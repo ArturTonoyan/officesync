@@ -4,7 +4,7 @@ import { inputs } from "./data";
 import styles from "./Registration.module.scss";
 
 function Registration() {
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("USER");
   return (
     <div className={styles.Registration}>
       <HeadLogo />

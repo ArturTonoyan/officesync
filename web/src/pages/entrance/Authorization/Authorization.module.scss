@@ -1,2 +1,38 @@
 .Authorization {
+  .container {
+    @include FormContainer;
+
+    h1 {
+      @include h1;
+    }
+
+    .auth {
+      @include auth;
+    }
+
+    .form {
+      @include form;
+
+      .input_box {
+        @include InputBox;
+        .role {
+          display: flex;
+          flex-direction: row;
+          background-color: var(--bg2);
+          button {
+            width: 50%;
+            @include ButtonBlueLight;
+          }
+          .active {
+            background-color: var(--blue);
+            color: #fff;
+          }
+        }
+      }
+      .save {
+        @include ButtonBlue();
+        width: 100%;
+      }
+    }
+  }
 }

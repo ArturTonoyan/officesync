@@ -4,6 +4,94 @@ $w1: 1400px;
 $w2: 769px;
 $w3: 480px;
 
+@mixin FormContainer() {
+  padding: 50px 120px;
+  background-color: #fff;
+  border-radius: 20px;
+  margin: 0 auto;
+  width: max-content;
+}
+
+@mixin h1 {
+  font-family: Overpass, sans-serif;
+  font-weight: 400;
+  font-size: 40px;
+  text-align: center;
+}
+
+@mixin auth {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  span {
+    margin-right: 10px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #989898;
+  }
+  a {
+    color: var(--blue);
+  }
+}
+
+@mixin form {
+  display: flex;
+  flex-direction: column;
+  width: 470px;
+  padding-top: 30px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+@mixin InputBox {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  width: 100%;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  input {
+    border: none;
+    padding: 20px;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+  }
+}
+
+@mixin ButtonBlue() {
+  background-color: var(--blue);
+  border: none;
+  border-radius: 12px;
+  font-family: Montserrat;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  @include HoverActive();
+  height: 50px;
+}
+
+@mixin ButtonBlueLight() {
+  background-color: var(--bg2);
+  border: none;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  cursor: pointer;
+  @include HoverActive;
+  font-family: Montserrat;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  color: #7872b9;
+}
+
+//!!!!!!!!!!!!!
+
 @mixin TextArea($fs: torem(18px)) {
   border-radius: torem(10px);
   height: torem(120px);
@@ -23,20 +111,6 @@ $w3: 480px;
   @media (max-width: $w3) {
     font-size: torem(14px);
   }
-}
-
-@mixin ButtonBlue() {
-  background-color: var(--blue);
-  border: none;
-  border-radius: 12px;
-  font-family: Montserrat;
-  text-align: center;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 16px;
-  @include HoverActive();
-  height: 50px;
 }
 
 @mixin ButtonLight($fs: torem(18px)) {
