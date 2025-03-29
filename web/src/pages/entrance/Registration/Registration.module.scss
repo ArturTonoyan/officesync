@@ -1,0 +1,86 @@
+.Registration {
+  .container {
+    padding: 50px 120px;
+    background-color: #fff;
+    border-radius: 20px;
+    margin: 0 auto;
+    width: max-content;
+
+    h1 {
+      font-family: Overpass, sans-serif;
+      font-weight: 400;
+      font-size: 40px;
+      text-align: center;
+    }
+
+    .auth {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      margin-top: 15px;
+      span {
+        margin-right: 10px;
+        font-weight: 400;
+        font-size: 14px;
+        color: #989898;
+      }
+      a {
+        color: var(--blue);
+      }
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      width: 470px;
+      padding-top: 30px;
+      margin: 0 auto;
+      align-items: center;
+
+      .input_box {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        width: 100%;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        input {
+          border: none;
+          padding: 20px;
+          border-radius: 12px;
+          width: 100%;
+          box-sizing: border-box;
+          outline: none;
+        }
+        .role {
+          display: flex;
+          flex-direction: row;
+          background-color: var(--bg2);
+          button {
+            width: 50%;
+            background-color: var(--bg2);
+            border: none;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 12px;
+            cursor: pointer;
+            @include HoverActive;
+            font-family: Montserrat;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            color: #7872b9;
+          }
+          .active {
+            background-color: var(--blue);
+            color: #fff;
+          }
+        }
+      }
+      .save {
+        @include ButtonBlue();
+        width: 100%;
+      }
+    }
+  }
+}
