@@ -1,0 +1,121 @@
+.AboutUs {
+  margin-top: 180px;
+  h1 {
+    font-weight: 700;
+    font-size: 58px;
+    line-height: 70px;
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    width: 714px;
+    color: #1e0e62;
+  }
+  h2 {
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 32px;
+    letter-spacing: 0px;
+    text-align: center;
+    width: 827px;
+    margin: 0 auto;
+    color: #15143966;
+    margin-bottom: 120px;
+  }
+
+  .blok2 {
+    width: 65vw;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 100px;
+    h3 {
+      font-weight: 700;
+      font-size: 42px;
+      color: #1e0e62;
+      margin-bottom: 30px;
+    }
+    h4 {
+      font-weight: 500;
+      font-size: 22px;
+      color: #15143966;
+      width: 470px;
+      margin-bottom: 50px;
+    }
+    .list {
+      display: flex;
+      flex-direction: column;
+      .item {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 40px;
+        img {
+          margin-right: 20px;
+          width: 30px;
+          height: 30px;
+        }
+        span {
+          font-weight: 500;
+          font-size: 18px;
+          color: #1e0e62;
+        }
+      }
+    }
+    .second {
+      img {
+        width: auto;
+        height: 500px;
+        pointer-events: none;
+      }
+    }
+  }
+  .blok3 {
+    width: 65vw;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 100px;
+    h3 {
+      font-weight: 700;
+      font-size: 42px;
+      text-align: center;
+      color: #1e0e62;
+      margin-bottom: 100px;
+    }
+    .boxs {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 200px;
+
+      .box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 310px;
+        img {
+          width: 60px;
+          height: 60px;
+          margin-bottom: 25px;
+        }
+        span {
+          font-weight: 500;
+          font-size: 22px;
+          line-height: 32px;
+          letter-spacing: 0px;
+          text-align: center;
+          margin-bottom: 40px;
+          color: #1e0e62;
+        }
+        p {
+          color: #15143966;
+          font-weight: 400;
+          font-size: 16px;
+          line-height: 26px;
+          text-align: center;
+        }
+      }
+    }
+  }
+}

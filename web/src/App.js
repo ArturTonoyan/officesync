@@ -5,6 +5,8 @@ import "./styles/app.scss";
 import Authorization from "./pages/entrance/Authorization/Authorization";
 import Registration from "./pages/entrance/Registration/Registration";
 import store from "./store/store";
+import AboutUs from "./pages/AboutUs/AboutUs";
+import Admin from "./pages/Admin/Admin";
 
 function App() {
   const queryClient = new QueryClient();
@@ -16,6 +18,8 @@ function App() {
             <Routes>
               <Route path="/authorization" element={<Authorization />}></Route>
               <Route path="/registration" element={<Registration />}></Route>
+              <Route path="/" element={<AboutUs />}></Route>
+              <Route path="/admin" element={<Admin />}></Route>
             </Routes>
           </main>
         </Provider>

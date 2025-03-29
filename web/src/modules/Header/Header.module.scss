@@ -1,0 +1,42 @@
+.Header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 40px;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: 120px;
+  background-color: var(--bg);
+  .logo {
+    img {
+      width: 187px;
+      height: 33px;
+    }
+  }
+  .nav {
+    display: flex;
+    gap: 100px;
+    a {
+      text-decoration: none;
+      color: #333333;
+      font-weight: 400;
+      font-size: 20px;
+      color: #1e0e62;
+    }
+  }
+  .auth {
+    width: 187px;
+    display: flex;
+    justify-content: end;
+    button {
+      @include ButtonBlue;
+      width: max-content;
+      height: 40px;
+      padding: 0 40px;
+    }
+  }
+}
