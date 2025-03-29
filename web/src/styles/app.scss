@@ -1,3 +1,5 @@
+@import "./../assets/fonts/montserrat/stylesheet.scss";
+
 body {
   p,
   h1,
@@ -10,5 +12,6 @@ body {
     margin: 0;
     padding: 0;
   }
+  font-family: Montserrat, sans-serif;
   background-color: var(--bg);
 }
