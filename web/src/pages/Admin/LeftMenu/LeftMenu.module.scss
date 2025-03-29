@@ -1,0 +1,79 @@
+@mixin menuItem {
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  transition: all 0.2s linear;
+  margin-bottom: 18px;
+  &:hover {
+    background-color: #006cf91f;
+  }
+  &:active {
+    background-color: #4592f80f;
+  }
+  img {
+    margin-right: 10px;
+  }
+  span {
+    font-size: 20px;
+    color: #333;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.LeftMenu {
+  width: 300px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px;
+  background-color: #f5f7fb;
+  .logotype {
+    margin: 20px;
+  }
+  .container,
+  .container_bottom {
+    display: flex;
+    flex-direction: column;
+  }
+  .tables_box {
+    margin-top: 60px;
+    padding-right: 20px;
+    span {
+      color: #a9a9a9;
+      font-size: 16px;
+      padding-left: 10px;
+    }
+    .list_item {
+      padding: 0;
+      margin: 0;
+      padding-top: 20px;
+      list-style: none;
+      border-bottom: 1px solid #c7c7c7;
+      li {
+        @include menuItem;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100%);
+  }
+  .constructor_box,
+  .container_bottom {
+    margin-top: 18px;
+    padding-right: 20px;
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    li {
+      @include menuItem;
+    }
+  }
+}
