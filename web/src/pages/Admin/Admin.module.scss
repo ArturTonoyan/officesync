@@ -1,2 +1,13 @@
 .Admin {
+  display: flex;
+  justify-content: end;
+  .container {
+    width: calc(100% - 300px);
+    padding: 40px;
+    box-sizing: border-box;
+    h1 {
+      font-weight: 700;
+      font-size: 32px;
+    }
+  }
 }

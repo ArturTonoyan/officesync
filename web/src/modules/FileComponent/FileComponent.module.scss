@@ -1,0 +1,212 @@
+$w1: 1366px;
+$w2: 769px;
+$w3: 480px;
+
+.FileComponent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+
+  .is_dragging {
+    opacity: 0;
+    transition: opacity 0.15s linear;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: #0045290a;
+    z-index: 400;
+  }
+  .is_dragging_opasity {
+    opacity: 1;
+    transition: opacity 0.15s linear;
+  }
+  .is_dragging_opasity_no {
+    opacity: 0;
+    transition: opacity 0.15s linear;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    // border: 1px dashed #858b89;
+    border-radius: 10px;
+    @include HoverActive;
+    cursor: pointer;
+    position: relative;
+
+    .container_inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      opacity: 0; /* Начальное состояние: невидимое */
+      transition: opacity 0.5s ease, transform 0.5s ease; /* Плавный переход */
+      transform: scale(0.95); /* Легкое уменьшение для эффекта появления */
+      img {
+        width: 57px;
+        height: 62px;
+        @media (max-width: $w2) {
+          width: 47px;
+          height: 43px;
+        }
+      }
+
+      span {
+        padding: 0;
+        margin: 0;
+        margin-top: 5px;
+        width: auto;
+        font-family: Overpass, sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 19px;
+        letter-spacing: 0%;
+        text-align: center;
+        color: #858b89;
+        text-wrap: nowrap;
+      }
+      .error_size {
+        color: #b32020;
+      }
+    }
+    .visible {
+      opacity: 1; /* Делает изображение видимым */
+      transform: scale(1); /* Возвращает изображение к нормальному размеру */
+    }
+    .novisible {
+      opacity: 0;
+      transition: none;
+    }
+  }
+
+  .container_file {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #c8d0ce;
+    border-radius: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+
+    .container_file_inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 50%;
+      height: 50%;
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      // overflow: hidden;
+    }
+
+    .container_file_inner_file {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      .box_logo {
+        opacity: 0; /* Начальное состояние: невидимое */
+        transition: opacity 0.5s ease, transform 0.5s ease; /* Плавный переход */
+        transform: scale(0.95); /* Легкое уменьшение для эффекта появления */
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        img {
+          width: 57px;
+          height: 62px;
+          cursor: pointer;
+          @media (max-width: $w2) {
+            width: 47px;
+            height: 43px;
+          }
+        }
+        span {
+          cursor: pointer;
+
+          max-width: 80%;
+          font-family: Overpass, sans-serif;
+          font-weight: 400;
+          font-size: 16px;
+          line-height: 19px;
+          letter-spacing: 0%;
+          text-align: center;
+          color: #333333;
+          padding: 0;
+          margin: 0;
+          margin-top: 8px;
+        }
+      }
+      .novisible {
+        opacity: 0;
+        transition: none;
+      }
+
+      .visible {
+        opacity: 1; /* Делает изображение видимым */
+        transform: scale(1); /* Возвращает изображение к нормальному размеру */
+      }
+    }
+    .logo {
+      opacity: 0; /* Начальное состояние: невидимое */
+      transition: opacity 0.5s ease, transform 0.5s ease; /* Плавный переход */
+      transform: scale(0.95); /* Легкое уменьшение для эффекта появления */
+    }
+    .novisible {
+      opacity: 0;
+      transition: none;
+    }
+
+    .visible {
+      opacity: 1; /* Делает изображение видимым */
+      transform: scale(1); /* Возвращает изображение к нормальному размеру */
+    }
+    .delete {
+      width: 36px;
+      height: 36px;
+      img {
+        width: 24px;
+        height: 24px;
+        @media (max-width: $w3) {
+          width: 16px;
+          height: 16px;
+        }
+      }
+      box-sizing: border-box;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      cursor: pointer;
+      @include ButtonIcon;
+      @include HoverActive;
+      padding: 7px;
+      border-radius: 5px;
+      @media (max-width: $w3) {
+        top: 5px;
+        right: 5px;
+      }
+    }
+  }
+}

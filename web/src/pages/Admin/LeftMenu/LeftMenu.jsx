@@ -14,30 +14,46 @@ function LeftMenu() {
   const listMenu = [
     {
       icon: officeIcon,
-      title: "Офисы",
-      navigate: "/mainpage",
+      title: "Компания",
+      navigate: "/admin",
     },
     {
-      icon: deviceIcon,
-      title: "Оборудование",
-      navigate: "/mainpage/equipment",
+      icon: officeIcon,
+      title: "Офисы",
+      navigate: "/admin/offices",
+    },
+    {
+      icon: officeIcon,
+      title: "Этажи",
+      navigate: "/admin/floors",
     },
     {
       icon: personsIcon,
       title: "Сотрудники",
-      navigate: "/mainpage/workers",
+      navigate: "/admin/users",
     },
+    {
+      icon: deviceIcon,
+      title: "Оборудование",
+      navigate: "/admin/equipments",
+    },
+
     {
       icon: errorsIcon,
       title: "Неполадки",
-      navigate: "/mainpage",
+      navigate: "/admin/problems",
+    },
+    {
+      icon: errorsIcon,
+      title: "ТО",
+      navigate: "/admin/to",
     },
   ];
 
   return (
     <div className={styles.LeftMenu}>
       <div className={styles.logotype}>
-        <img src={logoIcon} alt="Логотип" />
+        <img src={logoIcon} alt="Логотип" onClick={() => navigate("/")} />
       </div>
       <div className={styles.content}>
         <div className={styles.container}>
@@ -54,7 +70,7 @@ function LeftMenu() {
           </div>
           <div className={styles.constructor_box}>
             <ul className={styles.list_item}>
-              <li>
+              <li onClick={() => navigate("/constructor")}>
                 <img src={constructorIcon} alt="img" />
                 <span>Конструктор</span>
               </li>

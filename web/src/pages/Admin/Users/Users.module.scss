@@ -1,0 +1,10 @@
+.Users {
+  .content {
+    @include FormContainer;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 40px;
+    padding: 0px;
+    overflow: hidden;
+  }
+}

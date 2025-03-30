@@ -1,0 +1,165 @@
+.Table {
+  max-height: 73vh;
+  overflow: auto;
+  border-radius: 8px;
+  @include ScrollBar;
+  padding-bottom: 200px;
+  box-sizing: border-box;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-radius: 8px;
+    font-family: "Arial", sans-serif;
+    padding-bottom: 250px;
+
+    thead {
+      background-color: #e7eae9;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      th {
+        padding: 12px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 18px;
+        color: #333;
+        border-bottom: 2px solid #d0d7de;
+        padding: 20px;
+
+        &:first-child {
+          border-top-left-radius: 8px;
+        }
+
+        &:last-child {
+          border-top-right-radius: 8px;
+          position: sticky;
+          right: 0;
+          background-color: #e7eae9;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        &:hover {
+          td {
+            background-color: #f0f4f8 !important;
+          }
+        }
+
+        cursor: pointer;
+        height: 81px;
+        td {
+          padding: 10px 12px;
+          border-bottom: 1px solid #e0e0e0;
+          vertical-align: middle;
+          color: #444;
+          background-color: inherit;
+          transition: all 0.2s linear;
+          text-align: center;
+          padding: 20px;
+          min-width: 100px;
+        }
+        td:nth-child(3) {
+          min-width: 210px;
+        }
+        td[name="phone"] {
+          text-wrap: nowrap;
+        }
+        td:nth-child(5) {
+          max-width: 310px;
+        }
+        td:nth-child(6) {
+          min-width: 210px;
+        }
+        td:last-child {
+          position: sticky;
+          right: 0;
+          background-color: #fff;
+        }
+
+        .editData {
+          background-color: #1ce99633;
+          transition: all 0.2s linear;
+        }
+        &:last-child {
+          td {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+
+    .direction_container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      position: relative;
+      justify-content: space-between;
+      .rigth_box {
+        margin-left: 10px;
+        img {
+          width: 24px;
+          height: 24px;
+          padding: 5px;
+          transform: scaleY(-1);
+          transition: all 0.2s linear;
+        }
+        .open {
+          transform: scaleY(1);
+          transition: all 0.2s linear;
+        }
+      }
+    }
+
+    td[name="param"],
+    th[name="param"] {
+      font-size: 22px;
+      font-weight: 700;
+      position: relative;
+    }
+
+    .param {
+      display: flex;
+      margin: auto;
+      justify-content: center;
+      align-items: center;
+      @include ButtonIcon;
+      font-size: 22px;
+      font-weight: 700;
+      @include HoverActive;
+      transform: translateY(-4px);
+    }
+  }
+}
+
+.DirectionList {
+  position: fixed;
+  background-color: #f0f3f2;
+  max-height: 500px;
+  width: 310px;
+  overflow: auto;
+  overflow-x: hidden;
+  border-radius: 10px;
+  z-index: 1000;
+  border: 1px solid #c8d0ce;
+
+  ul {
+    @include listNoStyle;
+    width: 100%;
+    li {
+      cursor: pointer;
+      width: 100%;
+      padding: 20px;
+      font-family: Overpass, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 19px;
+    }
+    .selected {
+      background-color: #00452940;
+    }
+  }
+}
