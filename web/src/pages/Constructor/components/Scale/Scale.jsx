@@ -16,7 +16,7 @@ function Scale({ scale, setScale }) {
   return (
     <div className={styles.Scale}>
       <button onClick={funMinus}>-</button>
-      <span>{(scale * 100).toFixed(0)}</span>
+      <span>{(scale * 100).toFixed(0)}%</span>
       <button onClick={funPlus}>+</button>
     </div>
   );
