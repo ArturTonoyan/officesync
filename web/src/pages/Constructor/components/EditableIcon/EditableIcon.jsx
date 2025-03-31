@@ -24,6 +24,8 @@ const EditableIcon = ({ isSelected, object, handleDragEnd, handleSelect }) => {
         rotation={object.rotation}
         x={object.x}
         y={object.y}
+        width={object.width}
+        height={object.height}
         onDragEnd={(e) => handleDragEnd(e, object.id)}
         onClick={() => handleSelect(object.id)}
         ref={imageRef} // Set the image reference

@@ -1,0 +1,73 @@
+.RightMenu {
+  position: fixed;
+  right: 0;
+  top: 120px;
+  height: 70vh;
+  background-color: #fff;
+  width: 300px;
+  transition: all 0.15s linear;
+
+  .head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 20px;
+    h3 {
+      padding: 20px;
+      margin: 0;
+      font-weight: 500;
+      font-size: 18px;
+      color: var(--blueText);
+    }
+    img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      @include HoverActive;
+      transform: scaleX(-1);
+      transition: all 0.15s linear;
+    }
+    .rotate {
+      transform: scaleX(1);
+      transition: all 0.15s linear;
+    }
+  }
+
+  h4 {
+    padding: 10px 20px;
+    margin: 0;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--blueText);
+  }
+
+  .position {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 10px 20px;
+    .input_box {
+      @include InputBox2;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px;
+      width: 110px;
+      height: 40px;
+      span {
+        margin-right: 10px;
+      }
+      input {
+        height: 100%;
+        width: 80px;
+        text-align: center;
+        padding: 0;
+      }
+    }
+  }
+}
+
+.RightMenuClose {
+  right: calc(-240px) !important;
+  transition: all 0.15s linear;
+}

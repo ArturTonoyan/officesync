@@ -7,6 +7,9 @@ import BottomMenu from "../../components/BottomMenu/BottomMenu";
 import { objects } from "./data";
 import EditableIcon from "../../components/EditableIcon/EditableIcon";
 import ModalAddObject from "../../components/ModalAddObject/ModalAddObject";
+import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
+import RightMenu from "../RightMenu/RightMenu";
+import TopMenu from "../TopMenu/TopMenu";
 
 function ConvasSpace() {
   const [data, setData] = useState(objects);
@@ -46,12 +49,20 @@ function ConvasSpace() {
 
   //! изменение позиции обьекта
   const handleDragEnd = (e, id) => {
+    console.log("e", e);
     const newData = data.map((object) => {
       if (object.id === id) {
+        const { x, y, scaleX, scaleY, rotation } = e.target.attrs;
+        const { width, height } = e.currentTarget.attrs;
         return {
           ...object,
           x: e.target.x(),
           y: e.target.y(),
+          scaleX: e.target?.attrs?.scaleX,
+          scaleY: e.target.attrs?.scaleY,
+          rotation: rotation,
+          width: width,
+          height: height,
         };
       }
       return object;
@@ -97,6 +108,16 @@ function ConvasSpace() {
       {/* Нижнее меню */}
       <BottomMenu setModalAddEquipment={setModalAddEquipment} />
       <Scale scale={scale} setScale={setScale} />
+
+      {/* правое меню */}
+      <RightMenu
+        item={data.find((item) => item.id === isSelected)}
+        data={data}
+        setData={setData}
+      />
+
+      {/* Верхнее меню */}
+      <TopMenu />
 
       {/* Попапы */}
       <ModalAddObject
