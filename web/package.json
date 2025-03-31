@@ -22,10 +22,11 @@
     "react-scripts": "5.0.1",
     "redux-persist": "^6.0.0",
     "save-dev": "^0.0.1-security",
+    "use-image": "^1.1.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "craco start PORT=3001",
+    "start": "craco start",
     "build": "craco build",
     "test": "craco test",
     "lint": "eslint --fix 'src/**/*.{js,jsx}' && prettier --write 'src/**/*.{js,jsx}'"

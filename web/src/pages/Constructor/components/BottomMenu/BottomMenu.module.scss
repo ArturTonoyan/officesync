@@ -1,0 +1,16 @@
+.BottomMenu {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    .addEquipment {
+      @include ButtonBlue;
+      padding: 0 40px;
+    }
+  }
+}

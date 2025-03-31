@@ -3,7 +3,7 @@ import styles from "./Scale.module.scss";
 function Scale({ scale, setScale }) {
   const funPlus = () => {
     let newScale = scale + 0.1;
-    if (newScale > 1) newScale = 1;
+    if (newScale > 1.5) newScale = 1.5;
     setScale(newScale);
   };
 

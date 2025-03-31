@@ -3,10 +3,17 @@ import styles from "./ConvasSpace.module.scss";
 import { Stage, Layer, Rect } from "react-konva";
 import Grid from "../../components/Grid/Grid";
 import Scale from "../../components/Scale/Scale";
+import BottomMenu from "../../components/BottomMenu/BottomMenu";
+import { objects } from "./data";
+import EditableIcon from "../../components/EditableIcon/EditableIcon";
+import ModalAddObject from "../../components/ModalAddObject/ModalAddObject";
 
 function ConvasSpace() {
+  const [data, setData] = useState(objects);
   const [scale, setScale] = useState(1);
   const stageRef = useRef(null);
+  const [modalAddEquipment, setModalAddEquipment] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
 
   const handleWheel = (e) => {
     e.evt.preventDefault();
@@ -19,8 +26,8 @@ function ConvasSpace() {
     if (newScale < 0.1) {
       newScale = 0.1;
     }
-    if (newScale > 1) {
-      newScale = 1;
+    if (newScale > 1.5) {
+      newScale = 1.5;
     }
     setScale(newScale);
 
@@ -30,6 +37,35 @@ function ConvasSpace() {
       y: pointer.y - (pointer.y - stage.y()) * (newScale / oldScale),
     });
   };
+
+  //! при клике вне EditableIcon убираем выделение
+  const handleStageClick = (e) => {
+    if (e.target !== e.currentTarget) return;
+    setIsSelected(false);
+  };
+
+  //! изменение позиции обьекта
+  const handleDragEnd = (e, id) => {
+    const newData = data.map((object) => {
+      if (object.id === id) {
+        return {
+          ...object,
+          x: e.target.x(),
+          y: e.target.y(),
+        };
+      }
+      return object;
+    });
+    setData(newData);
+  };
+
+  //! выделение обьекта для изменения
+  const handleSelect = (id) => {
+    setIsSelected(id);
+  };
+
+  console.log("data", data);
+
   return (
     <div className={styles.ConvasSpace}>
       <Stage
@@ -40,23 +76,36 @@ function ConvasSpace() {
         ref={stageRef}
         scaleX={scale}
         scaleY={scale}
+        onClick={handleStageClick}
       >
         <Layer>
           {/* Сетка */}
           <Grid />
 
-          {/* Комната */}
-          <Rect
-            x={100}
-            y={100}
-            width={200}
-            height={150}
-            fill="blue"
-            draggable
-          />
+          {/* Объекты */}
+          {data?.map((object) => (
+            <EditableIcon
+              isSelected={isSelected === object.id}
+              object={object}
+              handleDragEnd={handleDragEnd}
+              handleSelect={handleSelect}
+            />
+          ))}
         </Layer>
       </Stage>
+
+      {/* Нижнее меню */}
+      <BottomMenu setModalAddEquipment={setModalAddEquipment} />
       <Scale scale={scale} setScale={setScale} />
+
+      {/* Попапы */}
+      <ModalAddObject
+        show={modalAddEquipment}
+        setShow={setModalAddEquipment}
+        title={"Добавить объект"}
+        objects={data}
+        setObjects={setData}
+      />
     </div>
   );
 }

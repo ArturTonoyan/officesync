@@ -1,0 +1,106 @@
+.ModalAddObject {
+  @include PopupBlur;
+
+  .container {
+    @include FormContainer;
+    padding: 50px 30px;
+    height: max-content;
+    box-sizing: border-box;
+    margin-top: 100px;
+    max-height: 80vh;
+    overflow: hidden;
+    overflow-y: auto;
+    @include ScrollBar;
+    h2 {
+      margin-bottom: 60px;
+    }
+    .form {
+      display: flex;
+      flex-wrap: wrap;
+      width: 440px;
+      justify-content: space-between;
+    }
+    .input_box {
+      width: 100%;
+      .name {
+        display: flex;
+        padding-bottom: 18px;
+        font-weight: 500;
+        font-size: 18px;
+        color: var(--blueText);
+      }
+      .input {
+        @include InputBox2;
+        transition: all 0.15s linear;
+        display: flex;
+        flex-direction: row;
+
+        input {
+          color: var(--blueText);
+          font-weight: 400;
+          font-size: 18px;
+        }
+        img {
+          padding: 20px;
+          width: 12px;
+          height: 12px;
+          margin: auto;
+          transform: scaleY(-1);
+          cursor: pointer;
+          @include HoverActive;
+        }
+      }
+    }
+
+    .input_box_icon {
+      width: 45%;
+      .name {
+        display: flex;
+        padding-bottom: 18px;
+        font-weight: 500;
+        font-size: 18px;
+        color: var(--blueText);
+      }
+      .input {
+        @include InputBox2;
+        transition: all 0.15s linear;
+        display: flex;
+        flex-direction: row;
+
+        input {
+          color: var(--blueText);
+          font-weight: 400;
+          font-size: 18px;
+        }
+        img {
+          padding: 20px;
+          width: 12px;
+          height: 12px;
+          margin: auto;
+          transform: scaleY(-1);
+          cursor: pointer;
+          @include HoverActive;
+        }
+      }
+    }
+
+    .btn {
+      display: flex;
+      justify-content: end;
+      width: 100%;
+      flex-direction: row;
+      margin-top: 40px;
+      justify-content: space-between;
+      .cancel {
+        @include ButtonBlueLight;
+        padding: 0 60px;
+        width: 48%;
+      }
+      .save {
+        @include ButtonBlue;
+        padding: 0 60px;
+        width: 48%;
+      }
+    }
+  }
+}
