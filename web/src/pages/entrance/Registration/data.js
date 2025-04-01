@@ -32,6 +32,6 @@ export const inputs = [
   {
     type: "password",
     name: "Повторите пароль",
-    key: "password2",
+    key: "repeatPassword",
   },
 ];

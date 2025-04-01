@@ -26,13 +26,21 @@ export const apiRequest = async (
 
 //! Запрос на регистрацию
 export const apiRegister = async (data) => {
-  return await apiRequest("post", "/auth/register", data);
+  const response = await apiRequest("post", "/auth/register", data);
+  const { token } = response.data;
+  localStorage.setItem("accessToken", token);
+  return response;
 };
 
 //! Запрос на авторизацию
-export const apiLogin = async (UserData) => {
-  const response = await apiRequest("post", "/auth/login", UserData);
-  const { participant, token } = response.data;
+export const apiLogin = async (data) => {
+  const response = await apiRequest("post", "/auth/login", data);
+  const { token } = response.data;
   localStorage.setItem("accessToken", token);
   return response;
+};
+
+//! Запрос получение данных user
+export const apiGetUser = async () => {
+  return await apiRequest("get", "/users/me");
 };

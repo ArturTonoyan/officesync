@@ -9,9 +9,6 @@ const UserSlice = createSlice({
     editUser: {
       data: {},
     },
-    emailSend: "",
-    status: "idle", // idle | loading | succeeded | failed
-    error: null,
   },
 
   reducers: {

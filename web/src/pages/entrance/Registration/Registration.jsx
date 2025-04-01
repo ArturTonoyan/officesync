@@ -2,9 +2,35 @@ import { useState } from "react";
 import HeadLogo from "../../../modules/HeadLogo/HeadLogo";
 import { inputs } from "./data";
 import styles from "./Registration.module.scss";
+import { apiRegister } from "../../../api/apirequests";
+import { useNavigate } from "react-router-dom";
 
-function Registration() {
-  const [role, setRole] = useState("USER");
+function Registration({ funUpdUser }) {
+  const navigate = useNavigate();
+  const [data, setData] = useState({
+    name: "",
+    surname: "",
+    patronymic: "",
+    email: "",
+    role: "USER",
+    password: "",
+    repeatPassword: "",
+  });
+
+  const funSetData = (key, value) => {
+    setData({ ...data, [key]: value });
+  };
+
+  const funSave = () => {
+    console.log(data);
+    apiRegister(data).then((res) => {
+      if (res.status === 201) {
+        navigate("/");
+        funUpdUser();
+      }
+    });
+  };
+
   return (
     <div className={styles.Registration}>
       <HeadLogo />
@@ -20,14 +46,14 @@ function Registration() {
               {item.key === "role" ? (
                 <div className={styles.role}>
                   <button
-                    onClick={() => setRole("ADMIN")}
-                    className={role === "ADMIN" ? styles.active : ""}
+                    onClick={() => funSetData("role", "ADMIN")}
+                    className={data.role === "ADMIN" ? styles.active : ""}
                   >
                     Администратор
                   </button>
                   <button
-                    onClick={() => setRole("USER")}
-                    className={role === "USER" ? styles.active : ""}
+                    onClick={() => funSetData("role", "USER")}
+                    className={data.role === "USER" ? styles.active : ""}
                   >
                     Сотрудник
                   </button>
@@ -38,11 +64,15 @@ function Registration() {
                   type={item.type}
                   placeholder={item.name}
                   autoComplete="new-password"
+                  value={data[item.key]}
+                  onChange={(e) => funSetData(item.key, e.target.value)}
                 />
               )}
             </div>
           ))}
-          <button className={styles.save}>Зарегистрироваться</button>
+          <button className={styles.save} onClick={funSave}>
+            Зарегистрироваться
+          </button>
         </div>
       </div>
     </div>

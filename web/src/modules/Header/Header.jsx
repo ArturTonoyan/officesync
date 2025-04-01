@@ -1,9 +1,16 @@
+import { useSelector } from "react-redux";
 import { nav } from "./data";
 import styles from "./Header.module.scss";
 import logo from "@assets/images/logo/logo.svg";
 import { useNavigate } from "react-router-dom";
 
 function Header() {
+  const userEmail = useSelector((state) => state.user.user.data?.email);
+  const userRole = useSelector(
+    (state) => state.user.user.data?.roles?.[0]?.value
+  );
+  console.log("userRole", userRole);
+
   const navigate = useNavigate();
   return (
     <div className={styles.Header}>
@@ -16,9 +23,16 @@ function Header() {
             {item.name}
           </a>
         ))}
+        {userRole === "ADMIN" && (
+          <a key={0} href="/admin">
+            Админ
+          </a>
+        )}
       </div>
       <div className={styles.auth}>
-        <button onClick={() => navigate("/authorization")}>Войти</button>
+        <button onClick={() => navigate("/authorization")}>
+          {userEmail ? "Личный кабинет" : "Вход"}
+        </button>
       </div>
     </div>
   );

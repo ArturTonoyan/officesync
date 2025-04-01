@@ -5,7 +5,6 @@ import { inputs } from "./data";
 import noPhoto from "@assets/images/icons/nophoto.png";
 
 function Company() {
-  const server = "http://localhost:3000";
   const [editing, setEditing] = useState(true);
 
   const [data, setData] = useState({

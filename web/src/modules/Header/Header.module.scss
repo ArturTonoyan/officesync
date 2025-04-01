@@ -35,6 +35,7 @@
     button {
       @include ButtonBlue;
       width: max-content;
+      text-wrap: nowrap;
       height: 40px;
       padding: 0 40px;
     }
