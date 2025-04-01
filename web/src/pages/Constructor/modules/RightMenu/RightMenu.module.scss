@@ -65,6 +65,16 @@
       }
     }
   }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    .actions_container {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 20px;
+    }
+  }
 }
 
 .RightMenuClose {

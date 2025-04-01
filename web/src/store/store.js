@@ -11,15 +11,17 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import UserSlice from "./userSlice/user.Slice.js";
+import ConvaSlice from "./convaSlice/conva.Slice.js";
 
 const rootReducer = combineReducers({
   user: UserSlice,
+  conva: ConvaSlice,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["UserSlice"],
+  whitelist: ["UserSlice", "ConvaSlice"],
   blacklist: [],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);

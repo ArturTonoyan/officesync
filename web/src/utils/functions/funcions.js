@@ -192,3 +192,16 @@ export const splitArrayIntoChunks = (array, chunkSize) => {
 export const sortArrayByDate = (array) => {
   return array.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 };
+
+export const funAllSearch = (text, originalData) => {
+  if (text.trim() !== "") {
+    const filteredData = originalData.filter((item) =>
+      Object.values(item).some((value) =>
+        value.toString().toLowerCase().includes(text.toLowerCase())
+      )
+    );
+    return filteredData;
+  } else {
+    return [...originalData]; // Сбрасываем фильтр
+  }
+};

@@ -2,10 +2,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddObject.module.scss";
 import arrow from "@assets/images/icons/arrowMini.svg";
 import { addEquipmentData } from "./data";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
+import { useDispatch } from "react-redux";
+import { addObject } from "../../../../store/convaSlice/conva.Slice";
 
-function ModalAddObject({ title, show, setShow, objects, setObjects }) {
+function ModalAddObject({ title, show, setShow }) {
+  const dispatch = useDispatch();
   const [modalAllIcons, setModalAllIcons] = useState(false);
   const inputs = addEquipmentData;
 
@@ -15,14 +18,15 @@ function ModalAddObject({ title, show, setShow, objects, setObjects }) {
     user: "",
     floor: "",
     icon: "",
-    x: 400,
-    y: 400,
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
     width: 100,
     height: 100,
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
-    id: Date.now(),
+    zIndex: 800,
+    isLocked: false,
   });
 
   const funSetData = (key, value) => {
@@ -31,7 +35,7 @@ function ModalAddObject({ title, show, setShow, objects, setObjects }) {
 
   const funSave = () => {
     setShow(false);
-    setObjects([...objects, data]);
+    dispatch(addObject({ data }));
   };
 
   const funClick = (key) => {
@@ -69,7 +73,11 @@ function ModalAddObject({ title, show, setShow, objects, setObjects }) {
             <div className={styles.form}>
               {inputs.map((item, index) =>
                 item.key === "floor" || item.key === "icon" ? (
-                  <div className={styles.input_box_icon} name={item.key}>
+                  <div
+                    className={styles.input_box_icon}
+                    name={item.key}
+                    key={index}
+                  >
                     <span className={styles.name}>{item.name}</span>
                     <div className={styles.input}>
                       {item.key === "floor" && (
@@ -100,7 +108,7 @@ function ModalAddObject({ title, show, setShow, objects, setObjects }) {
                     </div>
                   </div>
                 ) : (
-                  <div className={styles.input_box} name={item.key}>
+                  <div className={styles.input_box} name={item.key} key={index}>
                     <span className={styles.name}>{item.name}</span>
                     <div className={styles.input}>
                       <input

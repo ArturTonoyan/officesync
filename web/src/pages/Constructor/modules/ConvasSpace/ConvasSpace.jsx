@@ -1,22 +1,21 @@
 import { useRef, useState } from "react";
 import styles from "./ConvasSpace.module.scss";
-import { Stage, Layer, Rect } from "react-konva";
-import Grid from "../../components/Grid/Grid";
+import { Stage, Layer } from "react-konva";
 import Scale from "../../components/Scale/Scale";
 import BottomMenu from "../../components/BottomMenu/BottomMenu";
-import { objects } from "./data";
 import EditableIcon from "../../components/EditableIcon/EditableIcon";
 import ModalAddObject from "../../components/ModalAddObject/ModalAddObject";
-import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
 import RightMenu from "../RightMenu/RightMenu";
 import TopMenu from "../TopMenu/TopMenu";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setSelected } from "../../../../store/convaSlice/conva.Slice";
+import LeftMenu from "../LeftMenu/LeftMenu";
 function ConvasSpace() {
-  const [data, setData] = useState(objects);
+  const dispatch = useDispatch();
+  const conva = useSelector((state) => state.conva);
   const [scale, setScale] = useState(1);
   const stageRef = useRef(null);
   const [modalAddEquipment, setModalAddEquipment] = useState(false);
-  const [isSelected, setIsSelected] = useState(false);
 
   const handleWheel = (e) => {
     e.evt.preventDefault();
@@ -41,41 +40,10 @@ function ConvasSpace() {
     });
   };
 
-  //! при клике вне EditableIcon убираем выделение
   const handleStageClick = (e) => {
     if (e.target !== e.currentTarget) return;
-    setIsSelected(false);
+    dispatch(setSelected(null));
   };
-
-  //! изменение позиции обьекта
-  const handleDragEnd = (e, id) => {
-    console.log("e", e);
-    const newData = data.map((object) => {
-      if (object.id === id) {
-        const { x, y, scaleX, scaleY, rotation } = e.target.attrs;
-        const { width, height } = e.currentTarget.attrs;
-        return {
-          ...object,
-          x: e.target.x(),
-          y: e.target.y(),
-          scaleX: e.target?.attrs?.scaleX,
-          scaleY: e.target.attrs?.scaleY,
-          rotation: rotation,
-          width: width,
-          height: height,
-        };
-      }
-      return object;
-    });
-    setData(newData);
-  };
-
-  //! выделение обьекта для изменения
-  const handleSelect = (id) => {
-    setIsSelected(id);
-  };
-
-  console.log("data", data);
 
   return (
     <div className={styles.ConvasSpace}>
@@ -90,42 +58,34 @@ function ConvasSpace() {
         onClick={handleStageClick}
       >
         <Layer>
-          {/* Сетка */}
-          <Grid />
-
-          {/* Объекты */}
-          {data?.map((object) => (
-            <EditableIcon
-              isSelected={isSelected === object.id}
-              object={object}
-              handleDragEnd={handleDragEnd}
-              handleSelect={handleSelect}
-            />
-          ))}
+          {/* Objects */}
+          {conva.objects.data &&
+            [...conva.objects.data]
+              .sort((a, b) => a.zIndex - b.zIndex)
+              .map((object) => (
+                <EditableIcon key={object.id} object={object} />
+              ))}
         </Layer>
       </Stage>
 
-      {/* Нижнее меню */}
+      {/* Bottom Menu */}
       <BottomMenu setModalAddEquipment={setModalAddEquipment} />
       <Scale scale={scale} setScale={setScale} />
 
-      {/* правое меню */}
-      <RightMenu
-        item={data.find((item) => item.id === isSelected)}
-        data={data}
-        setData={setData}
-      />
+      {/* Right Menu */}
+      <RightMenu />
 
-      {/* Верхнее меню */}
+      {/* Left Menu */}
+      <LeftMenu />
+
+      {/* Top Menu */}
       <TopMenu />
 
-      {/* Попапы */}
+      {/* Modals */}
       <ModalAddObject
         show={modalAddEquipment}
         setShow={setModalAddEquipment}
         title={"Добавить объект"}
-        objects={data}
-        setObjects={setData}
       />
     </div>
   );

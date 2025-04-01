@@ -35,3 +35,56 @@ function Grid() {
 }
 
 export default Grid;
+{
+  /* Background Image */
+}
+{
+  /* {image && (
+            <>
+              <Image
+                image={image}
+                width={8858 / 2}
+                height={5906 / 2}
+                draggable={false}
+                x={-8858 / 4}
+                y={-5906 / 4}
+              />
+              <Image
+                image={image}
+                width={8858 / 2}
+                height={5906 / 2}
+                draggable={false}
+                x={-8693 / 2}
+                y={-5906 / 4}
+              />
+              <Image
+                image={image}
+                width={8858 / 2}
+                height={5906 / 2}
+                draggable={false}
+                x={-8856 / 4}
+                y={1477}
+              />
+              <Image
+                image={image}
+                width={8858 / 2}
+                height={5906 / 2}
+                draggable={false}
+                x={-4346.5}
+                y={1476}
+              />
+            </>
+          )} */
+}
+// import bg from "./../../../../assets/images/bg/bg.jpg";
+
+// const [image, setImage] = useState(null);
+
+// // Load the background image
+// useEffect(() => {
+//   const img = new window.Image();
+//   img.src = bg; // Replace with your image path
+//   img.onload = () => {
+//     setImage(img);
+//   };
+// }, []);

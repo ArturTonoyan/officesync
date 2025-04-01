@@ -2,22 +2,24 @@ import { useState } from "react";
 import styles from "./RightMenu.module.scss";
 import arrow from "@assets/images/icons/arrow.svg";
 import { inputs } from "./data";
-function RightMenu({ item, data, setData }) {
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setDataBySelected,
+  deleteObject,
+} from "../../../../store/convaSlice/conva.Slice";
+function RightMenu() {
+  const dispatch = useDispatch();
+  const item = useSelector((state) => state.conva.objects.selectedObject);
   const [openMenu, setOpenMenu] = useState(true);
   const [editData, setEditData] = useState(null);
   const [value, setValue] = useState("");
 
   const funChangeData = (key, value) => {
-    const newData = data.map((object) => {
-      if (object.id === item.id) {
-        return {
-          ...object,
-          [key]: value,
-        };
-      }
-      return object;
-    });
-    setData(newData);
+    dispatch(setDataBySelected({ key, value }));
+  };
+
+  const funDelete = () => {
+    dispatch(deleteObject(item.id));
   };
 
   return (
@@ -50,7 +52,7 @@ function RightMenu({ item, data, setData }) {
                     value={
                       editData === index
                         ? value
-                        : Number(item?.[el.key])?.toFixed(0)
+                        : Number(item?.[el.key])?.toFixed(2)
                     }
                     onFocus={() => {
                       setEditData(index);
@@ -67,6 +69,14 @@ function RightMenu({ item, data, setData }) {
             ))}
           </div>
         </>
+      )}
+      {item?.id && (
+        <div className={styles.actions}>
+          <h4>Действия</h4>
+          <div className={styles.actions_container}>
+            <button onClick={funDelete}>Удалить</button>
+          </div>
+        </div>
       )}
     </div>
   );

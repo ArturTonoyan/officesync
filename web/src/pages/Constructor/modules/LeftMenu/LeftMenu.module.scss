@@ -1,0 +1,80 @@
+.LeftMenu {
+  position: fixed;
+  left: 0;
+  top: 120px;
+  height: 70vh;
+  background-color: #fff;
+  width: 300px;
+  transition: all 0.15s linear;
+
+  .head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-right: 20px;
+    justify-content: space-between;
+    h3 {
+      padding: 20px;
+      margin: 0;
+      font-weight: 500;
+      font-size: 18px;
+      color: var(--blueText);
+    }
+    img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      @include HoverActive;
+      transform: scaleX(1);
+      transition: all 0.15s linear;
+    }
+    .rotate {
+      transform: scaleX(-1);
+      transition: all 0.15s linear;
+    }
+  }
+
+  .search {
+    @include InputBox2;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    margin: 20px;
+    width: 260px;
+    padding-right: 10px;
+    input {
+      padding: 10px;
+    }
+  }
+
+  .objects {
+    display: flex;
+    flex-direction: column;
+
+    .object {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 5px 20px;
+      cursor: pointer;
+
+      margin-bottom: 10px;
+      &:hover {
+        background-color: #006cf91f;
+      }
+      span {
+        font-size: 16px;
+        color: var(--blueText);
+      }
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+.LeftMenuClose {
+  left: calc(-240px) !important;
+  transition: all 0.15s linear;
+}

@@ -4,4 +4,5 @@ export const inputs = [
   { name: "W", type: "text", key: "width" },
   { name: "H", type: "text", key: "height" },
   { name: "R", type: "text", key: "rotation" },
+  { name: "I", type: "text", key: "zIndex" },
 ];

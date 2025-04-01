@@ -1,0 +1,29 @@
+//! установка секволайз для работы с бд
+npm install --save @nestjs/sequelize sequelize sequelize-typescript
+//! устновка для постгре
+npm install --save pg pg-hstore
+//! установка типов для секволайза
+npm install --save-dev @types/sequelize
+
+//! создание модуля 
+nest generate module users 
+//! создание контроллера 
+nest generate controller users
+//! создание сервиса 
+nest generate service users  
+
+//! установка конфигураций
+npm i @nestjs/config
+
+//! модуль для работы с jwt токеном
+ npm i @nestjs/jwt bcryptjs 
+
+//! валидация
+ npm i class-validator class transformer
+
+//! для показа файлов в браузере по запросу на сервер
+npm install --save @nestjs/serve-static
+
+//! для загрузки файлов
+npm install multer
+npm install --save-dev @types/multer
