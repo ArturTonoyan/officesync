@@ -1,43 +1,38 @@
-import api from './axios';
-const URL = window.location.origin;
-//! получение url c env
-export let server =
+import api from "./axios";
+export const server = process.env.REACT_APP_API_URL || "http://localhost:3004";
 
-//! Запрос на Выход
-export const logout = async () => {
-  const data = { refreshToken: localStorage.getItem('refreshToken') };
+// Универсальная функция для выполнения запросов
+export const apiRequest = async (
+  method,
+  endpoint,
+  data = null,
+  headers = {}
+) => {
   try {
-    const response = await api.post(`${server}/auth/logout`, data);
+    const config = {
+      method,
+      url: `${server}${endpoint}`,
+      headers,
+      data,
+    };
+
+    const response = await api(config);
     return response;
   } catch (error) {
-    alert('Ошибка при выходе из системы !');
+    console.error("Ошибка при выполнении запроса:", error);
+    throw error; // Пробрасываем ошибку дальше для обработки
   }
 };
 
 //! Запрос на регистрацию
-export const apiRegister = async data => {
-  try {
-    const response = await api.post(`${server}/auth/register`, data);
-    return response;
-  } catch (error) {
-    alert('Регистрация не прошла!');
-  }
+export const apiRegister = async (data) => {
+  return await apiRequest("post", "/auth/register", data);
 };
-
-
 
 //! Запрос на авторизацию
-export const LoginFunc = async UserData => {
-  try {
-    const response = await api.post(`${server}/auth/login`, UserData);
-    const { participant, token } = response.data;
-    localStorage.setItem('accessToken', token);
-    localStorage.setItem('userData', JSON.stringify(participant));
-    return response;
-  } catch (error) {
-    // alert('Пользователь не найден!');
-    return error;
-  }
+export const apiLogin = async (UserData) => {
+  const response = await apiRequest("post", "/auth/login", UserData);
+  const { participant, token } = response.data;
+  localStorage.setItem("accessToken", token);
+  return response;
 };
-
-
