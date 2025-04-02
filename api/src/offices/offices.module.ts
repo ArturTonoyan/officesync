@@ -1,25 +1,25 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { CompaniesService } from './companies.service';
-import { CompaniesController } from './companies.controller';
+import { OfficesService } from './offices.service';
+import { OfficesController } from './offices.controller';
+import { Company } from 'src/companies/companies.model';
+import { User } from 'src/users/users.model';
+import { Office } from './offices.model';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Company } from './companies.model';
 import { RolesModule } from 'src/roles/roles.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { FilesModule } from 'src/files/files.module';
-import { User } from 'src/users/users.model';
 import { Floors } from 'src/floors/floors.model';
 import { Equipment } from 'src/equipments/equipments.model';
-import { Office } from 'src/offices/offices.model';
 
 @Module({
-  providers: [CompaniesService],
-  controllers: [CompaniesController],
+  providers: [OfficesService],
+  controllers: [OfficesController],
   imports: [
-    SequelizeModule.forFeature([Company, User, Floors, Equipment, Office]),
+    SequelizeModule.forFeature([Office, Company, User, Floors, Equipment]),
     RolesModule,
     forwardRef(() => AuthModule),
     FilesModule,
   ],
-  exports: [CompaniesService],
+  exports: [OfficesService],
 })
-export class CompaniesModule {}
+export class OfficesModule {}

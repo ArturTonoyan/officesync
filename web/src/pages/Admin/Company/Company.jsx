@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FileComponent from "../../../modules/FileComponent/FileComponent";
 import styles from "./Company.module.scss";
 import { inputs } from "./data";
 import noPhoto from "@assets/images/icons/nophoto.png";
+import {
+  apiCreateCompany,
+  apiGetCompany,
+  apiUpdateCompany,
+  server,
+} from "../../../api/apirequests";
+import { useQuery } from "@tanstack/react-query";
 
 function Company() {
   const [editing, setEditing] = useState(true);
@@ -14,7 +21,35 @@ function Company() {
     inn: "",
     image: null,
     imageUrl: null,
+    adress: "",
   });
+
+  console.log("data", data);
+
+  const {
+    status,
+    data: query,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["companies/my"],
+    queryFn: apiGetCompany,
+    staleTime: Infinity, //! не обновлять
+    onError: (error) => {
+      console.error("Error fetching data:", error);
+    },
+  });
+
+  useEffect(() => {
+    if (query?.data) {
+      setData({
+        ...query?.data,
+        imageUrl: query?.data?.image ? `${server}/${query?.data?.image}` : null,
+      });
+    } else {
+      setEditing(false);
+    }
+  }, [query?.data]);
 
   const funSetPhoto = (file) => {
     if (!file) return;
@@ -24,6 +59,57 @@ function Company() {
       imageUrl: URL.createObjectURL(file),
     });
   };
+
+  const funChanegeData = (name, value) => {
+    setData({
+      ...data,
+      [name]: value,
+    });
+  };
+
+  const funSave = () => {
+    if (query?.data?.id) {
+      //! обновление компании
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("phone", data.phone);
+      formData.append("email", data.email);
+      formData.append("inn", data.inn);
+      formData.append("adress", data.adress);
+      formData.append("image", data.image);
+      console.log("data", data);
+      apiUpdateCompany(formData).then((res) => {
+        if (res.status === 200) {
+          setEditing(true);
+          refetch();
+        }
+      });
+    } else {
+      //! создание компании
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("phone", data.phone);
+      formData.append("email", data.email);
+      formData.append("inn", data.inn);
+      formData.append("image", data.image);
+      formData.append("adress", data.adress);
+      console.log("data", data);
+      apiCreateCompany(formData).then((res) => {
+        if (res.status === 201) {
+          setEditing(true);
+          refetch();
+        }
+      });
+    }
+  };
+
+  if (status === "loading") {
+    return <span>Загрузка...</span>;
+  }
+
+  if (status === "error") {
+    return <span>Ошибка</span>;
+  }
 
   return (
     <div className={styles.Company}>
@@ -35,6 +121,7 @@ function Company() {
               <div
                 className={`${styles.input_box} ${editing ? styles.edit : ""}`}
                 name={item.key}
+                key={index}
               >
                 <span className={styles.name}>{item.name}</span>
                 <div className={styles.input}>
@@ -44,6 +131,8 @@ function Company() {
                     autoComplete="new-password"
                     readOnly={editing}
                     placeholder="Не указанно"
+                    onChange={(e) => funChanegeData(item.key, e.target.value)}
+                    value={data[item.key]}
                   />
                 </div>
               </div>
@@ -61,6 +150,8 @@ function Company() {
                   autoComplete="new-password"
                   readOnly={editing}
                   placeholder="Не указанно"
+                  onChange={(e) => funChanegeData("adress", e.target.value)}
+                  value={data.adress || ""}
                 />
               </div>
             </div>
@@ -88,9 +179,21 @@ function Company() {
               Редактировать
             </button>
           ) : (
-            <button className={styles.save} onClick={() => setEditing(true)}>
-              Сохранить
-            </button>
+            <>
+              <button
+                className={styles.cancel}
+                onClick={() => setEditing(true)}
+              >
+                Отменить
+              </button>
+              <button className={styles.save} onClick={funSave}>
+                {query?.data?.id ? (
+                  <span>Сохранить</span>
+                ) : (
+                  <span>Создать</span>
+                )}
+              </button>
+            </>
           )}
         </div>
       </div>

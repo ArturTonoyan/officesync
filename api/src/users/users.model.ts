@@ -4,7 +4,13 @@ import {
   DataType,
   Table,
   BelongsToMany,
+  HasMany,
+  ForeignKey,
 } from 'sequelize-typescript';
+import { Company } from 'src/companies/companies.model';
+import { Equipment } from 'src/equipments/equipments.model';
+import { Floors } from 'src/floors/floors.model';
+import { Office } from 'src/offices/offices.model';
 import { Role } from 'src/roles/roles.model';
 import { UserRoles } from 'src/roles/user-roles.model';
 
@@ -63,4 +69,28 @@ export class User extends Model<User, UserCreationAttrs> {
   //! пользователя может быть несколько ролей
   @BelongsToMany(() => Role, () => UserRoles)
   roles: Role[];
+
+  @ForeignKey(() => Company)
+  @Column({
+    type: DataType.UUID,
+    allowNull: true,
+  })
+  companyId: string;
+
+  @ForeignKey(() => Office)
+  @Column({
+    type: DataType.UUID,
+    allowNull: true,
+  })
+  officeId: string;
+
+  @ForeignKey(() => Floors)
+  @Column({
+    type: DataType.UUID,
+    allowNull: true,
+  })
+  floorId: string;
+
+  @HasMany(() => Equipment)
+  eqipments: Equipment[];
 }

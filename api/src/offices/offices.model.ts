@@ -2,21 +2,22 @@ import {
   Model,
   Column,
   DataType,
-  Table,
   ForeignKey,
+  Table,
   HasMany,
 } from 'sequelize-typescript';
+import { Company } from 'src/companies/companies.model';
 import { Equipment } from 'src/equipments/equipments.model';
-import { Office } from 'src/offices/offices.model';
+import { Floors } from 'src/floors/floors.model';
 import { User } from 'src/users/users.model';
 
-interface CompanyCreationAttrs {
-  //! для создание модели необходимы тольок эти поля
+interface OfficeCreationAttrs {
   name: string;
+  companyId: string;
 }
 
-@Table({ tableName: 'companies' })
-export class Company extends Model<Company, CompanyCreationAttrs> {
+@Table({ tableName: 'offices' })
+export class Office extends Model<Office, OfficeCreationAttrs> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -34,6 +35,12 @@ export class Company extends Model<Company, CompanyCreationAttrs> {
     type: DataType.STRING,
     allowNull: true,
   })
+  address: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
   phone: string;
 
   @Column({
@@ -42,33 +49,19 @@ export class Company extends Model<Company, CompanyCreationAttrs> {
   })
   email: string;
 
+  @ForeignKey(() => Company)
   @Column({
-    type: DataType.STRING,
+    type: DataType.UUID,
+    allowNull: false,
   })
-  inn: string;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  adress: string;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  image: string;
-
-  @HasMany(() => Office)
-  offices: Office[];
+  companyId: string;
 
   @HasMany(() => User)
   users: User[];
 
+  @HasMany(() => Floors)
+  floors: Floors[];
+
   @HasMany(() => Equipment)
   eqipments: Equipment[];
-
-  // @ForeignKey(() => User)
-  // @Column({
-  //   type: DataType.UUID,
-  // })
-  // userId: string;
 }

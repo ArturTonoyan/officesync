@@ -11,6 +11,13 @@ import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CompaniesModule } from './companies/companies.module';
 import * as path from 'path';
+import { Company } from './companies/companies.model';
+import { OfficesModule } from './offices/offices.module';
+import { Office } from './offices/offices.model';
+import { FloorsModule } from './floors/floors.module';
+import { Floors } from './floors/floors.model';
+import { EquipmentsModule } from './equipments/equipments.module';
+import { Equipment } from './equipments/equipments.model';
 
 @Module({
   controllers: [],
@@ -30,7 +37,7 @@ import * as path from 'path';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Role, UserRoles],
+      models: [User, Role, UserRoles, Company, Office, Floors, Equipment],
       autoLoadModels: true,
     }),
     UsersModule,
@@ -38,6 +45,9 @@ import * as path from 'path';
     AuthModule,
     FilesModule,
     CompaniesModule,
+    OfficesModule,
+    FloorsModule,
+    EquipmentsModule,
   ],
 })
 export class AppModule {}

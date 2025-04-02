@@ -1,6 +1,6 @@
 import { IsEmail, IsString } from 'class-validator';
 
-export class CreateCompanyDto {
+export class CreateOfficesDto {
   @IsString({ message: 'Должно быть строкой' }) //! валидация
   readonly name: string;
 
@@ -12,14 +12,11 @@ export class CreateCompanyDto {
   readonly email?: string;
 
   @IsString({ message: 'Должно быть строкой' }) //! валидация
-  readonly inn?: string;
-
-  @IsString({ message: 'Должно быть строкой' }) //! валидация
-  readonly adress?: string;
+  readonly address?: string;
 
   @IsString({ message: 'Должно быть строкой' }) //! валидация
   image?: string;
 
-  // @IsString({ message: 'Должно быть строкой' }) //! валидация
-  // userId: string;
+  @IsString({ message: 'Должно быть строкой' }) //! валидация
+  companyId: string;
 }

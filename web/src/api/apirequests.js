@@ -44,3 +44,22 @@ export const apiLogin = async (data) => {
 export const apiGetUser = async () => {
   return await apiRequest("get", "/users/me");
 };
+
+//! создание компании
+export const apiCreateCompany = async (data) => {
+  return await apiRequest("post", "/companies", data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! получение своей компании
+export const apiGetCompany = async () => {
+  return await apiRequest("get", "/companies/my");
+};
+
+//! обновление данных компании
+export const apiUpdateCompany = async (data) => {
+  return await apiRequest("put", "/companies/my", data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
