@@ -15,7 +15,7 @@ function HeadBlock({ shearchParam, setShearchParam, setModalShow }) {
       </div>
       <div className={styles.right_block}>
         <button className={styles.save} onClick={() => setModalShow(true)}>
-          + Добавить офис
+          + Добавить сотрудника
         </button>
       </div>
     </div>

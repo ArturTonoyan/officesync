@@ -18,6 +18,8 @@ import { FloorsModule } from './floors/floors.module';
 import { Floors } from './floors/floors.model';
 import { EquipmentsModule } from './equipments/equipments.module';
 import { Equipment } from './equipments/equipments.model';
+import { ElementsModule } from './elements/elements.module';
+import { Element } from './elements/elements.model';
 
 @Module({
   controllers: [],
@@ -37,7 +39,16 @@ import { Equipment } from './equipments/equipments.model';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Role, UserRoles, Company, Office, Floors, Equipment],
+      models: [
+        User,
+        Role,
+        UserRoles,
+        Company,
+        Office,
+        Floors,
+        Equipment,
+        Element,
+      ],
       autoLoadModels: true,
     }),
     UsersModule,
@@ -48,6 +59,7 @@ import { Equipment } from './equipments/equipments.model';
     OfficesModule,
     FloorsModule,
     EquipmentsModule,
+    ElementsModule,
   ],
 })
 export class AppModule {}

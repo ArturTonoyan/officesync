@@ -8,6 +8,16 @@ const ConvaSlice = createSlice({
       selectedObject: {},
       selected: null,
     },
+    offices: {
+      data: [],
+      selected: null,
+      selectedObject: {},
+    },
+    floors: {
+      data: [],
+      selected: null,
+      selectedObject: {},
+    },
   },
 
   reducers: {

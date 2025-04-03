@@ -34,18 +34,8 @@ export const addOfficeData = [
     type: "text",
   },
   {
-    name: "Фото",
-    key: "image",
-    type: "text",
-  },
-  {
     name: "Должность",
     key: "position",
-    type: "text",
-  },
-  {
-    name: "Телефон",
-    key: "phone",
     type: "text",
   },
   {
@@ -67,21 +57,6 @@ export const addOfficeData = [
     name: "Подтверждение пароля",
     key: "passwordConfirm",
     type: "password",
-  },
-  {
-    name: "Офис",
-    key: "office",
-    type: "text",
-  },
-  {
-    name: "Этаж",
-    key: "floor",
-    type: "text",
-  },
-  {
-    name: "Оборудование",
-    key: "devices",
-    type: "text",
   },
 ];
 
@@ -121,45 +96,5 @@ export const tableHeader = [
   {
     name: "Этаж",
     key: "floor",
-  },
-  {
-    name: "Оборудование",
-    key: "devices",
-  },
-];
-
-export const testData = [
-  {
-    number: 1,
-    fio: "Иванов Иван Иванович",
-    position: "Директор",
-    phone: "+7 (999) 999-99-99",
-    email: "s9yG5@example.com",
-    role: "admin",
-    office: "Офис А",
-    floor: "Этаж 1",
-    devices: 5,
-  },
-  {
-    number: 2,
-    fio: "Петров Петр Петрович",
-    position: "Менеджер",
-    phone: "+7 (888) 888-88-88",
-    email: "WpDyM@example.com",
-    role: "manager",
-    office: "Офис Б",
-    floor: "Этаж 2",
-    devices: 5,
-  },
-  {
-    number: 3,
-    fio: "Сидоров Сидор Сидорович",
-    position: "Сотрудник",
-    phone: "+7 (777) 777-77-77",
-    email: "ZK2tF@example.com",
-    role: "user",
-    office: "Офис В",
-    floor: "Этаж 3",
-    devices: 5,
   },
 ];

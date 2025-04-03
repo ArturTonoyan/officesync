@@ -10,12 +10,20 @@ import { FloorsController } from './floors.controller';
 import { Company } from 'src/companies/companies.model';
 import { Office } from 'src/offices/offices.model';
 import { Equipment } from 'src/equipments/equipments.model';
+import { Element } from 'src/elements/elements.model';
 
 @Module({
   providers: [FloorsService],
   controllers: [FloorsController],
   imports: [
-    SequelizeModule.forFeature([Floors, User, Company, Office, Equipment]),
+    SequelizeModule.forFeature([
+      Floors,
+      User,
+      Company,
+      Office,
+      Equipment,
+      Element,
+    ]),
     RolesModule,
     forwardRef(() => AuthModule),
     FilesModule,

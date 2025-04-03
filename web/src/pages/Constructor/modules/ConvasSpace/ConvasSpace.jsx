@@ -10,12 +10,39 @@ import TopMenu from "../TopMenu/TopMenu";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelected } from "../../../../store/convaSlice/conva.Slice";
 import LeftMenu from "../LeftMenu/LeftMenu";
+import { useQuery } from "@tanstack/react-query";
+import {
+  apiGetEquipments,
+  apiGetFloors,
+  apiGetOffices,
+} from "../../../../api/apirequests";
 function ConvasSpace() {
   const dispatch = useDispatch();
   const conva = useSelector((state) => state.conva);
   const [scale, setScale] = useState(1);
   const stageRef = useRef(null);
   const [modalAddEquipment, setModalAddEquipment] = useState(false);
+
+  const { data: equipments, refetch: refetchEquipments } = useQuery({
+    queryKey: ["equipments/all/id", user?.companyId],
+    queryFn: () => apiGetEquipments(user?.companyId),
+    staleTime: Infinity, //! не обновлять
+    enabled: !!user?.companyId,
+  });
+
+  const { data: offices, refetch: refetchOffices } = useQuery({
+    queryKey: ["offices/all/id", user?.companyId],
+    queryFn: () => apiGetOffices(user?.companyId),
+    staleTime: Infinity, //! не обновлять
+    enabled: !!user?.companyId,
+  });
+
+  const { data: floors, refetch: refetchFloors } = useQuery({
+    queryKey: ["offices", user?.companyId],
+    queryFn: () => apiGetFloors(user?.companyId),
+    staleTime: Infinity, //! не обновлять
+    enabled: !!user?.companyId,
+  });
 
   const handleWheel = (e) => {
     e.evt.preventDefault();

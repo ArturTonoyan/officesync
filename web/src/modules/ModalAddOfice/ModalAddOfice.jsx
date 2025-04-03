@@ -21,7 +21,6 @@ function ModalAddOfice({
     setData({ ...data, ...keysDatas });
     setOpenList(null);
   };
-  console.log("lists", lists);
 
   return (
     <AnimatePresence>
@@ -41,7 +40,7 @@ function ModalAddOfice({
             {title && <h2>{title}</h2>}
             <div className={styles.form}>
               {inputs?.map((item, index) => (
-                <div className={styles.input_box} name={item.key}>
+                <div className={styles.input_box} name={item.key} key={index}>
                   <span className={styles.name}>{item.name}</span>
                   <div className={styles.input}>
                     <input
@@ -51,8 +50,10 @@ function ModalAddOfice({
                       placeholder="Не указанно"
                       value={data?.[item.key]}
                       onChange={(e) => funChange(item.key, e.target.value)}
-                      readOnly={lists[item.key]}
-                      onClick={() => setOpenList(item.key)}
+                      readOnly={lists?.[item.key]}
+                      onClick={() =>
+                        lists?.[item.key] ? setOpenList(item.key) : null
+                      }
                     />
                     {openList === item.key && lists[item.key] && (
                       <div className={styles.list}>

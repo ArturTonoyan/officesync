@@ -59,7 +59,10 @@ function App() {
             {userRole === "ADMIN" && (
               <>
                 <Route path="/admin" element={<Admin />}>
-                  <Route path="" element={<Company />}></Route>
+                  <Route
+                    path=""
+                    element={<Company funUpdUser={funUpdUser} />}
+                  ></Route>
                   <Route path="offices" element={<Offices />}></Route>
                   <Route path="floors" element={<Floors />}></Route>
                   <Route path="users" element={<Users />}></Route>

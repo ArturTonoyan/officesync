@@ -7,18 +7,22 @@ export const paramMenu = [
   {
     name: "Редактировать",
     icon: editIcon,
+    key: "edit",
   },
   {
     name: "Удалить",
     icon: trashICon,
+    key: "delete",
   },
   {
     name: "Сотрудники",
     icon: userIcon,
+    key: "users",
   },
   {
     name: "Оборудование",
     icon: deviceIcon,
+    key: "devices",
   },
 ];
 

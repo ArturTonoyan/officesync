@@ -6,8 +6,10 @@ import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
 import Table from "../../../modules/Table/Table";
 import {
   apiCreateFloor,
+  apiDeleteFloor,
   apiGetFloors,
   apiGetOffices,
+  apiUpdateFloor,
 } from "../../../api/apirequests";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +20,8 @@ function Floors() {
   const [tableData, setTableData] = useState([]);
   const [shearchParam, setShearchParam] = useState("");
   const [modalShow, setModalShow] = useState(false);
+  const [modalEditShow, setModalEditShow] = useState(false);
+  const [modalEditData, setModalEditData] = useState({});
   const [createFloorData, setCreateFloorData] = useState({
     name: "",
     number: "",
@@ -45,8 +49,12 @@ function Floors() {
 
   useEffect(() => {
     if (floors?.data) {
-      setTableData(floors?.data);
-      setOriginalData(floors?.data);
+      const qdat = floors?.data.map((item) => ({
+        ...item,
+        office: offices?.data?.find((el) => el.id === item.officeId)?.name,
+      }));
+      setTableData(qdat);
+      setOriginalData(qdat);
     }
   }, [floors?.data]);
 
@@ -85,6 +93,40 @@ function Floors() {
     });
   };
 
+  //! при клике в контекстном меню
+  const funParamClick = (param) => {
+    console.log("param", param);
+    if (param.key === "edit") {
+      setModalEditShow(true);
+      setModalEditData(param.row);
+    }
+    if (param.key === "delete") {
+      funDeleteFloor(param.row.id);
+    }
+  };
+
+  //! обновление этажа
+  const funUpdateFloor = () => {
+    apiUpdateFloor(
+      { name: modalEditData.name, number: modalEditData.number },
+      modalEditData.id
+    ).then((res) => {
+      if (res.status === 200) {
+        setModalEditShow(false);
+        refetchFloors();
+      }
+    });
+  };
+
+  //! удаление этажа
+  const funDeleteFloor = (id) => {
+    apiDeleteFloor(id).then((res) => {
+      if (res.status === 200) {
+        refetchFloors();
+      }
+    });
+  };
+
   return (
     <div className={styles.Floors}>
       <h1>Этажи</h1>
@@ -97,6 +139,16 @@ function Floors() {
         data={createFloorData}
         setData={setCreateFloorData}
         funSave={funCreateFloor}
+      />
+      <ModalAddOfice
+        show={modalEditShow}
+        setShow={setModalEditShow}
+        title={"Редактировать данные этажа"}
+        inputs={addFloorData}
+        lists={{ office: { data: offices?.data, key: "officeId" } }}
+        data={modalEditData}
+        setData={setModalEditData}
+        funSave={funUpdateFloor}
       />
       <HeadBlock
         setModalShow={setModalShow}
@@ -112,6 +164,7 @@ function Floors() {
           setModalShow={setModalShow}
           paramMenu={paramMenu}
           tableHeader={tableHeader}
+          funClick={funParamClick}
         />
       </div>
     </div>

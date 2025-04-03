@@ -22,6 +22,7 @@ export class FloorsService {
       if (!myOffice) {
         throw new Error('Офис не найден');
       }
+      dto.companyId = myOffice.companyId;
       return await this.floorsRepository.create(dto);
     } catch (error) {
       console.error('Ошибка при создании этажа:', error);
@@ -45,7 +46,11 @@ export class FloorsService {
     try {
       const floors = await this.floorsRepository.findAll({
         where: { companyId: id },
+        include: { all: true },
       });
+      if (!floors) {
+        throw new Error('Этажи не найдены');
+      }
       return floors;
     } catch (error) {
       console.error('Ошибка при получении этажей:', error);
@@ -61,7 +66,7 @@ export class FloorsService {
       if (!floor) {
         throw new Error('Этаж не найден');
       }
-      Object.assign(dto);
+      Object.assign(floor, dto);
       await floor.save();
       return floor;
     } catch (error) {

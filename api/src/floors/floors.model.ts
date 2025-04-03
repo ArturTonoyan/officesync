@@ -7,6 +7,7 @@ import {
   HasMany,
 } from 'sequelize-typescript';
 import { Company } from 'src/companies/companies.model';
+import { Element } from 'src/elements/elements.model';
 import { Equipment } from 'src/equipments/equipments.model';
 import { Office } from 'src/offices/offices.model';
 import { User } from 'src/users/users.model';
@@ -34,7 +35,6 @@ export class Floors extends Model<Floors, FloorsCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
-    unique: true,
   })
   number: number;
 
@@ -55,4 +55,7 @@ export class Floors extends Model<Floors, FloorsCreationAttrs> {
 
   @HasMany(() => Equipment)
   eqipments: Equipment[];
+
+  @HasMany(() => Element)
+  elements: Element[];
 }

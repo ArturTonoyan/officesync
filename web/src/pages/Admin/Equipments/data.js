@@ -5,18 +5,22 @@ export const paramMenu = [
   {
     name: "Редактировать",
     icon: editIcon,
+    key: "edit",
   },
   {
     name: "Удалить",
     icon: trashICon,
+    key: "delete",
   },
   {
     name: "Объект",
     icon: editIcon,
+    key: "object",
   },
   {
     name: "Неполадки",
     icon: editIcon,
+    key: "problems",
   },
 ];
 
@@ -42,8 +46,13 @@ export const addOfficeData = [
     type: "text",
   },
   {
+    name: "Офис",
+    key: "office",
+    type: "text",
+  },
+  {
     name: "Сотрудник",
-    key: "employee",
+    key: "user",
     type: "text",
   },
   {
@@ -101,7 +110,7 @@ export const tableHeader = [
   },
   {
     name: "Сотрудник",
-    key: "employee",
+    key: "user",
   },
   {
     name: "Описание",

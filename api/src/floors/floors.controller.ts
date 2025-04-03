@@ -16,6 +16,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FloorsService } from './floors.service';
 import { CreateFloorsDto } from './dto/create-floors-dto';
+import { UpdateFloorsDto } from './dto/update-floors-dto';
 
 @Controller('floors')
 export class FloorsController {
@@ -39,7 +40,7 @@ export class FloorsController {
 
   @Roles('ADMIN')
   @Put(':id')
-  update(@Body() dto: CreateFloorsDto, @Param('id') id: string) {
+  update(@Body() dto: UpdateFloorsDto, @Param('id') id: string) {
     return this.floorsService.update(dto, id);
   }
 

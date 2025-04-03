@@ -12,7 +12,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 
-function Company() {
+function Company({ funUpdUser }) {
   const [editing, setEditing] = useState(true);
   const user = useSelector((state) => state.user.user.data);
 
@@ -105,6 +105,7 @@ function Company() {
         if (res.status === 201) {
           setEditing(true);
           refetch();
+          funUpdUser();
         }
       });
     }

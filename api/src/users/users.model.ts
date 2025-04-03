@@ -65,6 +65,11 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   image: string;
 
+  @Column({
+    type: DataType.STRING,
+  })
+  position: string;
+
   //! делаем связь с таблицей Role многие ко многим так как у одног
   //! пользователя может быть несколько ролей
   @BelongsToMany(() => Role, () => UserRoles)

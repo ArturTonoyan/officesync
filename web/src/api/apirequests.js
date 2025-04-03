@@ -97,5 +97,43 @@ export const apiCreateFloor = async (data) => {
 
 //! получение всех этажей
 export const apiGetFloors = async (companyId) => {
-  return await apiRequest("get", `/floors/${companyId}`);
+  return await apiRequest("get", `/floors/all/${companyId}`);
+};
+//! обновление данных этажа
+export const apiUpdateFloor = async (data, id) => {
+  return await apiRequest("put", `/floors/${id}`, data);
+};
+
+//! удаление этажа
+export const apiDeleteFloor = async (id) => {
+  return await apiRequest("delete", `/floors/${id}`);
+};
+
+//! получение всех пользователей
+export const apiGetUsers = async (companyId) => {
+  return await apiRequest("get", `/users/all/${companyId}`);
+};
+
+//! получение всех оборудований
+export const apiGetEquipments = async (companyId) => {
+  return await apiRequest("get", `/equipments/all/${companyId}`);
+};
+
+//! создание оборудования
+export const apiCreateEquipment = async (data) => {
+  return await apiRequest("post", `/equipments`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! обновление данных оборудования
+export const apiUpdateEquipment = async (data, id) => {
+  return await apiRequest("put", `/equipments/${id}`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! удаление оборудования
+export const apiDeleteEquipment = async (id) => {
+  return await apiRequest("delete", `/equipments/${id}`);
 };

@@ -9,4 +9,7 @@ export class CreateFloorsDto {
 
   @IsString({ message: 'Должно быть строкой' }) //! валидация
   officeId: string;
+
+  @IsString({ message: 'Должно быть строкой' }) //! валидация
+  companyId: string;
 }

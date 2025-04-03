@@ -28,9 +28,13 @@ export class UsersService {
     return user;
   }
 
-  async getAllUsers() {
+  async getAllByCompany(id: string) {
+    console.log('id', id);
     //! { include: { all: true } } все поля с которыми связан пользователь подтягиваются в респонс
-    const users = await this.userRepository.findAll({ include: { all: true } });
+    const users = await this.userRepository.findAll({
+      where: { companyId: id },
+      include: { all: true },
+    });
     return users;
   }
 

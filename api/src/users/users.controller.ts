@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UsersService } from './users.service';
-// import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles-auth-decorator';
 import { RolesGuard } from 'src/auth/roles-guard';
 import { AddRoleDto } from './dto/add-role.dto';
@@ -31,19 +31,17 @@ export class UsersController {
   }
 
   @Roles('ADMIN') //! ограничение по ролям
-  // @UseGuards(JwtAuthGuard) //! ограничиваем доступ неавторизованным пользователям
+  @Get('/all/:id')
   @UseGuards(RolesGuard)
-  @Get()
-  getAll() {
-    return this.usersService.getAllUsers();
+  getAllByCompanyId(@Param('id') id: string) {
+    return this.usersService.getAllByCompany(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   async getOne(@Req() request: any) {
-    console.log('request.user', request.user);
-    const userId = request.user.id; // Извлечение ID пользователя из токена
-    return this.usersService.getOneUser(userId); // Обновление пользователя
+    const userId = request.user.id;
+    return this.usersService.getOneUser(userId);
   }
 
   @Roles('ADMIN')

@@ -13,9 +13,9 @@ function ModalAddObject({ title, show, setShow }) {
   const inputs = addEquipmentData;
 
   const [data, setData] = useState({
+    name: "",
     type: "",
     equipment: "",
-    user: "",
     floor: "",
     icon: "",
     x: window.innerWidth / 2,
