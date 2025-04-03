@@ -22,7 +22,7 @@ export const paramMenu = [
   },
 ];
 
-export const addOfficeData = [
+export const addFloorData = [
   {
     name: "Название",
     key: "name",

@@ -23,15 +23,18 @@ export class FloorsController {
 
   @Post()
   @Roles('ADMIN')
-  @UseGuards(JwtAuthGuard)
-  create(@Body() dto: CreateFloorsDto, @Req() request: any) {
-    const user = request.user;
-    return this.floorsService.create(dto, user);
+  create(@Body() dto: CreateFloorsDto) {
+    return this.floorsService.create(dto);
   }
 
   @Get(':id')
   getOne(@Param('id') id: string) {
     return this.floorsService.getOne(id);
+  }
+
+  @Get('all/:id')
+  getAll(@Param('id') id: string) {
+    return this.floorsService.getAllByCompanyId(id);
   }
 
   @Roles('ADMIN')

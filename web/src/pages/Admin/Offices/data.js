@@ -8,22 +8,27 @@ export const paramMenu = [
   {
     name: "Редактировать",
     icon: editIcon,
+    key: "edit",
   },
   {
     name: "Удалить",
     icon: trashICon,
+    key: "delete",
   },
   {
     name: "Сотрудники",
     icon: userIcon,
+    key: "users",
   },
   {
     name: "Этажи",
     icon: officeIcon,
+    key: "floors",
   },
   {
     name: "Оборудование",
     icon: deviceIcon,
+    key: "devices",
   },
 ];
 
@@ -92,63 +97,5 @@ export const tableHeader = [
     name: "Оборудование",
     key: "devices",
     type: "text",
-  },
-];
-
-export const testData = [
-  {
-    number: 1,
-    name: "Офис А",
-    address: "Улица 1, Город 1",
-    phone: "+7 (123) 456-78-90",
-    email: "contact@companyA.com",
-    director: "Иван Иванов",
-    floorsCount: 5,
-    usersCount: 10,
-    devices: 5,
-  },
-  {
-    number: 2,
-    name: "Офис Б",
-    address: "Улица 2, Город 2",
-    phone: "+7 (234) 567-89-01",
-    email: "info@companyB.com",
-    director: "Петр Петров",
-    floorsCount: 5,
-    usersCount: 10,
-    devices: 5,
-  },
-  {
-    number: 3,
-    name: "Офис В",
-    address: "Улица 3, Город 3",
-    phone: "+7 (345) 678-90-12",
-    email: "support@companyV.com",
-    director: "Сидор Сидоров",
-    floorsCount: 5,
-    usersCount: 10,
-    devices: 5,
-  },
-  {
-    number: 4,
-    name: "Офис Г",
-    address: "Улица 4, Город 4",
-    phone: "+7 (456) 789-01-23",
-    email: "hello@companyG.com",
-    director: "Анна Аннова",
-    floorsCount: 5,
-    usersCount: 10,
-    devices: 5,
-  },
-  {
-    number: 5,
-    name: "Офис Д",
-    address: "Улица 5, Город 5",
-    phone: "+7 (567) 890-12-34",
-    email: "contact@companyD.com",
-    director: "Олег Олегов",
-    floorsCount: 5,
-    usersCount: 10,
-    devices: 5,
   },
 ];

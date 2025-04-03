@@ -1,7 +1,28 @@
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddOfice.module.scss";
+import { useState } from "react";
 
-function ModalAddOfice({ title, inputs, show, setShow }) {
+function ModalAddOfice({
+  title,
+  inputs,
+  show,
+  setShow,
+  data,
+  setData,
+  funSave,
+  lists,
+}) {
+  const [openList, setOpenList] = useState(null);
+  const funChange = (key, value) => {
+    setData({ ...data, [key]: value });
+  };
+
+  const funChangeList = (keysDatas) => {
+    setData({ ...data, ...keysDatas });
+    setOpenList(null);
+  };
+  console.log("lists", lists);
+
   return (
     <AnimatePresence>
       {show && (
@@ -19,7 +40,7 @@ function ModalAddOfice({ title, inputs, show, setShow }) {
           >
             {title && <h2>{title}</h2>}
             <div className={styles.form}>
-              {inputs.map((item, index) => (
+              {inputs?.map((item, index) => (
                 <div className={styles.input_box} name={item.key}>
                   <span className={styles.name}>{item.name}</span>
                   <div className={styles.input}>
@@ -28,7 +49,29 @@ function ModalAddOfice({ title, inputs, show, setShow }) {
                       type={item.type}
                       autoComplete="new-password"
                       placeholder="Не указанно"
+                      value={data?.[item.key]}
+                      onChange={(e) => funChange(item.key, e.target.value)}
+                      readOnly={lists[item.key]}
+                      onClick={() => setOpenList(item.key)}
                     />
+                    {openList === item.key && lists[item.key] && (
+                      <div className={styles.list}>
+                        {lists[item.key]?.data?.map((elem, ind) => (
+                          <div
+                            className={styles.item}
+                            key={ind}
+                            onClick={() =>
+                              funChangeList({
+                                [lists[item.key]?.key]: elem.id,
+                                [item.key]: `${elem.name} ${elem.address}`,
+                              })
+                            }
+                          >
+                            {elem.name} {elem.address}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -37,7 +80,9 @@ function ModalAddOfice({ title, inputs, show, setShow }) {
               <button className={styles.cancel} onClick={() => setShow(false)}>
                 Отменить
               </button>
-              <button className={styles.save}>Сохранить</button>
+              <button className={styles.save} onClick={funSave}>
+                Сохранить
+              </button>
             </div>
           </motion.div>
         </motion.div>

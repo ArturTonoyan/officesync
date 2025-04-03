@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -21,52 +22,47 @@ import { UpdateOfficesDto } from './dto/update-offices-dto';
 export class OfficesController {
   constructor(private officesService: OfficesService) {}
 
-  @Post()
+  @Post('/create/:id')
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   create(
     @Body() dto: CreateOfficesDto,
-    @Req() request: any,
+    @Param('id') id: string,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    const user = request.user;
-    return this.officesService.create(dto, user, image);
+    return this.officesService.create(dto, id, image);
   }
 
   @Roles('ADMIN')
-  @Get('/all')
+  @Get('/all/:id')
   @UseGuards(JwtAuthGuard)
-  get(@Req() request: any) {
-    const companyId = request.user.companyId;
+  get(@Param('id') companyId: string) {
     return this.officesService.getAll(companyId);
   }
 
-  @Get('/my')
+  @Get(':id')
   @UseGuards(JwtAuthGuard)
-  getOneByUserId(@Req() request: any) {
-    const officeId = request.user.officeId;
-    return this.officesService.getMy(officeId);
+  getById(@Param('id') id: string) {
+    return this.officesService.getById(id);
   }
 
   @Roles('ADMIN')
-  @Put('/my')
+  @Put(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   update(
     @Body() dto: UpdateOfficesDto,
-    @Req() request: any,
+    @Param('id') id: string,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    const officeId = request.user.officeId;
-    return this.officesService.update(officeId, dto, image);
+    return this.officesService.update(id, dto, image);
   }
 
   @Roles('ADMIN')
-  @Delete('/my')
+  @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  delete(@Req() request: any) {
-    const officeId = request.user.officeId;
-    return this.officesService.delete(officeId);
+  delete(@Param('id') id: string) {
+    return this.officesService.delete(id);
   }
 }

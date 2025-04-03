@@ -16,9 +16,9 @@ export class OfficesService {
     private fileService: FilesService,
   ) {}
 
-  async create(dto: CreateOfficesDto, user: User, image: Express.Multer.File) {
+  async create(dto: CreateOfficesDto, id: string, image: Express.Multer.File) {
     try {
-      dto.companyId = user.companyId;
+      dto.companyId = id;
       if (image) {
         const fileName = await this.fileService.createFile(image);
         dto.image = fileName;
@@ -43,7 +43,7 @@ export class OfficesService {
     }
   }
 
-  async getMy(id: string) {
+  async getById(id: string) {
     try {
       const office = await this.officeRepository.findOne({ where: { id } });
       return office;

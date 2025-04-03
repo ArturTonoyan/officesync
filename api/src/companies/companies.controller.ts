@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -41,15 +42,21 @@ export class CompaniesController {
   }
 
   @Roles('ADMIN')
-  @Put('/my')
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  getById(@Param('id') id: string) {
+    return this.companiesService.getById(id);
+  }
+
+  @Roles('ADMIN')
+  @Put(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   update(
     @Body() dto: CreateCompanyDto,
-    @Req() request: any,
+    @Param('id') id: string,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    const companyId = request.user.companyId;
-    return this.companiesService.update(companyId, dto, image);
+    return this.companiesService.update(id, dto, image);
   }
 }

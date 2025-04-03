@@ -7,6 +7,7 @@ import {
   HasMany,
 } from 'sequelize-typescript';
 import { Equipment } from 'src/equipments/equipments.model';
+import { Floors } from 'src/floors/floors.model';
 import { Office } from 'src/offices/offices.model';
 import { User } from 'src/users/users.model';
 
@@ -65,6 +66,9 @@ export class Company extends Model<Company, CompanyCreationAttrs> {
 
   @HasMany(() => Equipment)
   eqipments: Equipment[];
+
+  @HasMany(() => Floors)
+  floors: Floors[];
 
   // @ForeignKey(() => User)
   // @Column({

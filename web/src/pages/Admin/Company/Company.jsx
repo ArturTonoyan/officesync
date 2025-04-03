@@ -10,9 +10,19 @@ import {
   server,
 } from "../../../api/apirequests";
 import { useQuery } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 
 function Company() {
   const [editing, setEditing] = useState(true);
+  const user = useSelector((state) => state.user.user.data);
+
+  useEffect(() => {
+    if (!user?.companyId) {
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+  }, []);
 
   const [data, setData] = useState({
     name: "",
@@ -32,13 +42,12 @@ function Company() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["companies/my"],
-    queryFn: apiGetCompany,
+    queryKey: ["companies", user?.companyId],
+    queryFn: () => apiGetCompany(user?.companyId),
     staleTime: Infinity, //! не обновлять
-    onError: (error) => {
-      console.error("Error fetching data:", error);
-    },
+    enabled: !!user?.companyId,
   });
+  console.log("query", query);
 
   useEffect(() => {
     if (query?.data) {
@@ -46,8 +55,6 @@ function Company() {
         ...query?.data,
         imageUrl: query?.data?.image ? `${server}/${query?.data?.image}` : null,
       });
-    } else {
-      setEditing(false);
     }
   }, [query?.data]);
 
@@ -78,7 +85,7 @@ function Company() {
       formData.append("adress", data.adress);
       formData.append("image", data.image);
       console.log("data", data);
-      apiUpdateCompany(formData).then((res) => {
+      apiUpdateCompany(formData, user?.companyId).then((res) => {
         if (res.status === 200) {
           setEditing(true);
           refetch();
@@ -107,9 +114,9 @@ function Company() {
     return <span>Загрузка...</span>;
   }
 
-  if (status === "error") {
-    return <span>Ошибка</span>;
-  }
+  // if (status === "error") {
+  //   return <span>Ошибка</span>;
+  // }
 
   return (
     <div className={styles.Company}>

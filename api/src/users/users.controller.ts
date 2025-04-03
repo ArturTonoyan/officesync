@@ -41,6 +41,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getOne(@Req() request: any) {
+    console.log('request.user', request.user);
     const userId = request.user.id; // Извлечение ID пользователя из токена
     return this.usersService.getOneUser(userId); // Обновление пользователя
   }

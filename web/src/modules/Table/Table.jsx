@@ -9,6 +9,7 @@ function Table({
   setModalShow,
   paramMenu,
   tableHeader,
+  funClick,
 }) {
   const [openList, setOpenList] = useState(null);
 
@@ -47,6 +48,8 @@ function Table({
                   openList={openList === indexRow}
                   setOpenList={setOpenList}
                   paramMenu={paramMenu}
+                  funClick={funClick}
+                  row={row}
                 />
               </td>
             </tr>

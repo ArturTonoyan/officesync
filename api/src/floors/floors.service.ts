@@ -6,6 +6,7 @@ import { User } from 'src/users/users.model';
 import { Floors } from './floors.model';
 import { CreateFloorsDto } from './dto/create-floors-dto';
 import { UpdateFloorsDto } from './dto/update-floors-dto';
+import { Office } from 'src/offices/offices.model';
 
 @Injectable()
 export class FloorsService {
@@ -14,17 +15,14 @@ export class FloorsService {
     private rolesService: RolesService,
   ) {}
 
-  async create(dto: CreateFloorsDto, user: User) {
+  async create(dto: CreateFloorsDto) {
+    console.log('dto', dto);
     try {
-      const myOffice = await this.floorsRepository.findOne({
-        where: { id: user.officeId },
-      });
+      const myOffice = await Office.findByPk(dto.officeId);
       if (!myOffice) {
         throw new Error('Офис не найден');
       }
-      dto.officeId = myOffice.id;
-      const floor = await this.floorsRepository.create(dto);
-      return floor;
+      return await this.floorsRepository.create(dto);
     } catch (error) {
       console.error('Ошибка при создании этажа:', error);
       throw new InternalServerErrorException(error.message);
@@ -39,6 +37,18 @@ export class FloorsService {
       return floor;
     } catch (error) {
       console.error('Ошибка при получении этажа:', error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async getAllByCompanyId(id: string) {
+    try {
+      const floors = await this.floorsRepository.findAll({
+        where: { companyId: id },
+      });
+      return floors;
+    } catch (error) {
+      console.error('Ошибка при получении этажей:', error);
       throw new InternalServerErrorException(error.message);
     }
   }

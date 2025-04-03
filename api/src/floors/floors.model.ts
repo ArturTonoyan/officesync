@@ -6,6 +6,7 @@ import {
   ForeignKey,
   HasMany,
 } from 'sequelize-typescript';
+import { Company } from 'src/companies/companies.model';
 import { Equipment } from 'src/equipments/equipments.model';
 import { Office } from 'src/offices/offices.model';
 import { User } from 'src/users/users.model';
@@ -42,6 +43,12 @@ export class Floors extends Model<Floors, FloorsCreationAttrs> {
     type: DataType.UUID,
   })
   officeId: string;
+
+  @ForeignKey(() => Company)
+  @Column({
+    type: DataType.UUID,
+  })
+  companyId: string;
 
   @HasMany(() => User)
   users: User[];

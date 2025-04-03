@@ -53,13 +53,49 @@ export const apiCreateCompany = async (data) => {
 };
 
 //! получение своей компании
-export const apiGetCompany = async () => {
-  return await apiRequest("get", "/companies/my");
+export const apiGetCompany = async (id) => {
+  const response = await apiRequest("get", `/companies/${id}`);
+  console.log("response", response);
+  return response;
 };
 
 //! обновление данных компании
-export const apiUpdateCompany = async (data) => {
-  return await apiRequest("put", "/companies/my", data, {
+export const apiUpdateCompany = async (data, companyId) => {
+  return await apiRequest("put", `/companies/${companyId}`, data, {
     "Content-Type": "multipart/form-data",
   });
+};
+
+//! создание офиса
+export const apiCreateOffice = async (data, companyId) => {
+  return await apiRequest("post", `/offices/create/${companyId}`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! получение всех офисов
+export const apiGetOffices = async (companyId) => {
+  return await apiRequest("get", `/offices/all/${companyId}`, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! обновление данных офиса
+export const apiUpdateOffice = async (data, officeId) => {
+  return await apiRequest("put", `/offices/${officeId}`, data);
+};
+
+//! удаление офиса
+export const apiDeleteOffice = async (officeId) => {
+  return await apiRequest("delete", `/offices/${officeId}`);
+};
+
+//! создание этажа
+export const apiCreateFloor = async (data) => {
+  return await apiRequest("post", `/floors`, data);
+};
+
+//! получение всех этажей
+export const apiGetFloors = async (companyId) => {
+  return await apiRequest("get", `/floors/${companyId}`);
 };

@@ -32,11 +32,41 @@
       .input {
         @include InputBox2;
         transition: all 0.15s linear;
+        position: relative;
+        box-sizing: border-box;
 
         input {
           color: var(--blueText);
           font-weight: 400;
           font-size: 18px;
+        }
+      }
+      .list {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #eff0f6;
+        border-bottom-right-radius: 12px;
+        border-bottom-left-radius: 12px;
+        position: absolute;
+        background-color: #fff;
+        width: calc(100% + 0px);
+        left: -1px;
+        z-index: 100;
+        transform: translateY(-8px);
+        overflow-x: hidden;
+        max-height: 200px;
+        overflow-y: auto;
+        @include ScrollBar;
+        .item {
+          padding: 10px 20px;
+          cursor: pointer;
+          transition: all 0.15s linear;
+          &:hover {
+            background-color: #006cf91f;
+          }
+          &:active {
+            background-color: #4592f80f;
+          }
         }
       }
     }

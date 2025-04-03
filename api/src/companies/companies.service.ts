@@ -16,21 +16,19 @@ export class CompaniesService {
 
   async create(dto: CreateCompanyDto, user: User, image: Express.Multer.File) {
     try {
-      const myCompany = await this.companyRepository.findOne({
-        where: { id: user.companyId },
-      });
-      if (myCompany) {
+      if (user.companyId) {
         throw new Error('У вас уже есть компания');
       }
+
       if (image) {
         const fileName = await this.fileService.createFile(image);
         dto.image = fileName;
       }
+      const company = await this.companyRepository.create(dto);
       //! у пользователя обновляем companyId
       const updUser = await User.findByPk(user.id);
-      updUser.companyId = myCompany.id;
+      updUser.companyId = company.id;
       await updUser.save();
-      const company = await this.companyRepository.create(dto);
       return company;
     } catch (error) {
       console.error('Ошибка при сохранении компании:', error);
@@ -40,6 +38,7 @@ export class CompaniesService {
 
   async getOneByUserId(companyId: string) {
     try {
+      if (!companyId) return null;
       const company = await this.companyRepository.findOne({
         where: { id: companyId },
       });
@@ -50,14 +49,22 @@ export class CompaniesService {
     }
   }
 
-  async update(
-    companyId: string,
-    dto: CreateCompanyDto,
-    image: Express.Multer.File,
-  ) {
+  async getById(id: string) {
     try {
       const company = await this.companyRepository.findOne({
-        where: { id: companyId },
+        where: { id },
+      });
+      return company;
+    } catch (error) {
+      console.error('Ошибка при получении компании:', error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async update(id: string, dto: CreateCompanyDto, image: Express.Multer.File) {
+    try {
+      const company = await this.companyRepository.findOne({
+        where: { id },
       });
       if (!company) {
         throw new Error('Компания не найдена');

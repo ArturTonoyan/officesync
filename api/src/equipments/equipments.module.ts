@@ -8,7 +8,6 @@ import { Equipment } from './equipments.model';
 import { RolesModule } from 'src/roles/roles.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { FilesModule } from 'src/files/files.module';
-import { FloorsService } from 'src/floors/floors.service';
 import { Company } from 'src/companies/companies.model';
 import { Office } from 'src/offices/offices.model';
 
@@ -21,6 +20,6 @@ import { Office } from 'src/offices/offices.model';
     forwardRef(() => AuthModule),
     FilesModule,
   ],
-  exports: [FloorsService],
+  exports: [EquipmentsService],
 })
 export class EquipmentsModule {}
