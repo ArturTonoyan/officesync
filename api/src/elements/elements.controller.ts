@@ -7,11 +7,12 @@ import {
   Post,
   Put,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ElementsService } from './elements.service';
 import { Roles } from 'src/auth/roles-auth-decorator';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { CreateElementDto } from './dto/create-element-dto';
 
 @Controller('elements')
@@ -26,6 +27,30 @@ export class ElementsController {
     @UploadedFile() image: Express.Multer.File,
   ) {
     return this.elementsService.create(dto, image);
+  }
+
+  @Roles('ADMIN')
+  @Post('bulk')
+  @UseInterceptors(
+    FilesInterceptor('image', 10, {
+      // Adjust the number as needed
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png|gif|svg)$/)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Unsupported file type'), false);
+        }
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB file size limit
+      },
+    }),
+  )
+  async createMany(
+    @Body() dtos: CreateElementDto[],
+    @UploadedFiles() icons: Express.Multer.File[],
+  ) {
+    return this.elementsService.createMany(dtos, icons);
   }
 
   @Roles('ADMIN')

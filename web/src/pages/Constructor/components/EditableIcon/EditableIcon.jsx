@@ -11,7 +11,7 @@ const EditableIcon = ({ object }) => {
   const dispatch = useDispatch();
   const isSelected =
     useSelector((state) => state.conva.objects.selected) === object.id;
-  const [image] = useImage(object.icon);
+  const [image] = useImage(object.icon || object.image);
   const imageRef = useRef(null); // Use ref for the image
   const transformerRef = useRef(null); // Use ref for the transformer
 

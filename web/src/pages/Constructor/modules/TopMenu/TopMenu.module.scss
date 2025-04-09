@@ -64,4 +64,32 @@
       font-weight: 700;
     }
   }
+  .container_list {
+    display: flex;
+    position: relative;
+    .list {
+      top: calc(100% + 10px);
+      position: absolute;
+      z-index: 100;
+      background-color: #fff;
+      min-width: calc(100% - 43px);
+      @include listNoStyle;
+      border: 1px solid #eff0f6;
+      border-radius: 12px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 400px;
+      @include ScrollBar;
+      li {
+        @include HoverActive;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 15px 25px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        color: #5f5f60;
+      }
+    }
+  }
 }

@@ -4,13 +4,15 @@ import arrow from "@assets/images/icons/arrowMini.svg";
 import { addEquipmentData } from "./data";
 import { useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addObject } from "../../../../store/convaSlice/conva.Slice";
+import { apiEddElement } from "../../../../api/apirequests";
 
 function ModalAddObject({ title, show, setShow }) {
   const dispatch = useDispatch();
   const [modalAllIcons, setModalAllIcons] = useState(false);
   const inputs = addEquipmentData;
+  const floorId = useSelector((state) => state.conva.floors.selected);
 
   const [data, setData] = useState({
     name: "",
@@ -36,6 +38,25 @@ function ModalAddObject({ title, show, setShow }) {
   const funSave = () => {
     setShow(false);
     dispatch(addObject({ data }));
+    const formatData = new FormData();
+    formatData.append("name", data.name);
+    formatData.append("type", data.type);
+    formatData.append("equipment", data.equipment);
+    formatData.append("floorId", floorId);
+    formatData.append("image", data.icon);
+    formatData.append("x", data.x);
+    formatData.append("y", data.y);
+    formatData.append("width", data.width);
+    formatData.append("height", data.height);
+    formatData.append("rotation", data.rotation);
+    formatData.append("scaleX", data.scaleX);
+    formatData.append("scaleY", data.scaleY);
+    formatData.append("zIndex", data.zIndex);
+    formatData.append("isLocked", data.isLocked);
+
+    apiEddElement(formatData).then((res) => {
+      console.log("res", res);
+    });
   };
 
   const funClick = (key) => {

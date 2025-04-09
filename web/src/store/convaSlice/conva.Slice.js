@@ -98,10 +98,23 @@ const ConvaSlice = createSlice({
       state.objects.selected = null;
       state.objects.selectedObject = {};
     },
+
+    setSelectedOffice(state, action) {
+      const { id, offices } = action.payload;
+      state.offices.selected = id;
+      state.offices.selectedObject = offices.find((obj) => obj.id === id);
+    },
+
+    setSelectedFloor(state, action) {
+      const { id, floors } = action.payload;
+      state.floors.selected = id;
+      state.floors.selectedObject = floors.find((obj) => obj.id === id);
+    },
   },
 });
 
 export const {
+  setObjects,
   setUserData,
   setSelected,
   setDataBySelected,
@@ -109,6 +122,8 @@ export const {
   addObject,
   setDataParam,
   deleteObject,
+  setSelectedOffice,
+  setSelectedFloor,
 } = ConvaSlice.actions;
 
 export default ConvaSlice.reducer;

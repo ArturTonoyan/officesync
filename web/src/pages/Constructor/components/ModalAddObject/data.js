@@ -14,11 +14,11 @@ export const addEquipmentData = [
     key: "user",
     type: "text",
   },
-  {
-    name: "Этаж",
-    key: "floor",
-    type: "text",
-  },
+  // {
+  //   name: "Этаж",
+  //   key: "floor",
+  //   type: "text",
+  // },
   {
     name: "Иконка",
     key: "icon",

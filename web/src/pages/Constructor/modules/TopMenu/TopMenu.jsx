@@ -2,26 +2,95 @@ import styles from "./TopMenu.module.scss";
 import logo from "@assets/images/logo/logo.svg";
 import { useNavigate } from "react-router-dom";
 import arrow from "@assets/images/icons/arrowMini.svg";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSelectedFloor,
+  setSelectedOffice,
+} from "../../../../store/convaSlice/conva.Slice";
+import { AnimatePresence, motion } from "framer-motion";
 
-function TopMenu() {
+function TopMenu({ offices, floors, funSave }) {
+  const selectOffice = useSelector(
+    (state) => state.conva.offices.selectedObject
+  );
+  const selectFloor = useSelector((state) => state.conva.floors.selectedObject);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [listShow, setListShow] = useState(null);
+
+  const funLicstCLick = (item) => {
+    if (item === listShow) {
+      setListShow(null);
+      return;
+    }
+    setListShow(item);
+  };
+
+  const funSelectOffice = (id) => {
+    dispatch(setSelectedOffice({ id, offices: offices.data }));
+    setListShow(null);
+  };
+
+  const funSelectFloor = (id) => {
+    dispatch(setSelectedFloor({ id, floors: floors.data }));
+    setListShow(null);
+  };
+
   return (
     <div className={styles.TopMenu}>
       <div className={styles.icon} onClick={() => navigate("/")}>
         <img src={logo} alt="logo" />
       </div>
       <div className={styles.office}>
-        <button>
-          <span>Офис Чехова 1</span>
-          <img src={arrow} alt="arrow" />
-        </button>
-        <button>
-          <span>Этаж 1</span>
-          <img src={arrow} alt="arrow" />
-        </button>
+        <div className={styles.container_list}>
+          <button onClick={() => funLicstCLick("office")}>
+            <span>{selectOffice?.name}</span>
+            <img src={arrow} alt="arrow" />
+          </button>
+          <AnimatePresence>
+            {listShow === "office" && (
+              <motion.ul
+                className={styles.list}
+                initial={{ height: 0, overflow: "auto" }}
+                animate={{ height: "auto", overflow: "hidden" }}
+                exit={{ height: 0, overflow: "hidden" }}
+              >
+                {offices?.data?.map((item) => (
+                  <li key={item.id} onClick={() => funSelectOffice(item.id)}>
+                    {item.name}
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
+        </div>
+        <div className={styles.container_list}>
+          <button onClick={() => funLicstCLick("floor")}>
+            <span>{selectFloor?.name}</span>
+            <img src={arrow} alt="arrow" />
+          </button>
+          <AnimatePresence>
+            {listShow === "floor" && (
+              <motion.ul
+                className={styles.list}
+                initial={{ height: 0, overflow: "auto" }}
+                animate={{ height: "auto", overflow: "hidden" }}
+                exit={{ height: 0, overflow: "hidden" }}
+              >
+                {floors?.data?.map((item) => (
+                  <li key={item.id} onClick={() => funSelectFloor(item.id)}>
+                    {item.name}
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
       <div className={styles.param}>
-        <button>Сохранить</button>
+        <button onClick={funSave}>Сохранить</button>
       </div>
     </div>
   );

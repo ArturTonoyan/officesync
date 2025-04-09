@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./ConvasSpace.module.scss";
 import { Stage, Layer } from "react-konva";
 import Scale from "../../components/Scale/Scale";
@@ -8,16 +8,22 @@ import ModalAddObject from "../../components/ModalAddObject/ModalAddObject";
 import RightMenu from "../RightMenu/RightMenu";
 import TopMenu from "../TopMenu/TopMenu";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelected } from "../../../../store/convaSlice/conva.Slice";
+import {
+  setObjects,
+  setSelected,
+} from "../../../../store/convaSlice/conva.Slice";
 import LeftMenu from "../LeftMenu/LeftMenu";
 import { useQuery } from "@tanstack/react-query";
 import {
+  apiEddElements,
+  apiGetElements,
   apiGetEquipments,
   apiGetFloors,
   apiGetOffices,
 } from "../../../../api/apirequests";
 function ConvasSpace() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user.data);
   const conva = useSelector((state) => state.conva);
   const [scale, setScale] = useState(1);
   const stageRef = useRef(null);
@@ -72,6 +78,27 @@ function ConvasSpace() {
     dispatch(setSelected(null));
   };
 
+  useEffect(() => {
+    if (conva?.floors?.selected) {
+      apiGetElements(conva?.floors?.selected).then((res) => {
+        console.log("res", res);
+        if (res.status === 200) dispatch(setObjects({ data: res.data }));
+      });
+    }
+  }, [conva?.floors?.selected]);
+
+  //! сохранить карту
+  const funSave = () => {
+    const qerydata = conva?.objects?.data?.map((obj) => ({
+      ...obj,
+      floorId: conva?.floors?.selected,
+    }));
+    console.log("qerydata", qerydata);
+    apiEddElements(qerydata).then((res) => {
+      console.log("res", res);
+    });
+  };
+
   return (
     <div className={styles.ConvasSpace}>
       <Stage
@@ -106,7 +133,7 @@ function ConvasSpace() {
       <LeftMenu />
 
       {/* Top Menu */}
-      <TopMenu />
+      <TopMenu floors={floors} offices={offices} funSave={funSave} />
 
       {/* Modals */}
       <ModalAddObject

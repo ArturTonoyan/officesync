@@ -22,6 +22,26 @@ export class ElementsService {
     return element;
   }
 
+  async createMany(dtos: CreateElementDto[], icons: Express.Multer.File[]) {
+    const createdElements = [];
+    console.log('dtos', dtos);
+
+    for (let i = 0; i < dtos.length; i++) {
+      const dto = dtos[i];
+      const icon = icons[i]; // Assuming the icons array matches the dtos array
+
+      if (icon) {
+        const fileName = await this.fileService.createFile(icon); // Save the file and get the filename
+        dto.image = fileName; // Update DTO with the filename
+      }
+
+      const element = await this.elementRepository.create(dto);
+      createdElements.push(element);
+    }
+
+    return createdElements;
+  }
+
   async getAllByFloor(id: string) {
     const elements = await this.elementRepository.findAll({
       where: { floorId: id },

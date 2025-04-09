@@ -137,3 +137,20 @@ export const apiUpdateEquipment = async (data, id) => {
 export const apiDeleteEquipment = async (id) => {
   return await apiRequest("delete", `/equipments/${id}`);
 };
+
+//! добавить обьект карты
+export const apiEddElement = async (data) => {
+  return await apiRequest("post", `/elements`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! сохранить все обьекты карты
+export const apiEddElements = async (data) => {
+  return await apiRequest("post", `/elements/bulk`, data);
+};
+
+//! получение всех обьектов карты
+export const apiGetElements = async (floorId) => {
+  return await apiRequest("get", `/elements/all/${floorId}`);
+};
