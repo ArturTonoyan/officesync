@@ -1,27 +1,28 @@
 export const addEquipmentData = [
   {
+    name: "Название",
+    key: "name",
+    type: "text",
+  },
+  {
     name: "Тип",
     key: "type",
-    type: "text",
+    type: "list",
   },
   {
     name: "Оборудование",
     key: "equipment",
-    type: "text",
+    type: "list",
   },
   {
     name: "Сотрудник",
     key: "user",
-    type: "text",
+    type: "list",
   },
-  // {
-  //   name: "Этаж",
-  //   key: "floor",
-  //   type: "text",
-  // },
+
   {
     name: "Иконка",
     key: "icon",
-    type: "text",
+    type: "list",
   },
 ];

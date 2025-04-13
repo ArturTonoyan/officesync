@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddObject.module.scss";
 import arrow from "@assets/images/icons/arrowMini.svg";
 import { addEquipmentData } from "./data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -17,7 +17,7 @@ function ModalAddObject({ title, show, setShow }) {
   const inputs = addEquipmentData;
   const floorId = useSelector((state) => state.conva.floors.selected);
 
-  const [data, setData] = useState({
+  const obj = {
     name: "",
     type: "",
     equipment: "",
@@ -32,16 +32,48 @@ function ModalAddObject({ title, show, setShow }) {
     scaleY: 1,
     zIndex: 800,
     isLocked: false,
-  });
+  };
+
+  const [data, setData] = useState(obj);
 
   const funSetData = (key, value) => {
-    setData({ ...data, [key]: value });
+    if (key === "icon") {
+      const img = new Image();
+      img.src = value;
+
+      //! получаем реальные размеры фото
+      img.onload = () => {
+        let { width, height } = img;
+
+        const maxSize = 100;
+        const aspectRatio = width / height;
+
+        if (width > maxSize || height > maxSize) {
+          if (aspectRatio >= 1) {
+            width = maxSize;
+            height = maxSize / aspectRatio;
+          } else {
+            height = maxSize;
+            width = maxSize * aspectRatio;
+          }
+        }
+
+        setData((prevData) => ({
+          ...prevData,
+          icon: value,
+          width,
+          height,
+        }));
+      };
+    } else {
+      setData((prevData) => ({ ...prevData, [key]: value }));
+    }
   };
 
   const funSave = () => {
     setShow(false);
     const formatData = new FormData();
-    formatData.append("name", data.name);
+    formatData.append("name", data.name || "Новый объект");
     formatData.append("type", data.type);
     formatData.append("equipment", data.equipment);
     formatData.append("floorId", floorId);
@@ -62,6 +94,7 @@ function ModalAddObject({ title, show, setShow }) {
         setShow(false);
         dispatch(addObjectApi({ data: res.data }));
       }
+      setData(obj);
     });
   };
 
@@ -72,6 +105,7 @@ function ModalAddObject({ title, show, setShow }) {
   //! при клике на иконку
   const funCliclImg = (icon) => {
     funSetData("icon", icon);
+
     setModalAllIcons(false);
   };
 
@@ -99,7 +133,7 @@ function ModalAddObject({ title, show, setShow }) {
             {title && <h2>{title}</h2>}
             <div className={styles.form}>
               {inputs.map((item, index) =>
-                item.key === "floor" || item.key === "icon" ? (
+                item.key === "icon" ? (
                   <div
                     className={styles.input_box_icon}
                     name={item.key}
@@ -107,17 +141,6 @@ function ModalAddObject({ title, show, setShow }) {
                   >
                     <span className={styles.name}>{item.name}</span>
                     <div className={styles.input}>
-                      {item.key === "floor" && (
-                        <input
-                          key={index}
-                          type={item.type}
-                          autoComplete="new-password"
-                          placeholder={"Не указанно"}
-                          value={data[item.key]}
-                          onChange={(e) => funSetData(item.key, e.target.value)}
-                        />
-                      )}
-
                       {item.key === "icon" && data[item.key] && (
                         <img
                           className={styles.icon}
@@ -145,15 +168,27 @@ function ModalAddObject({ title, show, setShow }) {
                         placeholder="Не указанно"
                         value={data[item.key]}
                         onChange={(e) => funSetData(item.key, e.target.value)}
+                        readOnly={item.type === "list"}
+                        style={{
+                          cursor: item.type === "list" ? "pointer" : "",
+                        }}
                       />
-                      <img className={styles.arrow} src={arrow} alt="arrow" />
+                      {item.type === "list" && (
+                        <img className={styles.arrow} src={arrow} alt="arrow" />
+                      )}
                     </div>
                   </div>
                 )
               )}
             </div>
             <div className={styles.btn}>
-              <button className={styles.cancel} onClick={() => setShow(false)}>
+              <button
+                className={styles.cancel}
+                onClick={() => {
+                  setShow(false);
+                  setData(obj);
+                }}
+              >
                 Отменить
               </button>
               <button className={styles.save} onClick={funSave}>

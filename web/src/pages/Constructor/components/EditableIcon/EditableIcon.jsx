@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Image, Transformer } from "react-konva";
 import { useDispatch, useSelector } from "react-redux";
 import useImage from "use-image";
@@ -8,6 +8,11 @@ import {
 } from "../../../../store/convaSlice/conva.Slice";
 
 const EditableIcon = ({ object }) => {
+  const GRID_SIZE = 10;
+  const ROTATE_STEP = 5; // шаг поворота в градусах
+
+  const [isHovered, setIsHovered] = useState(false);
+
   const dispatch = useDispatch();
   const isSelected =
     useSelector((state) => state.conva.objects.selected) === object.id;
@@ -24,8 +29,19 @@ const EditableIcon = ({ object }) => {
 
   //! изменение позиции обьекта
   const handleDragEnd = (e) => {
+    const node = e.target;
+    const snappedX = Math.round(node.x() / GRID_SIZE) * GRID_SIZE;
+    const snappedY = Math.round(node.y() / GRID_SIZE) * GRID_SIZE;
+
+    // Устанавливаем привязанные координаты
+    node.position({ x: snappedX, y: snappedY });
+
+    // Обновляем Redux
     dispatch(
-      setDataManyParams({ values: { x: e.target.x(), y: e.target.y() } })
+      setDataManyParams({
+        values: { x: snappedX, y: snappedY },
+        id: object.id,
+      })
     );
   };
 
@@ -36,16 +52,42 @@ const EditableIcon = ({ object }) => {
 
   //! трансформация обьекта
   const handleTransformEnd = (e) => {
-    const newWidth = e.target.width() * e.target.scaleX();
-    const newHeight = e.target.height() * e.target.scaleY();
-    const values = {
-      width: newWidth,
-      height: newHeight,
-      scaleX: e.target.scaleX(),
-      scaleY: e.target.scaleY(),
-      rotation: e.target.rotation(),
-    };
-    dispatch(setDataManyParams({ values }));
+    const node = e.target;
+
+    const rawWidth = node.width() * node.scaleX();
+    const rawHeight = node.height() * node.scaleY();
+
+    const snappedWidth = Math.max(
+      GRID_SIZE,
+      Math.round(rawWidth / GRID_SIZE) * GRID_SIZE
+    );
+    const snappedHeight = Math.max(
+      GRID_SIZE,
+      Math.round(rawHeight / GRID_SIZE) * GRID_SIZE
+    );
+
+    const rawRotation = node.rotation();
+    const snappedRotation = Math.round(rawRotation / ROTATE_STEP) * ROTATE_STEP;
+
+    // Обновляем DOM
+    node.width(snappedWidth);
+    node.height(snappedHeight);
+    node.scaleX(1);
+    node.scaleY(1);
+    node.rotation(snappedRotation);
+
+    dispatch(
+      setDataManyParams({
+        id: object.id,
+        values: {
+          width: snappedWidth,
+          height: snappedHeight,
+          scaleX: 1,
+          scaleY: 1,
+          rotation: snappedRotation,
+        },
+      })
+    );
   };
 
   return (
@@ -68,6 +110,11 @@ const EditableIcon = ({ object }) => {
         }
         onMouseDown={() => (!object.isLocked ? handleSelect(object.id) : null)}
         ref={imageRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        shadowColor={isHovered ? "blue" : ""}
+        shadowBlur={isHovered ? 5 : 0}
+        shadowOpacity={isHovered ? 0.6 : 0}
       />
       {isSelected && !object.isLocked && (
         <Transformer

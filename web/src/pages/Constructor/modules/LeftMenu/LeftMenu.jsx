@@ -14,6 +14,9 @@ import { funAllSearch } from "../../../../utils/functions/funcions";
 function LeftMenu() {
   const dispatch = useDispatch();
   const [openMenu, setOpenMenu] = useState(true);
+  const itemSelected = useSelector(
+    (state) => state.conva.objects.selectedObject
+  );
   const objects = useSelector((state) => state.conva.objects.data);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -62,7 +65,9 @@ function LeftMenu() {
         {data.map((item, index) => (
           <div
             key={index}
-            className={styles.object}
+            className={`${styles.object} ${
+              item.id === itemSelected?.id ? styles.selected : ""
+            }`}
             onClick={() => funClickObject(item.id)}
           >
             <span>{item.name}</span>
