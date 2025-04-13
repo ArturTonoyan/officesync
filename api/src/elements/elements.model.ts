@@ -3,15 +3,10 @@ import {
   Column,
   DataType,
   Table,
-  BelongsToMany,
-  HasMany,
   ForeignKey,
 } from 'sequelize-typescript';
-import { Company } from 'src/companies/companies.model';
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
-import { Office } from 'src/offices/offices.model';
-import { Role } from 'src/roles/roles.model';
 
 interface ElementCreationAttrs {
   //! для создание модели необходимы тольок эти поля
