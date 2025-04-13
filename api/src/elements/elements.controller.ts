@@ -14,6 +14,7 @@ import { ElementsService } from './elements.service';
 import { Roles } from 'src/auth/roles-auth-decorator';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { CreateElementDto } from './dto/create-element-dto';
+import { UpdateElementDto } from './dto/update-element-dto';
 
 @Controller('elements')
 export class ElementsController {
@@ -31,7 +32,7 @@ export class ElementsController {
 
   @Roles('ADMIN')
   @Post('bulk')
-  async createMany(@Body() dtos: CreateElementDto[]) {
+  async createMany(@Body() dtos: UpdateElementDto[]) {
     return this.elementsService.createMany(dtos);
   }
 
