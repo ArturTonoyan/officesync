@@ -1,6 +1,6 @@
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
-export class CreateElementDto {
+export class UpdateElementDto {
   @IsString({ message: 'Должно быть строкой' }) //! валидация
   readonly name: string;
 
@@ -42,4 +42,7 @@ export class CreateElementDto {
 
   @IsBoolean({ message: 'Должно быть boolean' })
   readonly isLocked: boolean;
+
+  @IsString({ message: 'Должно быть строкой' })
+  id: string;
 }

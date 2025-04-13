@@ -5,7 +5,10 @@ import { addEquipmentData } from "./data";
 import { useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
 import { useDispatch, useSelector } from "react-redux";
-import { addObject } from "../../../../store/convaSlice/conva.Slice";
+import {
+  addObject,
+  addObjectApi,
+} from "../../../../store/convaSlice/conva.Slice";
 import { apiEddElement } from "../../../../api/apirequests";
 
 function ModalAddObject({ title, show, setShow }) {
@@ -37,7 +40,6 @@ function ModalAddObject({ title, show, setShow }) {
 
   const funSave = () => {
     setShow(false);
-    dispatch(addObject({ data }));
     const formatData = new FormData();
     formatData.append("name", data.name);
     formatData.append("type", data.type);
@@ -56,6 +58,10 @@ function ModalAddObject({ title, show, setShow }) {
 
     apiEddElement(formatData).then((res) => {
       console.log("res", res);
+      if (res.status === 201) {
+        setShow(false);
+        dispatch(addObjectApi({ data: res.data }));
+      }
     });
   };
 

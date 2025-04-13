@@ -31,26 +31,8 @@ export class ElementsController {
 
   @Roles('ADMIN')
   @Post('bulk')
-  @UseInterceptors(
-    FilesInterceptor('image', 10, {
-      // Adjust the number as needed
-      fileFilter: (req, file, cb) => {
-        if (file.mimetype.match(/\/(jpg|jpeg|png|gif|svg)$/)) {
-          cb(null, true);
-        } else {
-          cb(new Error('Unsupported file type'), false);
-        }
-      },
-      limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB file size limit
-      },
-    }),
-  )
-  async createMany(
-    @Body() dtos: CreateElementDto[],
-    @UploadedFiles() icons: Express.Multer.File[],
-  ) {
-    return this.elementsService.createMany(dtos, icons);
+  async createMany(@Body() dtos: CreateElementDto[]) {
+    return this.elementsService.createMany(dtos);
   }
 
   @Roles('ADMIN')

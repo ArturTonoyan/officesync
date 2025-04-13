@@ -4,6 +4,7 @@ import { Element } from './elements.model';
 import { RolesService } from 'src/roles/roles.service';
 import { FilesService } from 'src/files/files.service';
 import { CreateElementDto } from './dto/create-element-dto';
+import { UpdateElementDto } from './dto/update-element-dto';
 
 @Injectable()
 export class ElementsService {
@@ -22,20 +23,23 @@ export class ElementsService {
     return element;
   }
 
-  async createMany(dtos: CreateElementDto[], icons: Express.Multer.File[]) {
+  async createMany(dtos: UpdateElementDto[]) {
     const createdElements = [];
     console.log('dtos', dtos);
 
     for (let i = 0; i < dtos.length; i++) {
       const dto = dtos[i];
-      const icon = icons[i]; // Assuming the icons array matches the dtos array
-
-      if (icon) {
-        const fileName = await this.fileService.createFile(icon); // Save the file and get the filename
-        dto.image = fileName; // Update DTO with the filename
+      let element = null;
+      const el = await this.elementRepository.findOne({
+        where: { id: dto.id },
+      });
+      if (el) {
+        element = await this.elementRepository.update(dto, {
+          where: { id: dto.id },
+        });
+      } else {
+        element = await this.elementRepository.create(dto);
       }
-
-      const element = await this.elementRepository.create(dto);
       createdElements.push(element);
     }
 

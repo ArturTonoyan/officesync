@@ -154,3 +154,8 @@ export const apiEddElements = async (data) => {
 export const apiGetElements = async (floorId) => {
   return await apiRequest("get", `/elements/all/${floorId}`);
 };
+
+//! удаление объкта
+export const apiDeleteElement = async (id) => {
+  return await apiRequest("delete", `/elements/${id}`);
+};

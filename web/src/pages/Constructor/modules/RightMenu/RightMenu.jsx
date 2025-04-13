@@ -7,6 +7,7 @@ import {
   setDataBySelected,
   deleteObject,
 } from "../../../../store/convaSlice/conva.Slice";
+import { apiDeleteElement } from "../../../../api/apirequests";
 function RightMenu() {
   const dispatch = useDispatch();
   const item = useSelector((state) => state.conva.objects.selectedObject);
@@ -19,7 +20,11 @@ function RightMenu() {
   };
 
   const funDelete = () => {
-    dispatch(deleteObject(item.id));
+    apiDeleteElement(item.id).then((res) => {
+      if (res.status === 200) {
+        dispatch(deleteObject(item.id));
+      }
+    });
   };
 
   return (

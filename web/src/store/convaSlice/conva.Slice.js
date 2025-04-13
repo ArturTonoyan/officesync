@@ -91,6 +91,13 @@ const ConvaSlice = createSlice({
       ].sort((a, b) => b.zIndex - a.zIndex);
     },
 
+    addObjectApi(state, action) {
+      const { data } = action.payload;
+      state.objects.data = [...state.objects.data, data].sort(
+        (a, b) => b.zIndex - a.zIndex
+      );
+    },
+
     deleteObject(state, action) {
       state.objects.data = state.objects.data.filter(
         (obj) => obj.id !== action.payload
@@ -120,6 +127,7 @@ export const {
   setDataBySelected,
   setDataManyParams,
   addObject,
+  addObjectApi,
   setDataParam,
   deleteObject,
   setSelectedOffice,
