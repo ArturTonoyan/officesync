@@ -56,6 +56,13 @@ export class Office extends Model<Office, OfficeCreationAttrs> {
   })
   companyId: string;
 
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  directorId: string;
+
   @HasMany(() => User)
   users: User[];
 

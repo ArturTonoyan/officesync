@@ -18,5 +18,8 @@ export class CreateOfficesDto {
   image?: string;
 
   @IsString({ message: 'Должно быть строкой' }) //! валидация
+  readonly directorId?: string;
+
+  @IsString({ message: 'Должно быть строкой' }) //! валидация
   companyId: string;
 }

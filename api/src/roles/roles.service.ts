@@ -15,6 +15,7 @@ export class RolesService implements OnModuleInit {
     const roles: CreateRoleDto[] = [
       { value: 'ADMIN', description: 'Администратор' },
       { value: 'USER', description: 'Пользователь' },
+      { value: 'DIRECTOR', description: 'Директор офиса' },
       // Добавьте другие роли по необходимости
     ];
 
@@ -34,5 +35,10 @@ export class RolesService implements OnModuleInit {
   async getRoleByValue(value: string) {
     const role = await this.roleRepository.findOne({ where: { value } });
     return role;
+  }
+
+  async getAll() {
+    const roles = await this.roleRepository.findAll();
+    return roles;
   }
 }

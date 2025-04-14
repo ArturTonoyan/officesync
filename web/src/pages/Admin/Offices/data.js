@@ -47,6 +47,7 @@ export const addOfficeData = [
     name: "Телефон",
     key: "phone",
     type: "text",
+    placeholder: "+7 (___) ___-__-__",
   },
   {
     name: "Почта",
@@ -83,7 +84,7 @@ export const tableHeader = [
   },
   {
     name: "Руководитель",
-    key: "director",
+    key: "directorId",
   },
   {
     name: "Этажи",

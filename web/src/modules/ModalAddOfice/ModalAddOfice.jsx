@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddOfice.module.scss";
 import { useState } from "react";
+import { formatPhoneNumber } from "../../utils/validations/Validations";
 
 function ModalAddOfice({
   title,
@@ -14,10 +15,15 @@ function ModalAddOfice({
 }) {
   const [openList, setOpenList] = useState(null);
   const funChange = (key, value) => {
-    setData({ ...data, [key]: value });
+    let newVal = value;
+    if (key === "phone") {
+      newVal = formatPhoneNumber(value);
+    }
+    setData({ ...data, [key]: newVal });
   };
 
   const funChangeList = (keysDatas) => {
+    console.log("keysDatas", keysDatas);
     setData({ ...data, ...keysDatas });
     setOpenList(null);
   };
@@ -47,13 +53,14 @@ function ModalAddOfice({
                       key={index}
                       type={item.type}
                       autoComplete="new-password"
-                      placeholder="Не указанно"
+                      placeholder={item.placeholder || "Не указанно"}
                       value={data?.[item.key]}
                       onChange={(e) => funChange(item.key, e.target.value)}
                       readOnly={lists?.[item.key]}
                       onClick={() =>
                         lists?.[item.key] ? setOpenList(item.key) : null
                       }
+                      style={lists?.[item.key] ? { cursor: "pointer" } : {}}
                     />
                     {openList === item.key && lists[item.key] && (
                       <div className={styles.list}>
@@ -64,11 +71,19 @@ function ModalAddOfice({
                             onClick={() =>
                               funChangeList({
                                 [lists[item.key]?.key]: elem.id,
-                                [item.key]: `${elem.name} ${elem.address}`,
+                                [item.key]: [
+                                  lists[item.key]?.value
+                                    ?.map((item) => elem[item])
+                                    .join(" "),
+                                ],
+                                [lists[item.key]?.obj?.key]:
+                                  elem[lists[item.key]?.obj?.value],
                               })
                             }
                           >
-                            {elem.name} {elem.address}
+                            {lists[item.key]?.value?.map((item, index) => (
+                              <span key={index}>{elem[item]} </span>
+                            ))}
                           </div>
                         ))}
                       </div>

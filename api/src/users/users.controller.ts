@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -28,6 +29,12 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   create(@Body() userDto: CreateUserDto) {
     return this.usersService.createUser(userDto);
+  }
+
+  @Roles('ADMIN') //! ограничение по ролям
+  @Post('create')
+  createUser(@Body() userDto: CreateUserDto) {
+    return this.usersService.createUserAdmin(userDto);
   }
 
   @Roles('ADMIN') //! ограничение по ролям
@@ -61,5 +68,17 @@ export class UsersController {
   ) {
     const userId = request.user.id; // Извлечение ID пользователя из токена
     return this.usersService.updateUser(userId, updateUserDto, image); // Обновление пользователя
+  }
+
+  @Roles('ADMIN')
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.removeUser(id);
+  }
+
+  @Roles('ADMIN')
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUserId(id, updateUserDto);
   }
 }

@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import styles from "./Users.module.scss";
-import { addOfficeData, paramMenu, tableHeader } from "./data";
+import { addOfficeData, editOfficeData, paramMenu, tableHeader } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
 import Table from "../../../modules/Table/Table";
-import { apiGetOffices, apiGetUsers } from "../../../api/apirequests";
+import {
+  apiCreateUser,
+  apiDeleteUser,
+  apiGetOffices,
+  apiGetRoles,
+  apiGetUsers,
+  apiUpdateUser,
+} from "../../../api/apirequests";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 
@@ -14,6 +21,10 @@ function Users() {
   const [tableData, setTableData] = useState([]);
   const [shearchParam, setShearchParam] = useState("");
   const [modalShow, setModalShow] = useState(false);
+  const [modalEditShow, setModalEditShow] = useState(false);
+  const [modalEditData, setModalEditData] = useState({});
+
+  const [createUserData, setCreateUserData] = useState({});
 
   //! поиск по всем полям
   useEffect(() => {
@@ -42,19 +53,71 @@ function Users() {
     enabled: !!user?.companyId,
   });
 
+  const { data: roles, refetch: refetchRoles } = useQuery({
+    queryKey: ["roles/all"],
+    queryFn: () => apiGetRoles(),
+    staleTime: Infinity, //! не обновлять
+  });
+
   useEffect(() => {
     if (users?.data) {
       const qdata = users?.data.map((item) => ({
         ...item,
         fio: `${item.surname} ${item.name} ${item.patronymic}`,
-        role: item.roles[0].value,
-        office: offices?.data.find((office) => office.id === item.officeId)
-          ?.name,
+        role: item.roles?.map((role) => role.description).join(", "),
+        office: item?.office?.name,
       }));
       setTableData(qdata);
       setOriginalData(qdata);
     }
   }, [users?.data]);
+
+  //! удаление сотрудника
+  const funDeleteUser = (id) => {
+    apiDeleteUser(id).then((res) => {
+      if (res.status === 200) {
+        refetchUsers();
+      }
+    });
+  };
+
+  //! добавить сотрудника
+  const funAddUser = () => {
+    let data = {
+      ...createUserData,
+      companyId: user.companyId,
+    };
+    console.log("createUserData", createUserData);
+
+    apiCreateUser(data).then((res) => {
+      if (res.status === 201) {
+        setModalShow(false);
+        refetchUsers();
+      }
+    });
+  };
+
+  //! при клике в контекстном меню
+  const funParamClick = (param) => {
+    console.log("param", param);
+    if (param.key === "edit") {
+      setModalEditShow(true);
+      setModalEditData(param.row);
+    }
+    if (param.key === "delete") {
+      funDeleteUser(param.row.id);
+    }
+  };
+
+  //! обновление данных сотрудника
+  const funUpdateUser = () => {
+    apiUpdateUser(modalEditData, modalEditData.id).then((res) => {
+      if (res.status === 200) {
+        setModalEditShow(false);
+        refetchUsers();
+      }
+    });
+  };
 
   return (
     <div className={styles.Users}>
@@ -64,6 +127,38 @@ function Users() {
         setShow={setModalShow}
         title={"Добавить сотрудника"}
         inputs={addOfficeData}
+        funSave={funAddUser}
+        setData={setCreateUserData}
+        data={createUserData}
+        lists={{
+          role: {
+            data: roles?.data,
+            key: "roleId",
+            obj: { key: "role", value: "value" },
+            value: ["description"],
+          },
+          office: {
+            data: offices?.data,
+            key: "officeId",
+            value: ["name"],
+          },
+        }}
+      />
+      <ModalAddOfice
+        show={modalEditShow}
+        data={modalEditData}
+        setShow={setModalEditShow}
+        funSave={funUpdateUser}
+        setData={setModalEditData}
+        title={"Изменить данные сотрудника"}
+        inputs={editOfficeData}
+        lists={{
+          role: {
+            data: roles?.data,
+            key: "roleId",
+            value: ["description"],
+          },
+        }}
       />
       <HeadBlock
         setModalShow={setModalShow}
@@ -78,6 +173,7 @@ function Users() {
           direction={[]}
           setModalShow={setModalShow}
           paramMenu={paramMenu}
+          funClick={funParamClick}
           tableHeader={tableHeader}
         />
       </div>

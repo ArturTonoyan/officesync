@@ -8,6 +8,7 @@ import {
   apiCreateOffice,
   apiDeleteOffice,
   apiGetOffices,
+  apiGetUsers,
   apiUpdateOffice,
 } from "../../../api/apirequests";
 import { useSelector } from "react-redux";
@@ -40,10 +41,31 @@ function Offices() {
     enabled: !!user?.companyId,
   });
 
+  const { data: users } = useQuery({
+    queryKey: ["users/all/id", user?.companyId],
+    queryFn: () => apiGetUsers(user?.companyId),
+    staleTime: Infinity, //! не обновлять
+    enabled: !!user?.companyId,
+  });
+
+  const funGetUserFio = (user) => {
+    return `${user?.surname} ${user?.name} ${user?.patronymic}`;
+  };
+
   useEffect(() => {
     if (query?.data) {
-      setTableData(query?.data);
-      setOriginalData(query?.data);
+      const tabDat = query?.data.map((el) => ({
+        ...el,
+        directorId: funGetUserFio(
+          el?.users?.find((u) => u.id === el.directorId)
+        ),
+        usersCount: el?.users?.length,
+        floorsCount: el?.floors?.length,
+        devices: el?.eqipments?.length,
+      }));
+      console.log("tabDat", tabDat);
+      setTableData(tabDat);
+      setOriginalData(tabDat);
     }
   }, [query?.data]);
 
@@ -54,6 +76,7 @@ function Offices() {
     formData.append("address", createOfficeData.address);
     formData.append("phone", createOfficeData.phone);
     formData.append("email", createOfficeData.email);
+    formData.append("directorId", createOfficeData.directorId);
     apiCreateOffice(formData, user?.companyId).then((res) => {
       console.log("res", res);
       if (res.status === 201) {
@@ -97,7 +120,13 @@ function Offices() {
 
   //! обновление офиса
   const funUpdateOffice = () => {
-    apiUpdateOffice(modalEditData, modalEditData.id).then((res) => {
+    const data = {
+      ...modalEditData,
+      director: modalEditData.userId,
+    };
+    console.log("data", data);
+
+    apiUpdateOffice(data, modalEditData.id).then((res) => {
       if (res.status === 200) {
         setModalEditShow(false);
         refetch();
@@ -125,6 +154,13 @@ function Offices() {
         data={createOfficeData}
         setData={setCreateOfficeData}
         funSave={funCreateOffice}
+        lists={{
+          director: {
+            data: users?.data,
+            key: "directorId",
+            value: ["surname", "name", "patronymic", "email"],
+          },
+        }}
       />
       <ModalAddOfice
         show={modalEditShow}
@@ -134,6 +170,13 @@ function Offices() {
         data={modalEditData}
         setData={setModalEditData}
         funSave={funUpdateOffice}
+        lists={{
+          director: {
+            data: users?.data,
+            key: "directorId",
+            value: ["surname", "name", "patronymic", "email"],
+          },
+        }}
       />
       <HeadBlock
         setModalShow={setModalShow}

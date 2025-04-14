@@ -22,7 +22,6 @@ function Registration({ funUpdUser }) {
   };
 
   const funSave = () => {
-    console.log(data);
     apiRegister(data).then((res) => {
       if (res.status === 201) {
         navigate("/");

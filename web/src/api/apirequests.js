@@ -45,6 +45,26 @@ export const apiGetUser = async () => {
   return await apiRequest("get", "/users/me");
 };
 
+//! добавление пользователя
+export const apiCreateUser = async (data) => {
+  return await apiRequest("post", "/users/create", data);
+};
+
+//! удаление пользователя
+export const apiDeleteUser = async (id) => {
+  return await apiRequest("delete", `/users/${id}`);
+};
+
+//! обновление данных сотрудника
+export const apiUpdateUser = async (data, id) => {
+  return await apiRequest("put", `/users/${id}`, data);
+};
+
+//! получение всех ролей
+export const apiGetRoles = async () => {
+  return await apiRequest("get", "/roles");
+};
+
 //! создание компании
 export const apiCreateCompany = async (data) => {
   return await apiRequest("post", "/companies", data, {

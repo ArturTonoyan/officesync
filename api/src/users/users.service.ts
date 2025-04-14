@@ -6,6 +6,7 @@ import { RolesService } from 'src/roles/roles.service';
 import { AddRoleDto } from './dto/add-role.dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { FilesService } from 'src/files/files.service';
+import { Role } from 'src/roles/roles.model';
 
 @Injectable()
 export class UsersService {
@@ -18,11 +19,19 @@ export class UsersService {
   async createUser(dto: CreateUserDto) {
     const user = await this.userRepository.create(dto);
     let role;
-    if (dto.role === 'ADMIN') {
-      role = await this.rolesService.getRoleByValue('ADMIN');
-    } else {
-      role = await this.rolesService.getRoleByValue('USER');
+    role = await this.rolesService.getRoleByValue(dto.role);
+    await user.$set('roles', [role.id]);
+    user.roles = [role];
+    return user;
+  }
+
+  async createUserAdmin(dto: CreateUserDto) {
+    if (!dto.role) {
+      throw new HttpException('Роль не указана', HttpStatus.BAD_REQUEST);
     }
+    const user = await this.userRepository.create(dto);
+    let role;
+    role = await this.rolesService.getRoleByValue(dto.role);
     await user.$set('roles', [role.id]);
     user.roles = [role];
     return user;
@@ -89,6 +98,33 @@ export class UsersService {
 
     // Обновление полей пользователя
     Object.assign(user, updateUserDto);
+    await user.save(); // Сохранение обновленного пользователя
+    return user;
+  }
+
+  async removeUser(id: string) {
+    const user = await User.findByPk(id);
+    if (!user) {
+      throw new Error('Пользователь не найден'); // Обработка ошибки, если пользователь не найден
+    }
+    await user.destroy(); // Удаление пользователя
+    return user;
+  }
+
+  async updateUserId(id: string, dto: UpdateUserDto) {
+    const user = await User.findByPk(id);
+    if (!user) {
+      throw new Error('Пользователь не найден'); // Обработка ошибки, если пользователь не найден
+    }
+    console.log('updateUserDto', dto);
+    Object.assign(user, dto);
+    if (dto.roleId) {
+      const role = await Role.findByPk(dto.roleId);
+      if (!role) {
+        throw new Error('Роль не найдена');
+      }
+      await user.$set('roles', [role.id]); // Используйте $set для обновления ролей
+    }
     await user.save(); // Сохранение обновленного пользователя
     return user;
   }

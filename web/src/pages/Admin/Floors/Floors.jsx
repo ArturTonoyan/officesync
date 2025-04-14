@@ -52,6 +52,8 @@ function Floors() {
       const qdat = floors?.data.map((item) => ({
         ...item,
         office: offices?.data?.find((el) => el.id === item.officeId)?.name,
+        users: item.users?.length,
+        devices: item.eqipments?.length,
       }));
       setTableData(qdat);
       setOriginalData(qdat);
@@ -135,7 +137,13 @@ function Floors() {
         setShow={setModalShow}
         title={"Добавить этаж"}
         inputs={addFloorData}
-        lists={{ office: { data: offices?.data, key: "officeId" } }}
+        lists={{
+          office: {
+            data: offices?.data,
+            key: "officeId",
+            value: ["name", "address"],
+          },
+        }}
         data={createFloorData}
         setData={setCreateFloorData}
         funSave={funCreateFloor}
@@ -145,7 +153,13 @@ function Floors() {
         setShow={setModalEditShow}
         title={"Редактировать данные этажа"}
         inputs={addFloorData}
-        lists={{ office: { data: offices?.data, key: "officeId" } }}
+        lists={{
+          office: {
+            data: offices?.data,
+            key: "officeId",
+            value: ["name", "address"],
+          },
+        }}
         data={modalEditData}
         setData={setModalEditData}
         funSave={funUpdateFloor}

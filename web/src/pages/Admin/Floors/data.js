@@ -42,16 +42,6 @@ export const addFloorData = [
     key: "office",
     type: "text",
   },
-  {
-    name: "Сотрудники",
-    key: "users",
-    type: "text",
-  },
-  {
-    name: "Оборудование",
-    key: "devices",
-    type: "text",
-  },
 ];
 
 export const tableHeader = [
@@ -83,29 +73,5 @@ export const tableHeader = [
     name: "Оборудование",
     key: "devices",
     type: "text",
-  },
-];
-
-export const testData = [
-  {
-    number: 1,
-    name: "Этаж 1",
-    office: "Офис А",
-    users: 10,
-    devices: 5,
-  },
-  {
-    number: 2,
-    name: "Этаж 2",
-    office: "Офис Б",
-    users: 10,
-    devices: 5,
-  },
-  {
-    number: 3,
-    name: "Этаж 3",
-    office: "Офис В",
-    users: 10,
-    devices: 5,
   },
 ];

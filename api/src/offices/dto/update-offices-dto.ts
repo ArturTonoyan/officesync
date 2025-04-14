@@ -15,5 +15,8 @@ export class UpdateOfficesDto {
   readonly address?: string;
 
   @IsString({ message: 'Должно быть строкой' }) //! валидация
+  readonly directorId?: string;
+
+  @IsString({ message: 'Должно быть строкой' }) //! валидация
   image?: string;
 }

@@ -18,12 +18,26 @@ export class OfficesService {
 
   async create(dto: CreateOfficesDto, id: string, image: Express.Multer.File) {
     try {
+      console.log('dto', dto);
+      const office = await this.officeRepository.create(dto);
       dto.companyId = id;
       if (image) {
         const fileName = await this.fileService.createFile(image);
         dto.image = fileName;
       }
-      const office = await this.officeRepository.create(dto);
+      if (dto.directorId) {
+        const user = await User.findByPk(dto.directorId);
+        if (!user) {
+          throw new Error('Пользователь не найден');
+        }
+        const role = await this.rolesService.getRoleByValue('DIRECTOR');
+        if (!role) {
+          throw new Error('Роль не найдена');
+        }
+        user.roles = [role];
+        user.officeId = office.id;
+        await user.save();
+      }
       return office;
     } catch (error) {
       console.error('Ошибка при создании офиса:', error);
@@ -35,6 +49,7 @@ export class OfficesService {
     try {
       const offices = await this.officeRepository.findAll({
         where: { companyId },
+        include: { all: true },
       });
       return offices;
     } catch (error) {
@@ -54,6 +69,7 @@ export class OfficesService {
   }
 
   async update(id: string, dto: UpdateOfficesDto, image: Express.Multer.File) {
+    console.log('dto', dto);
     try {
       const office = await this.officeRepository.findOne({ where: { id } });
       if (!office) {
@@ -62,6 +78,19 @@ export class OfficesService {
       if (image) {
         const fileName = await this.fileService.createFile(image);
         dto.image = fileName;
+      }
+      if (dto.directorId) {
+        const user = await User.findByPk(dto.directorId);
+        if (!user) {
+          throw new Error('Пользователь не найден');
+        }
+        const role = await this.rolesService.getRoleByValue('DIRECTOR');
+        if (!role) {
+          throw new Error('Роль не найдена');
+        }
+        user.roles = [role];
+        user.officeId = office.id;
+        await user.save();
       }
       Object.assign(office, dto);
       await office.save();
