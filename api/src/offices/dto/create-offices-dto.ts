@@ -21,5 +21,12 @@ export class CreateOfficesDto {
   readonly directorId?: string;
 
   @IsString({ message: 'Должно быть строкой' }) //! валидация
-  companyId: string;
+  companyId?: string;
+  contract?: string;
+  renterId?: string;
+  dateStart?: string;
+  dateEnd?: string;
+  cost?: number;
+  renterContact?: string;
+  area?: number;
 }

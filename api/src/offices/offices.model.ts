@@ -59,7 +59,6 @@ export class Office extends Model<Office, OfficeCreationAttrs> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
-    allowNull: false,
   })
   directorId: string;
 
@@ -71,4 +70,46 @@ export class Office extends Model<Office, OfficeCreationAttrs> {
 
   @HasMany(() => Equipment)
   eqipments: Equipment[];
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  typeOwnership: string;
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+  })
+  renterId: string;
+
+  @Column({
+    type: DataType.STRING,
+  })
+  contract: string;
+
+  @Column({
+    type: DataType.STRING,
+  })
+  dateStart: string;
+
+  @Column({
+    type: DataType.STRING,
+  })
+  dateEnd: string;
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  cost: number;
+
+  @Column({
+    type: DataType.STRING,
+  })
+  renterContact: string;
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  area: number;
 }

@@ -4,6 +4,11 @@ import userIcon from "@assets/images/icons/user.svg";
 import officeIcon from "@assets/images/leftMenu/office.svg";
 import deviceIcon from "@assets/images/leftMenu/device.svg";
 
+export const typeOwnerships = [
+  { name: "Арендованный", id: "1" },
+  { name: "Собственный", id: "2" },
+];
+
 export const paramMenu = [
   {
     name: "Редактировать",
@@ -59,6 +64,48 @@ export const addOfficeData = [
     key: "director",
     type: "text",
   },
+  {
+    name: "Тип собственности",
+    key: "typeOwnership",
+    type: "text",
+  },
+  {
+    name: "Арендодатель",
+    key: "renter",
+    type: "text",
+  },
+  {
+    name: "Договор",
+    key: "contract",
+    type: "file",
+    accept: "application/pdf",
+  },
+  {
+    name: "Дата начала аренды",
+    key: "dateStart",
+    type: "date",
+  },
+  {
+    name: "Дата окончания аренды",
+    key: "dateEnd",
+    type: "date",
+  },
+  {
+    name: "Стоимость аренды в месяц",
+    key: "cost",
+    type: "number",
+  },
+  {
+    name: "Контакт арендодателя",
+    key: "renterContact",
+    type: "text",
+    placeholder: "+7 (___) ___-__-__",
+  },
+  {
+    name: "Площадь кв. м.",
+    key: "area",
+    type: "number",
+  },
 ];
 
 export const tableHeader = [
@@ -85,6 +132,48 @@ export const tableHeader = [
   {
     name: "Руководитель",
     key: "directorId",
+  },
+  {
+    name: "Тип собственности",
+    key: "typeOwnership",
+    type: "text",
+  },
+  {
+    name: "Арендодатель",
+    key: "renter",
+    type: "text",
+  },
+  {
+    name: "Договор",
+    key: "contract",
+    type: "file",
+    accept: "application/pdf",
+  },
+  {
+    name: "Дата начала аренды",
+    key: "dateStart",
+    type: "date",
+  },
+  {
+    name: "Дата окончания аренды",
+    key: "dateEnd",
+    type: "date",
+  },
+  {
+    name: "Стоимость аренды в месяц",
+    key: "cost",
+    type: "number",
+  },
+  {
+    name: "Контакт арендодателя",
+    key: "renterContact",
+    type: "text",
+    placeholder: "+7 (___) ___-__-__",
+  },
+  {
+    name: "Площадь кв. м.",
+    key: "area",
+    type: "number",
   },
   {
     name: "Этажи",

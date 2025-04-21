@@ -165,9 +165,21 @@ function Equipments() {
         setData={setCreateData}
         funSave={funCreate}
         lists={{
-          office: { data: offices?.data, key: "officeId" },
-          floor: { data: floors?.data, key: "floorId" },
-          user: { data: users?.data, key: "userId" },
+          office: {
+            data: offices?.data,
+            key: "officeId",
+            value: ["name", "address"],
+          },
+          floor: {
+            data: floors?.data,
+            key: "floorId",
+            value: ["name", "address"],
+          },
+          user: {
+            data: users?.data,
+            key: "userId",
+            value: ["name", "surname", "patronymic", "email"],
+          },
         }}
       />
       <ModalAddOfice

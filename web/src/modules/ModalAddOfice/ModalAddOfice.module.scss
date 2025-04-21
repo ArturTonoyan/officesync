@@ -40,6 +40,18 @@
           font-weight: 400;
           font-size: 18px;
         }
+
+        .file {
+          padding: 20px;
+          cursor: pointer;
+          overflow-y: auto;
+          height: 25px;
+          @include ScrollBar;
+        }
+
+        input[type="file"] {
+          display: none;
+        }
       }
       .list {
         display: flex;

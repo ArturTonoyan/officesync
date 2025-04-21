@@ -16,14 +16,18 @@ export class OfficesService {
     private fileService: FilesService,
   ) {}
 
-  async create(dto: CreateOfficesDto, id: string, image: Express.Multer.File) {
+  async create(
+    dto: CreateOfficesDto,
+    id: string,
+    contract: Express.Multer.File,
+  ) {
     try {
+      dto.companyId = id;
       console.log('dto', dto);
       const office = await this.officeRepository.create(dto);
-      dto.companyId = id;
-      if (image) {
-        const fileName = await this.fileService.createFile(image);
-        dto.image = fileName;
+      if (contract) {
+        const fileName = await this.fileService.createFile(contract);
+        dto.contract = fileName;
       }
       if (dto.directorId) {
         const user = await User.findByPk(dto.directorId);

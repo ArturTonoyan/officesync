@@ -29,9 +29,10 @@ export class OfficesController {
   create(
     @Body() dto: CreateOfficesDto,
     @Param('id') id: string,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile() contract: Express.Multer.File,
   ) {
-    return this.officesService.create(dto, id, image);
+    console.log('id', id);
+    return this.officesService.create(dto, id, contract);
   }
 
   @Roles('ADMIN')

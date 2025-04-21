@@ -2,8 +2,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddOfice.module.scss";
 import { useState } from "react";
 import { formatPhoneNumber } from "../../utils/validations/Validations";
+import TextField from "@mui/material/Input";
 
 function ModalAddOfice({
+  edit,
+  setEdit,
   title,
   inputs,
   show,
@@ -14,18 +17,31 @@ function ModalAddOfice({
   lists,
 }) {
   const [openList, setOpenList] = useState(null);
-  const funChange = (key, value) => {
+  const funChange = (type, key, value) => {
+    if (type === "file") {
+      setData({ ...data, [key]: document?.getElementById(key)?.files[0] });
+      if (edit) {
+        setEdit({ ...edit, [key]: document?.getElementById(key)?.files[0] });
+      }
+      return;
+    }
     let newVal = value;
-    if (key === "phone") {
+    if (key === "phone" || key === "renterContact") {
       newVal = formatPhoneNumber(value);
     }
     setData({ ...data, [key]: newVal });
+    if (edit) {
+      setEdit({ ...edit, [key]: newVal });
+    }
   };
 
   const funChangeList = (keysDatas) => {
     console.log("keysDatas", keysDatas);
     setData({ ...data, ...keysDatas });
     setOpenList(null);
+    if (edit) {
+      setEdit({ ...edit, ...keysDatas });
+    }
   };
 
   return (
@@ -54,14 +70,30 @@ function ModalAddOfice({
                       type={item.type}
                       autoComplete="new-password"
                       placeholder={item.placeholder || "Не указанно"}
-                      value={data?.[item.key]}
-                      onChange={(e) => funChange(item.key, e.target.value)}
+                      accept={item.accept || ""}
+                      value={item.type === "file" ? "" : data?.[item.key] ?? ""}
+                      onChange={(e) =>
+                        funChange(item.type, item.key, e.target.value)
+                      }
                       readOnly={lists?.[item.key]}
                       onClick={() =>
                         lists?.[item.key] ? setOpenList(item.key) : null
                       }
                       style={lists?.[item.key] ? { cursor: "pointer" } : {}}
+                      id={item.key}
                     />
+                    {item.type === "file" && (
+                      <div
+                        className={styles.file}
+                        onClick={() => {
+                          document.getElementById(item.key).click();
+                        }}
+                      >
+                        <span>
+                          {data?.[item.key]?.name || "Файл не выбран"}
+                        </span>
+                      </div>
+                    )}
                     {openList === item.key && lists[item.key] && (
                       <div className={styles.list}>
                         {lists[item.key]?.data?.map((elem, ind) => (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./Offices.module.scss";
-import { addOfficeData, paramMenu, tableHeader } from "./data";
+import { addOfficeData, paramMenu, tableHeader, typeOwnerships } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
 import Table from "../../../modules/Table/Table";
@@ -22,6 +22,7 @@ function Offices() {
   const [modalShow, setModalShow] = useState(false);
   const [modalEditShow, setModalEditShow] = useState(false);
   const [modalEditData, setModalEditData] = useState({});
+  const [modalEditInputData, setModalEditInputData] = useState({});
   const [createOfficeData, setCreateOfficeData] = useState({
     name: "",
     address: "",
@@ -49,20 +50,42 @@ function Offices() {
   });
 
   const funGetUserFio = (user) => {
-    return `${user?.surname} ${user?.name} ${user?.patronymic}`;
+    let fio = `${user?.surname || ""} ${user?.name || ""} ${
+      user?.patronymic || ""
+    }`;
+    if (fio.trim() === "") {
+      fio = "";
+    }
+    return fio;
   };
 
   useEffect(() => {
     if (query?.data) {
-      const tabDat = query?.data.map((el) => ({
+      let tabDat = query?.data.map((el) => ({
         ...el,
         directorId: funGetUserFio(
           el?.users?.find((u) => u.id === el.directorId)
         ),
+        renter: funGetUserFio(el?.users?.find((u) => u.id === el.renterId)),
         usersCount: el?.users?.length,
         floorsCount: el?.floors?.length,
         devices: el?.eqipments?.length,
       }));
+      tabDat.map((el) => {
+        Object.keys(el).forEach((key) => {
+          if (
+            el[key] === null ||
+            el[key] === undefined ||
+            !el[key] ||
+            el[key] === "undefined" ||
+            el[key] === "null" ||
+            el[key] === ""
+          ) {
+            el[key] = "";
+          }
+        });
+      });
+
       console.log("tabDat", tabDat);
       setTableData(tabDat);
       setOriginalData(tabDat);
@@ -72,11 +95,16 @@ function Offices() {
   //! функция создания офиса
   const funCreateOffice = () => {
     const formData = new FormData();
-    formData.append("name", createOfficeData.name);
-    formData.append("address", createOfficeData.address);
-    formData.append("phone", createOfficeData.phone);
-    formData.append("email", createOfficeData.email);
-    formData.append("directorId", createOfficeData.directorId);
+    const fields = {
+      ...createOfficeData,
+      cost: Number(createOfficeData.cost || 0),
+      area: Number(createOfficeData.area || 0),
+    };
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
     apiCreateOffice(formData, user?.companyId).then((res) => {
       console.log("res", res);
       if (res.status === 201) {
@@ -120,13 +148,24 @@ function Offices() {
 
   //! обновление офиса
   const funUpdateOffice = () => {
-    const data = {
-      ...modalEditData,
-      director: modalEditData.userId,
+    const formData = new FormData();
+    let fields = {
+      ...modalEditInputData,
     };
-    console.log("data", data);
+    if (modalEditInputData.cost) {
+      fields.cost = Number(modalEditInputData.cost);
+    }
+    if (modalEditInputData.area) {
+      fields.area = Number(modalEditInputData.area);
+    }
 
-    apiUpdateOffice(data, modalEditData.id).then((res) => {
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
+
+    apiUpdateOffice(formData, modalEditData.id).then((res) => {
       if (res.status === 200) {
         setModalEditShow(false);
         refetch();
@@ -150,7 +189,11 @@ function Offices() {
         show={modalShow}
         setShow={setModalShow}
         title={"Добавить офис"}
-        inputs={addOfficeData}
+        inputs={
+          createOfficeData?.typeOwnership?.[0] === "Арендованный"
+            ? addOfficeData
+            : addOfficeData?.slice(0, 6)
+        }
         data={createOfficeData}
         setData={setCreateOfficeData}
         funSave={funCreateOffice}
@@ -160,13 +203,29 @@ function Offices() {
             key: "directorId",
             value: ["surname", "name", "patronymic", "email"],
           },
+          renter: {
+            data: users?.data,
+            key: "renterId",
+            value: ["surname", "name", "patronymic", "email"],
+          },
+          typeOwnership: {
+            data: typeOwnerships,
+            key: "typeOwnership",
+            value: ["name"],
+          },
         }}
       />
       <ModalAddOfice
+        edit={modalEditInputData}
+        setEdit={setModalEditInputData}
         show={modalEditShow}
         setShow={setModalEditShow}
         title={"Редактировать данные офиса"}
-        inputs={addOfficeData}
+        inputs={
+          modalEditData?.typeOwnership?.[0] === "Арендованный"
+            ? addOfficeData
+            : addOfficeData?.slice(0, 6)
+        }
         data={modalEditData}
         setData={setModalEditData}
         funSave={funUpdateOffice}
@@ -175,6 +234,16 @@ function Offices() {
             data: users?.data,
             key: "directorId",
             value: ["surname", "name", "patronymic", "email"],
+          },
+          renter: {
+            data: users?.data,
+            key: "renterId",
+            value: ["surname", "name", "patronymic", "email"],
+          },
+          typeOwnership: {
+            data: typeOwnerships,
+            key: "typeOwnership",
+            value: ["name"],
           },
         }}
       />
