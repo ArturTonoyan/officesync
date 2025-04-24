@@ -10,7 +10,7 @@ import {
 } from "../../../../store/convaSlice/conva.Slice";
 import { AnimatePresence, motion } from "framer-motion";
 
-function TopMenu({ offices, floors, funSave }) {
+function TopMenu({ offices, floors, funSave, funDownload }) {
   const selectOffice = useSelector(
     (state) => state.conva.offices.selectedObject
   );
@@ -90,6 +90,9 @@ function TopMenu({ offices, floors, funSave }) {
         </div>
       </div>
       <div className={styles.param}>
+        <button className={styles.download} onClick={funDownload}>
+          Скачать
+        </button>
         <button onClick={funSave}>Сохранить</button>
       </div>
     </div>

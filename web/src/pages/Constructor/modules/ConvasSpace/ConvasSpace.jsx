@@ -87,6 +87,15 @@ function ConvasSpace() {
     }
   }, [conva?.floors?.selected]);
 
+  //! сохранение фотки в виде пнг
+  const handleDownload = () => {
+    const uri = stageRef.current.toDataURL();
+    const link = document.createElement("a");
+    link.download = "my-canvas.png";
+    link.href = uri;
+    link.click();
+  };
+
   //! сохранить карту
   const funSave = () => {
     const qerydata = conva?.objects?.data?.map((obj) => ({
@@ -133,7 +142,12 @@ function ConvasSpace() {
       <LeftMenu />
 
       {/* Top Menu */}
-      <TopMenu floors={floors} offices={offices} funSave={funSave} />
+      <TopMenu
+        floors={floors}
+        offices={offices}
+        funSave={funSave}
+        funDownload={handleDownload}
+      />
 
       {/* Modals */}
       <ModalAddObject
