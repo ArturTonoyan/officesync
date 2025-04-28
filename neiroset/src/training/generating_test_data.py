@@ -127,10 +127,11 @@ def save_cases_to_excel(cases, filename="test_cases.xlsx"):
 
     # Заголовки столбцов
     headers = [
-        "ID оборудования", "Тип оборудования", "Название оборудования", "Дата начала эксплуатации",
-        "Наработка (часы)", "Максимальная наработка (часы)", "Среднее ежедневное использование (часы)",
-        "Периодичность ТО (дни)", "Износ (0-1)", "Предыдущие отказы"
+        "id", "type", "type_name", "date_start",
+        "work_hours", "max_work_hours", "average_daily_usage_hours",
+        "maintenance_frequency_days", "wear", "previous_failures"
     ]
+
     ws.append(headers)
 
     # Заполнение данных
@@ -165,7 +166,7 @@ def save_cases_to_excel(cases, filename="test_cases.xlsx"):
             cell.alignment = Alignment(horizontal='center', vertical='center')
 
    # Путь к папке src рядом со скриптом
-    folder_path = os.path.join(os.path.dirname(__file__), '')
+    folder_path = os.path.join(os.path.dirname(__file__), '../data/')
     os.makedirs(folder_path, exist_ok=True)
 
     file_path = os.path.join(folder_path, filename)
@@ -179,7 +180,7 @@ def save_cases_to_excel(cases, filename="test_cases.xlsx"):
     print(f"Данные сохранены в файл '{file_path}' ✅")
 
 if __name__ == "__main__":
-    num_cases = 200  # Сколько тестовых данных сгенерировать
+    num_cases = 600  # Сколько тестовых данных сгенерировать
     cases = [generate_equipment_case() for _ in range(num_cases)]
     
     # Очищаем данные
