@@ -67,38 +67,54 @@ def generate_failure():
     }
 
 def generate_equipment_case():
-    """Генерирует случайный кейс оборудования с учетом закономерностей"""
+    """Генерирует кейс оборудования с учетом типа и реалистичных зависимостей"""
     equipment_type = random.choice(typeEquipment)
-    
-    # Генерируем начальную наработку и максимальную наработку
-    max_work_hours = random.choice([5000, 8000, 10000, 12000])
-    work_hours = random.randint(0, max_work_hours)
+    type_id = equipment_type["id"]
+    type_name = equipment_type["name"]
 
-    # Периодичность ТО
+    # Характеристики в зависимости от типа оборудования
+    equipment_profiles = {
+        1: {"max_work_hours": [5000, 8000], "avg_daily_use": (0.5, 2), "conditions": 0.1},  # Принтер
+        2: {"max_work_hours": [8000, 12000], "avg_daily_use": (3, 8), "conditions": 0.1},   # Компьютер
+        3: {"max_work_hours": [10000, 15000], "avg_daily_use": (2, 6), "conditions": 0.2},  # Кондиционер
+        4: {"max_work_hours": [10000, 20000], "avg_daily_use": (1, 4), "conditions": 0.05}, # Стол
+    }
+
+    profile = equipment_profiles[type_id]
+    max_work_hours = random.randint(*profile["max_work_hours"])
+
+    # Возраст оборудования
+    date_start = random_date(2020, 2024).date()
+    days_in_use = (datetime.today().date() - date_start).days
+    estimated_work_hours = int(days_in_use * random.uniform(*profile["avg_daily_use"]))
+    work_hours = min(estimated_work_hours, max_work_hours)
+
+    # Периодичность ТО — зависит от типа оборудования
     maintenance_frequency = random.choice([30, 90, 180, 365])
 
-    # Генерируем случайный процент использования оборудования
-    average_daily_usage_hours = round(random.uniform(1.0, 8.0), 1)
+    # Отказы
+    num_failures = random.randint(0, 4)
+    previous_failures = [generate_failure() for _ in range(num_failures)]
 
-    # Генерируем случайные отказы
-    previous_failures = [generate_failure() for _ in range(random.randint(0, 5))]
+    # Износ
+    failure_frequency = num_failures / (work_hours / 1000 + 1e-6)
+    operating_conditions = profile["conditions"]
+    wear = calculate_wear(work_hours, max_work_hours, previous_failures, failure_frequency, operating_conditions)
 
-    # Вычисляем износ
-    wear = calculate_wear(work_hours, max_work_hours, previous_failures, failure_frequency=0.1, operating_conditions=0.1)
-
-    case = {
+    return {
         "id": str(random.randint(10000, 99999)),
-        "type": equipment_type["id"],
-        "type_name": equipment_type["name"],
-        "date_start": random_date().date(),
+        "type": type_id,
+        "type_name": type_name,
+        "date_start": date_start,
         "work_hours": work_hours,
         "max_work_hours": max_work_hours,
-        "average_daily_usage_hours": average_daily_usage_hours,
+        "average_daily_usage_hours": round(work_hours / (days_in_use + 1), 2),
         "maintenance_frequency_days": maintenance_frequency,
         "previous_failures_types": previous_failures,
         "wear": wear,
     }
-    return case
+
+   
 
 def clean_data(cases):
     """Очищает данные от некорректных или ненужных записей"""
