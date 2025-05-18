@@ -47,6 +47,12 @@ export class AuthService {
 
   private async validateUser(userDto: CreateUserDto) {
     const user = await this.usersService.getUserByEmail(userDto.email);
+
+    if (!user) {
+      throw new UnauthorizedException({
+        message: 'Некорректный email или пароль',
+      });
+    }
     //! проверяем что пароли пользователя и из бд совподают
     const passwordEquals = await bcrypt.compare(
       userDto.password,

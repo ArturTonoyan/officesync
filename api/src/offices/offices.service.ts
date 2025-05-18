@@ -72,16 +72,20 @@ export class OfficesService {
     }
   }
 
-  async update(id: string, dto: UpdateOfficesDto, image: Express.Multer.File) {
+  async update(
+    id: string,
+    dto: UpdateOfficesDto,
+    contract: Express.Multer.File,
+  ) {
     console.log('dto', dto);
     try {
       const office = await this.officeRepository.findOne({ where: { id } });
       if (!office) {
         throw new Error('Офис не найден');
       }
-      if (image) {
-        const fileName = await this.fileService.createFile(image);
-        dto.image = fileName;
+      if (contract) {
+        const fileName = await this.fileService.createFile(contract);
+        dto.contract = fileName;
       }
       if (dto.directorId) {
         const user = await User.findByPk(dto.directorId);

@@ -12,6 +12,7 @@ import {
   apiEditProblem,
   apiGetEquipments,
   apiGetProblems,
+  server,
 } from "../../../api/apirequests";
 
 function Problems() {
@@ -50,6 +51,7 @@ function Problems() {
           " " +
           item.user?.patronymic,
         equipment: item.equipment?.name + " " + item.equipment?.inventoryNumber,
+        imageUrl: item?.image ? `${server}/${item?.image}` : null,
       }));
       setTableData(qdat);
       setOriginalData(qdat);

@@ -8,7 +8,9 @@ import constructorIcon from "@assets/images/leftMenu/constructor.svg";
 import paramIcon from "@assets/images/leftMenu/param.svg";
 import userIcon from "@assets/images/leftMenu/user.svg";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 function LeftMenu() {
+  const user = useSelector((state) => state.user.user.data);
   const navigate = useNavigate();
 
   const listMenu = [
@@ -55,6 +57,23 @@ function LeftMenu() {
       <div className={styles.logotype}>
         <img src={logoIcon} alt="Логотип" onClick={() => navigate("/")} />
       </div>
+      <div className={styles.profile_data}>
+        <div className={styles.profile_img}>
+          <img src="./img/men.png" alt="Логотип" />
+        </div>
+        <div className={styles.fio}>
+          <p
+            className={styles.fio_text}
+          >{`${user?.surname} ${user?.name} ${user?.patronymic}`}</p>
+          <span className={styles.email}>{user?.email}</span>
+          <span className={styles.position}>{user?.position}</span>
+        </div>
+        <div className={styles.buttons}>
+          <button className={styles.edit}>
+            <img src="./img/icons/edit.svg" alt="edit" />
+          </button>
+        </div>
+      </div>
       <div className={styles.content}>
         <div className={styles.container}>
           <div className={styles.tables_box}>
@@ -68,26 +87,6 @@ function LeftMenu() {
               ))}
             </ul>
           </div>
-          <div className={styles.constructor_box}>
-            <ul className={styles.list_item}>
-              <li onClick={() => navigate("/constructor")}>
-                <img src={constructorIcon} alt="img" />
-                <span>Конструктор</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className={styles.container_bottom}>
-          <ul className={styles.list_item}>
-            <li>
-              <img src={paramIcon} alt="img" />
-              <span>Настройки</span>
-            </li>
-            <li onClick={() => navigate("/profile")}>
-              <img src={userIcon} alt="img" />
-              <span>Профиль</span>
-            </li>
-          </ul>
         </div>
       </div>
     </div>

@@ -109,12 +109,7 @@ function Offices() {
       console.log("res", res);
       if (res.status === 201) {
         setModalShow(false);
-        setCreateOfficeData({
-          name: "",
-          address: "",
-          phone: "",
-          email: "",
-        });
+        setCreateOfficeData({});
         refetch();
       }
     });
@@ -203,11 +198,7 @@ function Offices() {
             key: "directorId",
             value: ["surname", "name", "patronymic", "email"],
           },
-          renter: {
-            data: users?.data,
-            key: "renterId",
-            value: ["surname", "name", "patronymic", "email"],
-          },
+
           typeOwnership: {
             data: typeOwnerships,
             key: "typeOwnership",
@@ -222,7 +213,8 @@ function Offices() {
         setShow={setModalEditShow}
         title={"Редактировать данные офиса"}
         inputs={
-          modalEditData?.typeOwnership?.[0] === "Арендованный"
+          modalEditData?.typeOwnership?.[0] === "Арендованный" ||
+          modalEditData?.typeOwnership === "Арендованный"
             ? addOfficeData
             : addOfficeData?.slice(0, 6)
         }
@@ -235,11 +227,7 @@ function Offices() {
             key: "directorId",
             value: ["surname", "name", "patronymic", "email"],
           },
-          renter: {
-            data: users?.data,
-            key: "renterId",
-            value: ["surname", "name", "patronymic", "email"],
-          },
+
           typeOwnership: {
             data: typeOwnerships,
             key: "typeOwnership",

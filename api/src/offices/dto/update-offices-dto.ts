@@ -19,4 +19,6 @@ export class UpdateOfficesDto {
 
   @IsString({ message: 'Должно быть строкой' }) //! валидация
   image?: string;
+
+  contract?: string;
 }

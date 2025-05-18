@@ -16,11 +16,12 @@ export class ProblemsService {
 
   async create(dto: CreateProblemsDto, image: Express.Multer.File) {
     try {
-      const problem = await this.problemRepository.create(dto);
       if (image) {
         const fileName = await this.fileService.createFile(image);
         dto.image = fileName;
       }
+
+      const problem = await this.problemRepository.create(dto);
       return problem;
     } catch (error) {
       console.error('Ошибка при создании неполадки:', error);

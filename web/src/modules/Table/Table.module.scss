@@ -92,6 +92,13 @@
       }
     }
 
+    .imgUrl {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border: none;
+    }
+
     .direction_container {
       display: flex;
       flex-direction: row;

@@ -1,0 +1,35 @@
+.CompanyInfo {
+  margin-bottom: 100px;
+  .ofice_floor {
+    display: flex;
+    flex-direction: row;
+  }
+  .office {
+    margin-right: 40px;
+    h2 {
+      margin-top: 40px;
+      font-size: 28px;
+    }
+
+    .office_info {
+      @include FormContainer;
+      padding: 60px;
+      height: max-content;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      width: max-content;
+      margin: 0;
+      margin-top: 40px;
+
+      span {
+        display: flex;
+        padding-bottom: 18px;
+        font-weight: 500;
+        font-size: 18px;
+        color: var(--blueText);
+      }
+    }
+  }
+}

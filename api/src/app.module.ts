@@ -22,6 +22,8 @@ import { ElementsModule } from './elements/elements.module';
 import { Element } from './elements/elements.model';
 import { Problem } from './problems/problems.model';
 import { ProblemsModule } from './problems/problems.module';
+import { To } from './tos/tos.model';
+import { TosModule } from './tos/tos.module';
 
 @Module({
   controllers: [],
@@ -51,6 +53,7 @@ import { ProblemsModule } from './problems/problems.module';
         Equipment,
         Element,
         Problem,
+        To,
       ],
       autoLoadModels: true,
     }),
@@ -64,6 +67,7 @@ import { ProblemsModule } from './problems/problems.module';
     EquipmentsModule,
     ElementsModule,
     ProblemsModule,
+    TosModule,
   ],
 })
 export class AppModule {}

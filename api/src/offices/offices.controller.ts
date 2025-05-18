@@ -25,7 +25,7 @@ export class OfficesController {
   @Post('/create/:id')
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('contract'))
   create(
     @Body() dto: CreateOfficesDto,
     @Param('id') id: string,
@@ -51,13 +51,13 @@ export class OfficesController {
   @Roles('ADMIN')
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('contract'))
   update(
     @Body() dto: UpdateOfficesDto,
     @Param('id') id: string,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile() contract: Express.Multer.File,
   ) {
-    return this.officesService.update(id, dto, image);
+    return this.officesService.update(id, dto, contract);
   }
 
   @Roles('ADMIN')

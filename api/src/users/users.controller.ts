@@ -66,6 +66,7 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() image: Express.Multer.File, // Получаем файл изображения
   ) {
+    console.log('image', image);
     const userId = request.user.id; // Извлечение ID пользователя из токена
     return this.usersService.updateUser(userId, updateUserDto, image); // Обновление пользователя
   }

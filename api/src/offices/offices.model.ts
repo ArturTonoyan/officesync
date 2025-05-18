@@ -77,11 +77,10 @@ export class Office extends Model<Office, OfficeCreationAttrs> {
   })
   typeOwnership: string;
 
-  @ForeignKey(() => User)
   @Column({
-    type: DataType.UUID,
+    type: DataType.STRING,
   })
-  renterId: string;
+  renter: string;
 
   @Column({
     type: DataType.STRING,

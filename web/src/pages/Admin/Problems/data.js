@@ -72,7 +72,7 @@ export const tableHeader = [
   },
   {
     name: "Фото",
-    key: "image",
+    key: "imageUrl",
   },
   {
     name: "ТО",

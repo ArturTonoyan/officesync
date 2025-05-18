@@ -1,0 +1,144 @@
+@mixin menuItem {
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  transition: all 0.2s linear;
+  margin-bottom: 18px;
+
+  &:hover {
+    background-color: #006cf91f;
+  }
+  &:active {
+    background-color: #4592f80f;
+  }
+  img {
+    margin-right: 10px;
+  }
+  span {
+    font-size: 20px;
+    color: #333;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.LeftMenu {
+  width: 300px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px;
+  background-color: #fff;
+  height: 100vh;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  .logotype {
+    margin: 20px;
+    img {
+      cursor: pointer;
+    }
+  }
+  .container,
+  .container_bottom {
+    display: flex;
+    flex-direction: column;
+  }
+  .tables_box {
+    margin-top: 40px;
+    padding-right: 20px;
+    border-bottom: 1px solid #c7c7c7;
+
+    span {
+      color: #a9a9a9;
+      font-size: 16px;
+      padding-left: 10px;
+    }
+    .list_item {
+      padding: 0;
+      margin: 0;
+      padding-top: 20px;
+      list-style: none;
+      li {
+        @include menuItem;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100%);
+  }
+  .constructor_box,
+  .container_bottom {
+    margin-top: 18px;
+    padding-right: 20px;
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    li {
+      @include menuItem;
+    }
+  }
+
+  .profile_data {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 30px;
+    align-items: center;
+
+    .profile_img {
+      margin-bottom: 25px;
+      img {
+        width: 175px;
+        height: 175px;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+    }
+    .fio {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .fio_text {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 6px;
+      }
+      span {
+        color: #a9a9a9;
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+    }
+    .buttons {
+      display: flex;
+      flex-direction: row;
+      margin-top: 20px;
+      .edit {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        cursor: pointer;
+        @include HoverActive;
+        border: 1px solid #b3b3b3;
+        img {
+          width: 20px;
+          height: 20px;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+}

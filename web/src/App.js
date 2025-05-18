@@ -17,6 +17,8 @@ import Constructor from "./pages/Constructor/Constructor";
 import { apiGetUser } from "./api/apirequests";
 import { useEffect } from "react";
 import { setUserData } from "./store/userSlice/user.Slice";
+import Profile from "./pages/Profile/Profile";
+import CompanyInfo from "./pages/Profile/CompanyInfo/CompanyInfo";
 
 function App() {
   const queryClient = new QueryClient();
@@ -24,13 +26,6 @@ function App() {
   const userRole = useSelector(
     (state) => state.user.user.data?.roles?.[0]?.value
   );
-
-  // const qery = useQuery({
-  //   queryKey: ['conference/participants', conferenceid], // Уникальный ключ, зависящий от conferenceid
-  //   queryFn: () => getConfParticipants(conferenceid), // Функция для получения данных
-  //   enabled: !!conferenceid, // Запрос выполняется только если conferenceid существует
-  //   staleTime: Infinity, // Запрос не будет обновляться автоматически
-  // });
 
   const funUpdUser = () => {
     apiGetUser().then((res) => {
@@ -71,6 +66,12 @@ function App() {
                   <Route path="to" element={<To />}></Route>
                 </Route>
                 <Route path="/constructor" element={<Constructor />}></Route>
+                <Route path="/profile" element={<Profile />}>
+                  <Route
+                    path=""
+                    element={<CompanyInfo funUpdUser={funUpdUser} />}
+                  ></Route>
+                </Route>
               </>
             )}
           </Routes>

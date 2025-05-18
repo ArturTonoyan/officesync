@@ -12,7 +12,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 
-function Company({ funUpdUser }) {
+function Company({ funUpdUser, noedit }) {
   const [editing, setEditing] = useState(true);
   const user = useSelector((state) => state.user.user.data);
 
@@ -34,8 +34,6 @@ function Company({ funUpdUser }) {
     adress: "",
   });
 
-  console.log("data", data);
-
   const {
     status,
     data: query,
@@ -47,7 +45,6 @@ function Company({ funUpdUser }) {
     staleTime: Infinity, //! не обновлять
     enabled: !!user?.companyId,
   });
-  console.log("query", query);
 
   useEffect(() => {
     if (query?.data) {
@@ -84,7 +81,6 @@ function Company({ funUpdUser }) {
       formData.append("inn", data.inn);
       formData.append("adress", data.adress);
       formData.append("image", data.image);
-      console.log("data", data);
       apiUpdateCompany(formData, user?.companyId).then((res) => {
         if (res.status === 200) {
           setEditing(true);
@@ -100,7 +96,6 @@ function Company({ funUpdUser }) {
       formData.append("inn", data.inn);
       formData.append("image", data.image);
       formData.append("adress", data.adress);
-      console.log("data", data);
       apiCreateCompany(formData).then((res) => {
         if (res.status === 201) {
           setEditing(true);
@@ -180,30 +175,31 @@ function Company({ funUpdUser }) {
             </div>
           </div>
         </div>
-
-        <div className={styles.btn}>
-          {editing ? (
-            <button className={styles.save} onClick={() => setEditing(false)}>
-              Редактировать
-            </button>
-          ) : (
-            <>
-              <button
-                className={styles.cancel}
-                onClick={() => setEditing(true)}
-              >
-                Отменить
+        {!noedit && (
+          <div className={styles.btn}>
+            {editing ? (
+              <button className={styles.save} onClick={() => setEditing(false)}>
+                Редактировать
               </button>
-              <button className={styles.save} onClick={funSave}>
-                {query?.data?.id ? (
-                  <span>Сохранить</span>
-                ) : (
-                  <span>Создать</span>
-                )}
-              </button>
-            </>
-          )}
-        </div>
+            ) : (
+              <>
+                <button
+                  className={styles.cancel}
+                  onClick={() => setEditing(true)}
+                >
+                  Отменить
+                </button>
+                <button className={styles.save} onClick={funSave}>
+                  {query?.data?.id ? (
+                    <span>Сохранить</span>
+                  ) : (
+                    <span>Создать</span>
+                  )}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
