@@ -10,6 +10,7 @@ import { Company } from 'src/companies/companies.model';
 import { Element } from 'src/elements/elements.model';
 import { Floors } from 'src/floors/floors.model';
 import { Office } from 'src/offices/offices.model';
+import { Problem } from 'src/problems/problems.model';
 import { User } from 'src/users/users.model';
 
 interface EquipmentCreationAttrs {
@@ -115,9 +116,6 @@ export class Equipment extends Model<Equipment, EquipmentCreationAttrs> {
   })
   elementId: string;
 
-  // @HasMany(() => To)
-  // tos: To[];
-
-  // @HasMany(() => Problem)
-  // problems: Problem[];
+  @HasMany(() => Problem)
+  problems: Problem[];
 }

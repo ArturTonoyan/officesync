@@ -9,6 +9,7 @@ import {
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
 import { Office } from 'src/offices/offices.model';
+import { Problem } from 'src/problems/problems.model';
 import { User } from 'src/users/users.model';
 
 interface CompanyCreationAttrs {
@@ -70,6 +71,8 @@ export class Company extends Model<Company, CompanyCreationAttrs> {
   @HasMany(() => Floors)
   floors: Floors[];
 
+  @HasMany(() => Problem)
+  problems: Problem[];
   // @ForeignKey(() => User)
   // @Column({
   //   type: DataType.UUID,

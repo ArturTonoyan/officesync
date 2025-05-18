@@ -12,6 +12,7 @@ import { Company } from 'src/companies/companies.model';
 import { Office } from 'src/offices/offices.model';
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
+import { Problem } from 'src/problems/problems.model';
 
 @Module({
   controllers: [UsersController],
@@ -25,6 +26,7 @@ import { Floors } from 'src/floors/floors.model';
       Office,
       Equipment,
       Floors,
+      Problem,
     ]),
     RolesModule,
     forwardRef(() => AuthModule),

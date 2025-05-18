@@ -7,37 +7,22 @@ export const paramMenu = [
   {
     name: "Редактировать",
     icon: editIcon,
+    key: "edit",
   },
   {
     name: "Удалить",
     icon: trashICon,
-  },
-  {
-    name: "Сотрудник",
-    icon: userIcon,
-  },
-  {
-    name: "Оборудование",
-    icon: deviceIcon,
+    key: "delete",
   },
 ];
 
 export const addOfficeData = [
   {
     name: "Оборудование",
-    key: "device",
+    key: "equipment",
     type: "text",
   },
-  {
-    name: "Заявитель",
-    key: "user",
-    type: "text",
-  },
-  {
-    name: "Описание",
-    key: "description",
-    type: "text",
-  },
+
   {
     name: "Статус",
     key: "status",
@@ -51,14 +36,23 @@ export const addOfficeData = [
   {
     name: "Фото",
     key: "image",
-    type: "text",
+    type: "file",
+  },
+  {
+    name: "Описание",
+    key: "description",
+    type: "descr",
   },
 ];
 
 export const tableHeader = [
   {
+    name: "№",
+    key: "number",
+  },
+  {
     name: "Оборудование",
-    key: "device",
+    key: "equipment",
   },
   {
     name: "Заявитель",
@@ -83,28 +77,5 @@ export const tableHeader = [
   {
     name: "ТО",
     key: "to",
-  },
-];
-
-export const testData = [
-  {
-    id: 1,
-    device: "Название оборудования",
-    user: "ФИО",
-    description: "Описание",
-    status: "Статус",
-    urgency: "Срочность",
-    image: "Фото",
-    to: "ТО",
-  },
-  {
-    id: 2,
-    device: "Название оборудования",
-    user: "ФИО",
-    description: "Описание",
-    status: "Статус",
-    urgency: "Срочность",
-    image: "Фото",
-    to: "ТО",
   },
 ];

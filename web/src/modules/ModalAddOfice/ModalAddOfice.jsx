@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddOfice.module.scss";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatPhoneNumber } from "../../utils/validations/Validations";
 import TextField from "@mui/material/Input";
 
@@ -17,6 +17,20 @@ function ModalAddOfice({
   lists,
 }) {
   const [openList, setOpenList] = useState(null);
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (listRef.current && !listRef.current.contains(event.target)) {
+        setOpenList(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const funChange = (type, key, value) => {
     if (type === "file") {
       setData({ ...data, [key]: document?.getElementById(key)?.files[0] });
@@ -65,23 +79,35 @@ function ModalAddOfice({
                 <div className={styles.input_box} name={item.key} key={index}>
                   <span className={styles.name}>{item.name}</span>
                   <div className={styles.input}>
-                    <input
-                      key={index}
-                      type={item.type}
-                      autoComplete="new-password"
-                      placeholder={item.placeholder || "Не указанно"}
-                      accept={item.accept || ""}
-                      value={item.type === "file" ? "" : data?.[item.key] ?? ""}
-                      onChange={(e) =>
-                        funChange(item.type, item.key, e.target.value)
-                      }
-                      readOnly={lists?.[item.key]}
-                      onClick={() =>
-                        lists?.[item.key] ? setOpenList(item.key) : null
-                      }
-                      style={lists?.[item.key] ? { cursor: "pointer" } : {}}
-                      id={item.key}
-                    />
+                    {item?.type === "descr" && (
+                      <textarea
+                        value={data?.[item.key] ?? ""}
+                        onChange={(e) =>
+                          funChange(item.type, item.key, e.target.value)
+                        }
+                      />
+                    )}
+                    {item?.type !== "descr" && (
+                      <input
+                        key={index}
+                        type={item.type}
+                        autoComplete="new-password"
+                        placeholder={item.placeholder || "Не указанно"}
+                        accept={item.accept || ""}
+                        value={
+                          item.type === "file" ? "" : data?.[item.key] ?? ""
+                        }
+                        onChange={(e) =>
+                          funChange(item.type, item.key, e.target.value)
+                        }
+                        readOnly={lists?.[item.key]}
+                        onClick={() =>
+                          lists?.[item.key] ? setOpenList(item.key) : null
+                        }
+                        style={lists?.[item.key] ? { cursor: "pointer" } : {}}
+                        id={item.key}
+                      />
+                    )}
                     {item.type === "file" && (
                       <div
                         className={styles.file}
@@ -95,7 +121,7 @@ function ModalAddOfice({
                       </div>
                     )}
                     {openList === item.key && lists[item.key] && (
-                      <div className={styles.list}>
+                      <div className={styles.list} ref={listRef}>
                         {lists[item.key]?.data?.map((elem, ind) => (
                           <div
                             className={styles.item}
@@ -116,6 +142,7 @@ function ModalAddOfice({
                             {lists[item.key]?.value?.map((item, index) => (
                               <span key={index}>{elem[item]} </span>
                             ))}
+                            {lists?.value?.length === 0 && <span>{elem}</span>}
                           </div>
                         ))}
                       </div>

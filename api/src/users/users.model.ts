@@ -12,6 +12,7 @@ import { Company } from 'src/companies/companies.model';
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
 import { Office } from 'src/offices/offices.model';
+import { Problem } from 'src/problems/problems.model';
 import { Role } from 'src/roles/roles.model';
 import { UserRoles } from 'src/roles/user-roles.model';
 
@@ -99,6 +100,9 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Equipment)
   eqipments: Equipment[];
+
+  @HasMany(() => Problem)
+  problems: Problem[];
 
   @HasOne(() => Office)
   office: Office;

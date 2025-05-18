@@ -35,6 +35,20 @@
         position: relative;
         box-sizing: border-box;
 
+        textarea {
+          resize: none;
+          height: 100px;
+          padding: 20px;
+          border: none;
+          outline: none;
+          color: var(--blueText);
+          font-weight: 400;
+          font-size: 18px;
+          width: calc(100% - 40px);
+          @include ScrollBar;
+          border-radius: 12px;
+        }
+
         input {
           color: var(--blueText);
           font-weight: 400;

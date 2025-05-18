@@ -179,3 +179,27 @@ export const apiGetElements = async (floorId) => {
 export const apiDeleteElement = async (id) => {
   return await apiRequest("delete", `/elements/${id}`);
 };
+
+//! Запрос получение данных неполадок
+export const apiGetProblems = async (companyId) => {
+  return await apiRequest("get", `/problems/all/${companyId}`);
+};
+
+//! создание неполадки
+export const apiCreateProblem = async (data) => {
+  return await apiRequest("post", `/problems`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! редактирование неполадки
+export const apiEditProblem = async (id, data) => {
+  return await apiRequest("put", `/problems/${id}`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
+//! удаление неполадки
+export const apiDeleteProblem = async (id) => {
+  return await apiRequest("delete", `/problems/${id}`);
+};

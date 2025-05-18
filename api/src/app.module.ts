@@ -20,6 +20,8 @@ import { EquipmentsModule } from './equipments/equipments.module';
 import { Equipment } from './equipments/equipments.model';
 import { ElementsModule } from './elements/elements.module';
 import { Element } from './elements/elements.model';
+import { Problem } from './problems/problems.model';
+import { ProblemsModule } from './problems/problems.module';
 
 @Module({
   controllers: [],
@@ -48,6 +50,7 @@ import { Element } from './elements/elements.model';
         Floors,
         Equipment,
         Element,
+        Problem,
       ],
       autoLoadModels: true,
     }),
@@ -60,6 +63,7 @@ import { Element } from './elements/elements.model';
     FloorsModule,
     EquipmentsModule,
     ElementsModule,
+    ProblemsModule,
   ],
 })
 export class AppModule {}
