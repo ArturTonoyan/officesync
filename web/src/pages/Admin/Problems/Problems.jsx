@@ -15,7 +15,7 @@ import {
   server,
 } from "../../../api/apirequests";
 
-function Problems() {
+function Problems({ noedit }) {
   const user = useSelector((state) => state.user.user.data);
   const [originalData, setOriginalData] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -42,17 +42,37 @@ function Problems() {
 
   useEffect(() => {
     if (problems?.data) {
-      const qdat = problems?.data.map((item) => ({
-        ...item,
-        user:
-          item.user?.name +
-          " " +
-          item.user?.surname +
-          " " +
-          item.user?.patronymic,
-        equipment: item.equipment?.name + " " + item.equipment?.inventoryNumber,
-        imageUrl: item?.image ? `${server}/${item?.image}` : null,
-      }));
+      let qdat = [];
+
+      if (noedit) {
+        qdat = problems?.data
+          ?.filter((item) => item.user?.id === user?.id)
+          .map((item) => ({
+            ...item,
+            user:
+              item.user?.name +
+              " " +
+              item.user?.surname +
+              " " +
+              item.user?.patronymic,
+            equipment:
+              item.equipment?.name + " " + item.equipment?.inventoryNumber,
+            imageUrl: item?.image ? `${server}/${item?.image}` : null,
+          }));
+      } else {
+        qdat = problems?.data.map((item) => ({
+          ...item,
+          user:
+            item.user?.name +
+            " " +
+            item.user?.surname +
+            " " +
+            item.user?.patronymic,
+          equipment:
+            item.equipment?.name + " " + item.equipment?.inventoryNumber,
+          imageUrl: item?.image ? `${server}/${item?.image}` : null,
+        }));
+      }
       setTableData(qdat);
       setOriginalData(qdat);
     }

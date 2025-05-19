@@ -5,6 +5,8 @@ import {
   Table,
   ForeignKey,
   HasMany,
+  HasOne,
+  BelongsTo,
 } from 'sequelize-typescript';
 import { Company } from 'src/companies/companies.model';
 import { Element } from 'src/elements/elements.model';
@@ -58,4 +60,7 @@ export class Floors extends Model<Floors, FloorsCreationAttrs> {
 
   @HasMany(() => Element)
   elements: Element[];
+
+  @BelongsTo(() => Office)
+  office: Office;
 }

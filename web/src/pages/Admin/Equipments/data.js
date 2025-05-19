@@ -24,6 +24,14 @@ export const paramMenu = [
   },
 ];
 
+export const paramMenuNoEdit = [
+  {
+    name: "Неполадки",
+    icon: editIcon,
+    key: "problems",
+  },
+];
+
 export const addOfficeData = [
   {
     name: "Название",

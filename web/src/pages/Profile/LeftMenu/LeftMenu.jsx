@@ -2,94 +2,125 @@ import styles from "./LeftMenu.module.scss";
 import logoIcon from "@assets/images/logo/logo.svg";
 import officeIcon from "@assets/images/leftMenu/office.svg";
 import deviceIcon from "@assets/images/leftMenu/device.svg";
-import personsIcon from "@assets/images/leftMenu/persons.svg";
 import errorsIcon from "@assets/images/leftMenu/errors.svg";
-import constructorIcon from "@assets/images/leftMenu/constructor.svg";
-import paramIcon from "@assets/images/leftMenu/param.svg";
-import userIcon from "@assets/images/leftMenu/user.svg";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import editIcon from "@assets/images/icons/editProfile.svg";
+import nophoto from "@assets/images/icons/noavatar.jpg";
+import { server } from "../../../api/apirequests";
+import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
+import { addOfficeData } from "./data";
+import { useState } from "react";
+
 function LeftMenu() {
   const user = useSelector((state) => state.user.user.data);
   const navigate = useNavigate();
+
+  const [modalEditShow, setModalEditShow] = useState(false);
+  const [modalEditData, setModalEditData] = useState({});
+
+  const funUpdate = () => {};
 
   const listMenu = [
     {
       icon: officeIcon,
       title: "Компания",
-      navigate: "/admin",
-    },
-    {
-      icon: officeIcon,
-      title: "Офисы",
-      navigate: "/admin/offices",
-    },
-    {
-      icon: officeIcon,
-      title: "Этажи",
-      navigate: "/admin/floors",
-    },
-    {
-      icon: personsIcon,
-      title: "Сотрудники",
-      navigate: "/admin/users",
+      navigate: "/profile",
     },
     {
       icon: deviceIcon,
       title: "Оборудование",
-      navigate: "/admin/equipments",
+      navigate: "/profile/equipments",
     },
 
     {
       icon: errorsIcon,
       title: "Неполадки",
-      navigate: "/admin/problems",
+      navigate: "/profile/problems",
     },
     {
       icon: errorsIcon,
       title: "ТО",
-      navigate: "/admin/to",
+      navigate: "/profile/to",
     },
   ];
 
+  const funClickEdit = () => {
+    setModalEditData(user);
+    setModalEditShow(true);
+  };
+
   return (
-    <div className={styles.LeftMenu}>
-      <div className={styles.logotype}>
-        <img src={logoIcon} alt="Логотип" onClick={() => navigate("/")} />
-      </div>
-      <div className={styles.profile_data}>
-        <div className={styles.profile_img}>
-          <img src="./img/men.png" alt="Логотип" />
+    <>
+      <ModalAddOfice
+        show={modalEditShow}
+        setShow={setModalEditShow}
+        title={"Редактировать данные оборудования"}
+        inputs={addOfficeData}
+        data={modalEditData}
+        setData={setModalEditData}
+        funSave={funUpdate}
+        // lists={{
+        //   office: {
+        //     data: offices?.data,
+        //     key: "officeId",
+        //     value: ["name", "address"],
+        //   },
+        //   floor: {
+        //     data: floors?.data,
+        //     key: "floorId",
+        //     value: ["name", "address"],
+        //   },
+        //   user: {
+        //     data: users?.data,
+        //     key: "userId",
+        //     value: ["name", "surname", "patronymic", "email"],
+        //   },
+        // }}
+      />
+
+      <div className={styles.LeftMenu}>
+        <div className={styles.logotype}>
+          <img src={logoIcon} alt="Логотип" onClick={() => navigate("/")} />
         </div>
-        <div className={styles.fio}>
-          <p
-            className={styles.fio_text}
-          >{`${user?.surname} ${user?.name} ${user?.patronymic}`}</p>
-          <span className={styles.email}>{user?.email}</span>
-          <span className={styles.position}>{user?.position}</span>
+        <div className={styles.profile_data}>
+          <div className={styles.profile_img}>
+            {user?.image ? (
+              <img src={`${server}/${user?.image}`} alt="Логотип" />
+            ) : (
+              <img style={{ opacity: "0.5" }} src={nophoto} alt="Логотип" />
+            )}
+          </div>
+          <div className={styles.fio}>
+            <p
+              className={styles.fio_text}
+            >{`${user?.surname} ${user?.name} ${user?.patronymic}`}</p>
+            <span className={styles.email}>{user?.email}</span>
+            <span className={styles.position}>{user?.position}</span>
+          </div>
+          <div className={styles.buttons}>
+            <button className={styles.edit} onClick={funClickEdit}>
+              <img src={editIcon} alt="edit" />
+            </button>
+          </div>
         </div>
-        <div className={styles.buttons}>
-          <button className={styles.edit}>
-            <img src="./img/icons/edit.svg" alt="edit" />
-          </button>
-        </div>
-      </div>
-      <div className={styles.content}>
-        <div className={styles.container}>
-          <div className={styles.tables_box}>
-            <span>Таблицы</span>
-            <ul className={styles.list_item}>
-              {listMenu.map((item, index) => (
-                <li key={index} onClick={() => navigate(item.navigate)}>
-                  <img src={item.icon} alt="img" />
-                  <span>{item.title}</span>
-                </li>
-              ))}
-            </ul>
+        <div className={styles.content}>
+          <div className={styles.container}>
+            <div className={styles.tables_box}>
+              <span>Таблицы</span>
+              <ul className={styles.list_item}>
+                {listMenu.map((item, index) => (
+                  <li key={index} onClick={() => navigate(item.navigate)}>
+                    <img src={item.icon} alt="img" />
+                    <span>{item.title}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

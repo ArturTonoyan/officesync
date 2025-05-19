@@ -71,6 +71,15 @@ function App() {
                     path=""
                     element={<CompanyInfo funUpdUser={funUpdUser} />}
                   ></Route>
+                  <Route
+                    path="equipments"
+                    element={<Equipments noedit={true} />}
+                  ></Route>
+                  <Route
+                    path="problems"
+                    element={<Problems noedit={true} />}
+                  ></Route>
+                  <Route path="to" element={<To noedit={true} />}></Route>
                 </Route>
               </>
             )}

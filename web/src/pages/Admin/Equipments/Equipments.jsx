@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./Equipments.module.scss";
-import { addOfficeData, paramMenu, tableHeader } from "./data";
+import { addOfficeData, paramMenu, paramMenuNoEdit, tableHeader } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
 import Table from "../../../modules/Table/Table";
@@ -16,7 +16,7 @@ import {
   apiUpdateEquipment,
 } from "../../../api/apirequests";
 
-function Equipments() {
+function Equipments({ noedit }) {
   const user = useSelector((state) => state.user.user.data);
   const [originalData, setOriginalData] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -85,12 +85,24 @@ function Equipments() {
 
   useEffect(() => {
     if (equipments?.data) {
-      const qdat = equipments?.data.map((item) => ({
-        ...item,
-        office: offices?.data?.find((el) => el.id === item.officeId)?.name,
-        floor: floors?.data?.find((el) => el.id === item.floorId)?.name,
-        user: users?.data?.find((el) => el.id === item.userId)?.name,
-      }));
+      let qdat = [];
+      if (noedit) {
+        qdat = equipments?.data
+          ?.filter((el) => el.userId === user?.id)
+          .map((item) => ({
+            ...item,
+            office: offices?.data?.find((el) => el.id === item.officeId)?.name,
+            floor: floors?.data?.find((el) => el.id === item.floorId)?.name,
+            user: users?.data?.find((el) => el.id === item.userId)?.name,
+          }));
+      } else {
+        qdat = equipments?.data.map((item) => ({
+          ...item,
+          office: offices?.data?.find((el) => el.id === item.officeId)?.name,
+          floor: floors?.data?.find((el) => el.id === item.floorId)?.name,
+          user: users?.data?.find((el) => el.id === item.userId)?.name,
+        }));
+      }
       setTableData(qdat);
       setOriginalData(qdat);
     }
@@ -155,7 +167,7 @@ function Equipments() {
 
   return (
     <div className={styles.Equipments}>
-      <h1>Оборудование</h1>
+      <h1> {noedit ? "Мои оборудование" : "Оборудование"} </h1>
       <ModalAddOfice
         show={modalShow}
         setShow={setModalShow}
@@ -190,11 +202,29 @@ function Equipments() {
         data={modalEditData}
         setData={setModalEditData}
         funSave={funUpdate}
+        lists={{
+          office: {
+            data: offices?.data,
+            key: "officeId",
+            value: ["name", "address"],
+          },
+          floor: {
+            data: floors?.data,
+            key: "floorId",
+            value: ["name", "address"],
+          },
+          user: {
+            data: users?.data,
+            key: "userId",
+            value: ["name", "surname", "patronymic", "email"],
+          },
+        }}
       />
       <HeadBlock
         setModalShow={setModalShow}
         shearchParam={shearchParam}
         setShearchParam={setShearchParam}
+        noedit={noedit}
       />
       <div className={styles.content}>
         <Table
@@ -203,7 +233,7 @@ function Equipments() {
           setTableData={setTableData}
           direction={[]}
           setModalShow={setModalShow}
-          paramMenu={paramMenu}
+          paramMenu={!noedit ? paramMenu : paramMenuNoEdit}
           tableHeader={tableHeader}
           funClick={funParamClick}
         />

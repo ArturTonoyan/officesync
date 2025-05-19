@@ -7,6 +7,7 @@ import {
   HasMany,
   ForeignKey,
   HasOne,
+  BelongsTo,
 } from 'sequelize-typescript';
 import { Company } from 'src/companies/companies.model';
 import { Equipment } from 'src/equipments/equipments.model';
@@ -106,4 +107,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasOne(() => Office)
   office: Office;
+
+  @BelongsTo(() => Floors)
+  floor: Floors;
 }

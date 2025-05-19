@@ -17,7 +17,7 @@ import {
   server,
 } from "../../../api/apirequests";
 
-function Tos() {
+function Tos({ noedit }) {
   const user = useSelector((state) => state.user.user.data);
   const [originalData, setOriginalData] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -58,19 +58,41 @@ function Tos() {
 
   useEffect(() => {
     if (tos?.data) {
-      const qdat = tos?.data.map((item) => ({
-        ...item,
-        user:
-          item.user?.name +
-          " " +
-          item.user?.surname +
-          " " +
-          item.user?.patronymic,
-        equipment: item.equipment?.name + " " + item.equipment?.inventoryNumber,
-        image: item?.image ? `${server}/${item?.image}` : null,
-        imageUrl: item?.image ? `${server}/${item?.image}` : null,
-        problem: item.problem?.description,
-      }));
+      let qdat = [];
+      if (noedit) {
+        qdat = tos?.data
+          ?.filter((item) => item.user?.id === user?.id)
+          .map((item) => ({
+            ...item,
+            user:
+              item.user?.name +
+              " " +
+              item.user?.surname +
+              " " +
+              item.user?.patronymic,
+            equipment:
+              item.equipment?.name + " " + item.equipment?.inventoryNumber,
+            image: item?.image ? `${server}/${item?.image}` : null,
+            imageUrl: item?.image ? `${server}/${item?.image}` : null,
+            problem: item.problem?.description,
+          }));
+      } else {
+        qdat = tos?.data.map((item) => ({
+          ...item,
+          user:
+            item.user?.name +
+            " " +
+            item.user?.surname +
+            " " +
+            item.user?.patronymic,
+          equipment:
+            item.equipment?.name + " " + item.equipment?.inventoryNumber,
+          image: item?.image ? `${server}/${item?.image}` : null,
+          imageUrl: item?.image ? `${server}/${item?.image}` : null,
+          problem: item.problem?.description,
+        }));
+      }
+
       setTableData(qdat);
       setOriginalData(qdat);
     }
@@ -219,6 +241,7 @@ function Tos() {
         setModalShow={setModalShow}
         shearchParam={shearchParam}
         setShearchParam={setShearchParam}
+        noedit={noedit}
       />
       <div className={styles.content}>
         <Table

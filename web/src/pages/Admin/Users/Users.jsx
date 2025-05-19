@@ -7,6 +7,7 @@ import Table from "../../../modules/Table/Table";
 import {
   apiCreateUser,
   apiDeleteUser,
+  apiGetFloors,
   apiGetOffices,
   apiGetRoles,
   apiGetUsers,
@@ -59,6 +60,13 @@ function Users() {
     staleTime: Infinity, //! не обновлять
   });
 
+  const { data: floors, refetch: refetchFloors } = useQuery({
+    queryKey: ["floors/all/id", user?.companyId],
+    queryFn: () => apiGetFloors(user?.companyId),
+    staleTime: Infinity, //! не обновлять
+    enabled: !!user?.companyId,
+  });
+
   useEffect(() => {
     if (users?.data) {
       const qdata = users?.data.map((item) => ({
@@ -66,6 +74,7 @@ function Users() {
         fio: `${item.surname} ${item.name} ${item.patronymic}`,
         role: item.roles?.map((role) => role.description).join(", "),
         office: item?.office?.name,
+        floor: item?.floor?.name,
       }));
       setTableData(qdata);
       setOriginalData(qdata);
@@ -142,6 +151,16 @@ function Users() {
             key: "officeId",
             value: ["name"],
           },
+          floor: {
+            data: floors?.data
+              ?.filter((item) => item.office?.id === createUserData.officeId)
+              .map((item) => ({
+                ...item,
+                officeName: item?.office?.name,
+              })),
+            key: "floorId",
+            value: ["name", "officeName"],
+          },
         }}
       />
       <ModalAddOfice
@@ -157,6 +176,22 @@ function Users() {
             data: roles?.data,
             key: "roleId",
             value: ["description"],
+          },
+          office: {
+            data: offices?.data,
+            key: "officeId",
+            value: ["name"],
+          },
+          floor: {
+            data: floors?.data
+              ?.filter((item) => item.office?.id === modalEditData.officeId)
+              .map((item) => ({
+                ...item,
+
+                officeName: item?.office?.name,
+              })),
+            key: "floorId",
+            value: ["name", "officeName"],
           },
         }}
       />

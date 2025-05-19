@@ -50,24 +50,7 @@ function CompanyInfo({ funUpdUser }) {
           <div className={styles.office_info}>
             <div>
               <span>Название: {floor?.name}</span>
-              <span>Адрес: {floor?.address}</span>
-              <span>Телефон: {floor?.phone}</span>
-              <span>Тип: {floor?.typeOwnership}</span>
-              <span>
-                Директор:{" "}
-                {
-                  users?.data?.find((item) => item.id === floor?.directorId)
-                    ?.surname
-                }{" "}
-                {
-                  users?.data?.find((item) => item.id === floor?.directorId)
-                    ?.name
-                }{" "}
-                {
-                  users?.data?.find((item) => item.id === floor?.directorId)
-                    ?.patronymic
-                }
-              </span>
+              <span>Номер: {floor?.number}</span>
             </div>
           </div>
         </div>

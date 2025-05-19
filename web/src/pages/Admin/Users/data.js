@@ -60,6 +60,16 @@ export const addOfficeData = [
     key: "passwordConfirm",
     type: "password",
   },
+  {
+    name: "Офис",
+    key: "office",
+    type: "text",
+  },
+  {
+    name: "Этаж",
+    key: "floor",
+    type: "text",
+  },
 ];
 
 export const editOfficeData = [
@@ -91,6 +101,16 @@ export const editOfficeData = [
   {
     name: "Роль",
     key: "role",
+    type: "text",
+  },
+  {
+    name: "Офис",
+    key: "office",
+    type: "text",
+  },
+  {
+    name: "Этаж",
+    key: "floor",
     type: "text",
   },
 ];

@@ -41,7 +41,7 @@ function Floors() {
   });
 
   const { data: floors, refetch: refetchFloors } = useQuery({
-    queryKey: ["offices", user?.companyId],
+    queryKey: ["floors/all/id", user?.companyId],
     queryFn: () => apiGetFloors(user?.companyId),
     staleTime: Infinity, //! не обновлять
     enabled: !!user?.companyId,

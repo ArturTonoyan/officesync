@@ -1,7 +1,7 @@
 import styles from "./HeadBlock.module.scss";
 import lupa from "@assets/images/icons/lupa.svg";
 
-function HeadBlock({ shearchParam, setShearchParam, setModalShow }) {
+function HeadBlock({ shearchParam, setShearchParam, setModalShow, noedit }) {
   return (
     <div className={styles.HeadBlock}>
       <div className={styles.left_block}>
@@ -13,11 +13,13 @@ function HeadBlock({ shearchParam, setShearchParam, setModalShow }) {
           placeholder="Поиск"
         />
       </div>
-      <div className={styles.right_block}>
-        <button className={styles.save} onClick={() => setModalShow(true)}>
-          + Добавить то
-        </button>
-      </div>
+      {!noedit && (
+        <div className={styles.right_block}>
+          <button className={styles.save} onClick={() => setModalShow(true)}>
+            + Добавить то
+          </button>
+        </div>
+      )}
     </div>
   );
 }
