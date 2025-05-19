@@ -11,12 +11,15 @@ import ruLocale from "date-fns/locale/ru";
 import { format } from "date-fns";
 import isWithinInterval from "date-fns/isWithinInterval";
 import { parse } from "date-fns";
+import ConvasSpace from "../../Constructor/modules/ConvasSpace/ConvasSpace";
 
 function Reservation() {
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [sendReservation, setSendReservation] = useState(false);
+  console.log("selectedRoom", selectedRoom);
 
   const testReserved = [
     {
@@ -174,14 +177,24 @@ function Reservation() {
   return (
     <div className={styles.Reservation}>
       <h1>Бронирование кабинетов</h1>
+
       <div className={styles.reserved_component}>
         <div className={styles.left}>
           <LocalizationProvider
             dateAdapter={AdapterDateFns}
             adapterLocale={ruLocale}
           >
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
+            <Grid container spacing={2} sx={{ height: "100%" }}>
+              <Grid
+                item
+                xs={4}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  height: "100%",
+                }}
+              >
                 <Typography variant="h6">Выбор даты</Typography>
                 <DateCalendar
                   value={selectedDate}
@@ -221,6 +234,11 @@ function Reservation() {
                 >
                   Забронировать
                 </Button>
+                <div className={styles.selected_room}>
+                  <span>Выбранный объект:</span>
+                  <p>Название: {selectedRoom?.name}</p>
+                  <p>Тип: {selectedRoom?.type}</p>
+                </div>
               </Grid>
             </Grid>
           </LocalizationProvider>
@@ -241,6 +259,9 @@ function Reservation() {
             </Box>
           </Grid>
         </div>
+      </div>
+      <div className={styles.canvas_container}>
+        <ConvasSpace noedit={true} setSelectedRoom={setSelectedRoom} />
       </div>
     </div>
   );

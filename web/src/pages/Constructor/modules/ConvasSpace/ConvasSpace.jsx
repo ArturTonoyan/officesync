@@ -21,7 +21,7 @@ import {
   apiGetFloors,
   apiGetOffices,
 } from "../../../../api/apirequests";
-function ConvasSpace() {
+function ConvasSpace({ noedit, setSelectedRoom }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user.data);
   const conva = useSelector((state) => state.conva);
@@ -114,11 +114,11 @@ function ConvasSpace() {
         width={window.innerWidth}
         height={window.innerHeight}
         draggable
-        onWheel={handleWheel}
+        onWheel={!noedit && handleWheel}
         ref={stageRef}
         scaleX={scale}
         scaleY={scale}
-        onClick={handleStageClick}
+        onClick={!noedit && handleStageClick}
       >
         <Layer>
           {/* Objects */}
@@ -126,28 +126,35 @@ function ConvasSpace() {
             [...conva.objects.data]
               .sort((a, b) => a.zIndex - b.zIndex)
               .map((object) => (
-                <EditableIcon key={object.id} object={object} />
+                <EditableIcon
+                  key={object.id}
+                  object={object}
+                  noedit={noedit}
+                  setSelectedRoom={setSelectedRoom}
+                />
               ))}
         </Layer>
       </Stage>
 
       {/* Bottom Menu */}
-      <BottomMenu setModalAddEquipment={setModalAddEquipment} />
+      {!noedit && <BottomMenu setModalAddEquipment={setModalAddEquipment} />}
       <Scale scale={scale} setScale={setScale} />
 
       {/* Right Menu */}
-      <RightMenu />
+      {!noedit && <RightMenu />}
 
       {/* Left Menu */}
-      <LeftMenu />
+      {!noedit && <LeftMenu />}
 
       {/* Top Menu */}
-      <TopMenu
-        floors={floors}
-        offices={offices}
-        funSave={funSave}
-        funDownload={handleDownload}
-      />
+      {!noedit && (
+        <TopMenu
+          floors={floors}
+          offices={offices}
+          funSave={funSave}
+          funDownload={handleDownload}
+        />
+      )}
 
       {/* Modals */}
       <ModalAddObject

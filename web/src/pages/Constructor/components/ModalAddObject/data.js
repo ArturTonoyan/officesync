@@ -26,3 +26,10 @@ export const addEquipmentData = [
     type: "list",
   },
 ];
+
+export const typesNoEquipment = [
+  "Кабинет",
+  "Переговорная",
+  "Рабочее место",
+  "Сотрудник",
+];

@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddObject.module.scss";
 import arrow from "@assets/images/icons/arrowMini.svg";
-import { addEquipmentData } from "./data";
+import { addEquipmentData, typesNoEquipment } from "./data";
 import { useEffect, useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,12 +13,6 @@ import {
 } from "../../../../api/apirequests";
 import { useQuery } from "@tanstack/react-query";
 
-const typesNoEquipment = [
-  "Кабинет",
-  "Переговорная",
-  "Рабочее место",
-  "Сотрудник",
-];
 const types = [
   "Кабинет",
   "Переговорная",

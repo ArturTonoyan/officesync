@@ -6,8 +6,9 @@ import {
   setDataManyParams,
   setSelected,
 } from "../../../../store/convaSlice/conva.Slice";
+import { typesNoEquipment } from "../ModalAddObject/data";
 
-const EditableIcon = ({ object }) => {
+const EditableIcon = ({ object, noedit, setSelectedRoom }) => {
   const GRID_SIZE = 10;
   const ROTATE_STEP = 5; // шаг поворота в градусах
 
@@ -94,7 +95,7 @@ const EditableIcon = ({ object }) => {
     <>
       <Image
         image={image}
-        draggable={!object.isLocked}
+        draggable={!object.isLocked && !noedit}
         scaleX={object.scaleX}
         scaleY={object.scaleY}
         rotation={object.rotation}
@@ -103,20 +104,32 @@ const EditableIcon = ({ object }) => {
         width={object.width / object.scaleX}
         height={object.height / object.scaleY}
         onDragEnd={(e) =>
-          !object.isLocked ? handleDragEnd(e, object.id) : null
+          !noedit && !object.isLocked ? handleDragEnd(e, object.id) : null
         }
-        onClick={() =>
-          !object.isLocked ? handleSelect(object.id) : handleSelect(null)
+        onClick={() => {
+          if (noedit) {
+            typesNoEquipment.includes(object.type) && setSelectedRoom(object);
+          } else {
+            !object.isLocked ? handleSelect(object.id) : handleSelect(null);
+          }
+        }}
+        onMouseDown={() =>
+          !noedit && !object.isLocked ? handleSelect(object.id) : null
         }
-        onMouseDown={() => (!object.isLocked ? handleSelect(object.id) : null)}
         ref={imageRef}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={() => {
+          if (noedit) {
+            typesNoEquipment.includes(object.type) && setIsHovered(true);
+          } else {
+            setIsHovered(true);
+          }
+        }}
         onMouseLeave={() => setIsHovered(false)}
         shadowColor={isHovered ? "blue" : ""}
         shadowBlur={isHovered ? 5 : 0}
         shadowOpacity={isHovered ? 0.6 : 0}
       />
-      {isSelected && !object.isLocked && (
+      {isSelected && !object.isLocked && !noedit && (
         <Transformer
           ref={transformerRef}
           onTransformEnd={(e) => {
