@@ -24,4 +24,9 @@ export const addOfficeData = [
     key: "email",
     type: "email",
   },
+  {
+    name: "Фото",
+    key: "photo",
+    type: "file",
+  },
 ];

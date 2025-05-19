@@ -59,15 +59,16 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('me')
+  @Put('')
   @UseInterceptors(FileInterceptor('image')) // Используем FileInterceptor для обработки файла
-  async updateUser(
+  async updateMe(
     @Req() request: any,
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() image: Express.Multer.File, // Получаем файл изображения
   ) {
     console.log('image', image);
     const userId = request.user.id; // Извлечение ID пользователя из токена
+    console.log('updateUserDto', updateUserDto);
     return this.usersService.updateUser(userId, updateUserDto, image); // Обновление пользователя
   }
 

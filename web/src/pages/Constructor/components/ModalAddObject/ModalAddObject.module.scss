@@ -22,6 +22,7 @@
     }
     .input_box {
       width: 100%;
+      position: relative;
       .name {
         display: flex;
         padding-bottom: 18px;
@@ -49,6 +50,30 @@
           transform: scaleY(-1);
           cursor: pointer;
           @include HoverActive;
+        }
+        .list {
+          position: absolute;
+          top: calc(100% - 20px);
+          max-height: 280px;
+          overflow-y: auto;
+          overflow-x: hidden;
+          @include ScrollBar;
+          left: 0;
+          background-color: #fff;
+          z-index: 100;
+          width: 100%;
+          border: 1px solid #eff0f6;
+          border-radius: 12px;
+          li {
+            @include HoverActive;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #5f5f60;
+          }
         }
       }
     }

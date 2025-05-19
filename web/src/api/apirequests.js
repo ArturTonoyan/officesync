@@ -60,6 +60,12 @@ export const apiUpdateUser = async (data, id) => {
   return await apiRequest("put", `/users/${id}`, data);
 };
 
+export const apiUpdateUserProfile = async (data) => {
+  return await apiRequest("put", `/users`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
 //! получение всех ролей
 export const apiGetRoles = async () => {
   return await apiRequest("get", "/roles");

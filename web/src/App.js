@@ -19,6 +19,7 @@ import { useEffect } from "react";
 import { setUserData } from "./store/userSlice/user.Slice";
 import Profile from "./pages/Profile/Profile";
 import CompanyInfo from "./pages/Profile/CompanyInfo/CompanyInfo";
+import Reservation from "./pages/Profile/Reservation/Reservation";
 
 function App() {
   const queryClient = new QueryClient();
@@ -66,7 +67,10 @@ function App() {
                   <Route path="to" element={<To />}></Route>
                 </Route>
                 <Route path="/constructor" element={<Constructor />}></Route>
-                <Route path="/profile" element={<Profile />}>
+                <Route
+                  path="/profile"
+                  element={<Profile funUpdUser={funUpdUser} />}
+                >
                   <Route
                     path=""
                     element={<CompanyInfo funUpdUser={funUpdUser} />}
@@ -80,6 +84,7 @@ function App() {
                     element={<Problems noedit={true} />}
                   ></Route>
                   <Route path="to" element={<To noedit={true} />}></Route>
+                  <Route path="reservation" element={<Reservation />}></Route>
                 </Route>
               </>
             )}

@@ -5,108 +5,209 @@ import { addEquipmentData } from "./data";
 import { useEffect, useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
 import { useDispatch, useSelector } from "react-redux";
+import { addObjectApi } from "../../../../store/convaSlice/conva.Slice";
 import {
-  addObject,
-  addObjectApi,
-} from "../../../../store/convaSlice/conva.Slice";
-import { apiEddElement } from "../../../../api/apirequests";
+  apiEddElement,
+  apiGetEquipments,
+  apiGetUsers,
+} from "../../../../api/apirequests";
+import { useQuery } from "@tanstack/react-query";
+
+const typesNoEquipment = [
+  "Кабинет",
+  "Переговорная",
+  "Рабочее место",
+  "Сотрудник",
+];
+const types = [
+  "Кабинет",
+  "Переговорная",
+  "Рабочее место",
+  "Мебель",
+  "Техника",
+  "Сотрудник",
+  "Другое",
+];
+
+const defaultData = {
+  name: "",
+  type: "",
+  equipment: "",
+  floor: "",
+  icon: "",
+  x: window.innerWidth / 2,
+  y: window.innerHeight / 2,
+  width: 100,
+  height: 100,
+  rotation: 0,
+  scaleX: 1,
+  scaleY: 1,
+  zIndex: 800,
+  isLocked: false,
+};
 
 function ModalAddObject({ title, show, setShow }) {
-  const dispatch = useDispatch();
-  const [modalAllIcons, setModalAllIcons] = useState(false);
-  const inputs = addEquipmentData;
+  const user = useSelector((state) => state.user.user.data);
   const floorId = useSelector((state) => state.conva.floors.selected);
+  const dispatch = useDispatch();
 
-  const obj = {
-    name: "",
-    type: "",
-    equipment: "",
-    floor: "",
-    icon: "",
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-    width: 100,
-    height: 100,
-    rotation: 0,
-    scaleX: 1,
-    scaleY: 1,
-    zIndex: 800,
-    isLocked: false,
-  };
+  const [modalAllIcons, setModalAllIcons] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(null);
+  const [data, setData] = useState(defaultData);
 
-  const [data, setData] = useState(obj);
+  const { data: equipments } = useQuery({
+    queryKey: ["equipments/all/id", user?.companyId],
+    queryFn: () => apiGetEquipments(user?.companyId),
+    staleTime: Infinity,
+    enabled: !!user?.companyId,
+  });
 
-  const funSetData = (key, value) => {
+  const { data: users } = useQuery({
+    queryKey: ["users/all", user?.companyId],
+    queryFn: () => apiGetUsers(user?.companyId),
+    staleTime: Infinity,
+    enabled: !!user?.companyId,
+  });
+
+  const handleSetData = (key, value) => {
     if (key === "icon") {
       const img = new Image();
       img.src = value;
-
-      //! получаем реальные размеры фото
       img.onload = () => {
-        let { width, height } = img;
-
         const maxSize = 100;
-        const aspectRatio = width / height;
+        let { width, height } = img;
+        const ratio = width / height;
 
         if (width > maxSize || height > maxSize) {
-          if (aspectRatio >= 1) {
+          if (ratio >= 1) {
             width = maxSize;
-            height = maxSize / aspectRatio;
+            height = maxSize / ratio;
           } else {
             height = maxSize;
-            width = maxSize * aspectRatio;
+            width = maxSize * ratio;
           }
         }
 
-        setData((prevData) => ({
-          ...prevData,
-          icon: value,
-          width,
-          height,
-        }));
+        setData((prev) => ({ ...prev, icon: value, width, height }));
       };
+    } else if (key === "user") {
+      setData((prev) => ({
+        ...prev,
+        user: `${value.surname} ${value.name} ${value.patronymic}`,
+        userId: value.id,
+      }));
+    } else if (key === "equipment") {
+      setData((prev) => ({
+        ...prev,
+        equipment: `${value.name} ${value.inventoryNumber}`,
+        equipmentId: value.id,
+      }));
     } else {
-      setData((prevData) => ({ ...prevData, [key]: value }));
+      setData((prev) => ({ ...prev, [key]: value }));
     }
   };
 
-  const funSave = () => {
+  const handleSave = () => {
     setShow(false);
-    const formatData = new FormData();
-    formatData.append("name", data.name || "Новый объект");
-    formatData.append("type", data.type);
-    formatData.append("equipment", data.equipment);
-    formatData.append("floorId", floorId);
-    formatData.append("image", data.icon);
-    formatData.append("x", data.x);
-    formatData.append("y", data.y);
-    formatData.append("width", data.width);
-    formatData.append("height", data.height);
-    formatData.append("rotation", data.rotation);
-    formatData.append("scaleX", data.scaleX);
-    formatData.append("scaleY", data.scaleY);
-    formatData.append("zIndex", data.zIndex);
-    formatData.append("isLocked", data.isLocked);
+    const formData = new FormData();
+    Object.entries({
+      ...data,
+      name: data.name || "Новый объект",
+      floorId,
+      image: data.icon,
+    }).forEach(([key, value]) => formData.append(key, value));
 
-    apiEddElement(formatData).then((res) => {
-      console.log("res", res);
+    apiEddElement(formData).then((res) => {
       if (res.status === 201) {
-        setShow(false);
         dispatch(addObjectApi({ data: res.data }));
+        setData(defaultData);
       }
-      setData(obj);
     });
   };
 
-  const funClick = (key) => {
-    if (key === "icon") setModalAllIcons(true);
+  const renderDropdownList = (key) => {
+    let list = [];
+    if (key === "type") list = types;
+    if (key === "equipment") list = equipments?.data || [];
+    if (key === "user") list = users?.data || [];
+
+    return (
+      <ul>
+        {list.map((item, index) => {
+          const label =
+            key === "type"
+              ? item
+              : key === "equipment"
+              ? `${item.name} ${item.inventoryNumber}`
+              : `${item.surname} ${item.name} ${item.patronymic} ${item.email}`;
+          return (
+            <li
+              key={index}
+              onClick={() => {
+                handleSetData(key, item);
+                setShowDropdown(null);
+              }}
+            >
+              {label}
+            </li>
+          );
+        })}
+      </ul>
+    );
   };
 
-  //! при клике на иконку
-  const funCliclImg = (icon) => {
-    funSetData("icon", icon);
+  const renderInput = (item) => {
+    if (item.key === "icon") {
+      return (
+        <div className={styles.input_box_icon} key={item.key}>
+          <span className={styles.name}>{item.name}</span>
+          <div className={styles.input}>
+            {data.icon && (
+              <img className={styles.icon} src={data.icon} alt="icon" />
+            )}
+            <img
+              className={styles.arrow}
+              src={arrow}
+              alt="arrow"
+              onClick={() => setModalAllIcons(true)}
+            />
+          </div>
+        </div>
+      );
+    }
 
-    setModalAllIcons(false);
+    if (typesNoEquipment.includes(data.type) && item.key === "equipment")
+      return null;
+
+    return (
+      <div className={styles.input_box} key={item.key}>
+        <span className={styles.name}>{item.name}</span>
+        <div className={styles.input}>
+          <input
+            type={item.type}
+            autoComplete="new-password"
+            placeholder="Не указано"
+            value={data[item.key] || ""}
+            onClick={
+              item.type === "list" ? () => setShowDropdown(item.key) : null
+            }
+            onChange={(e) => handleSetData(item.key, e.target.value)}
+            readOnly={item.type === "list"}
+            style={{ cursor: item.type === "list" ? "pointer" : "" }}
+          />
+          {item.type === "list" && (
+            <>
+              <img className={styles.arrow} src={arrow} alt="arrow" />
+              {showDropdown === item.key && (
+                <div className={styles.list}>
+                  {renderDropdownList(item.key)}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -121,7 +222,10 @@ function ModalAddObject({ title, show, setShow }) {
           <ModalAllIcons
             show={modalAllIcons}
             setShow={setModalAllIcons}
-            funCliclImg={funCliclImg}
+            funCliclImg={(icon) => {
+              handleSetData("icon", icon);
+              setModalAllIcons(false);
+            }}
           />
 
           <motion.div
@@ -132,66 +236,19 @@ function ModalAddObject({ title, show, setShow }) {
           >
             {title && <h2>{title}</h2>}
             <div className={styles.form}>
-              {inputs.map((item, index) =>
-                item.key === "icon" ? (
-                  <div
-                    className={styles.input_box_icon}
-                    name={item.key}
-                    key={index}
-                  >
-                    <span className={styles.name}>{item.name}</span>
-                    <div className={styles.input}>
-                      {item.key === "icon" && data[item.key] && (
-                        <img
-                          className={styles.icon}
-                          src={data[item.key]}
-                          alt="icon"
-                        />
-                      )}
-
-                      <img
-                        className={styles.arrow}
-                        src={arrow}
-                        alt="arrow"
-                        onClick={() => funClick(item.key)}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.input_box} name={item.key} key={index}>
-                    <span className={styles.name}>{item.name}</span>
-                    <div className={styles.input}>
-                      <input
-                        key={index}
-                        type={item.type}
-                        autoComplete="new-password"
-                        placeholder="Не указанно"
-                        value={data[item.key]}
-                        onChange={(e) => funSetData(item.key, e.target.value)}
-                        readOnly={item.type === "list"}
-                        style={{
-                          cursor: item.type === "list" ? "pointer" : "",
-                        }}
-                      />
-                      {item.type === "list" && (
-                        <img className={styles.arrow} src={arrow} alt="arrow" />
-                      )}
-                    </div>
-                  </div>
-                )
-              )}
+              {addEquipmentData.map(renderInput)}
             </div>
             <div className={styles.btn}>
               <button
                 className={styles.cancel}
                 onClick={() => {
                   setShow(false);
-                  setData(obj);
+                  setData(defaultData);
                 }}
               >
                 Отменить
               </button>
-              <button className={styles.save} onClick={funSave}>
+              <button className={styles.save} onClick={handleSave}>
                 Сохранить
               </button>
             </div>

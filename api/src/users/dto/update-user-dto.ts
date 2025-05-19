@@ -10,7 +10,6 @@ export class UpdateUserDto {
   @IsString()
   patronymic?: string;
 
-  @IsString()
   image?: string;
 
   @IsString()

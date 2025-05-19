@@ -7,25 +7,51 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import editIcon from "@assets/images/icons/editProfile.svg";
 import nophoto from "@assets/images/icons/noavatar.jpg";
-import { server } from "../../../api/apirequests";
+import { apiUpdateUserProfile, server } from "../../../api/apirequests";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
 import { addOfficeData } from "./data";
 import { useState } from "react";
 
-function LeftMenu() {
+function LeftMenu({ funUpdUser }) {
   const user = useSelector((state) => state.user.user.data);
   const navigate = useNavigate();
 
   const [modalEditShow, setModalEditShow] = useState(false);
   const [modalEditData, setModalEditData] = useState({});
 
-  const funUpdate = () => {};
+  const funUpdate = () => {
+    const formData = new FormData();
+    const fields = {
+      name: modalEditData.name,
+      surname: modalEditData.surname,
+      patronymic: modalEditData.patronymic,
+      email: modalEditData.email,
+      position: modalEditData.position,
+      image: modalEditData.photo,
+    };
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
+    apiUpdateUserProfile(formData).then((res) => {
+      if (res.status === 200) {
+        setModalEditShow(false);
+        funUpdUser();
+      }
+    });
+  };
 
   const listMenu = [
     {
       icon: officeIcon,
       title: "Компания",
       navigate: "/profile",
+    },
+    {
+      icon: officeIcon,
+      title: "Бронирование",
+      navigate: "/profile/reservation",
     },
     {
       icon: deviceIcon,
@@ -55,7 +81,7 @@ function LeftMenu() {
       <ModalAddOfice
         show={modalEditShow}
         setShow={setModalEditShow}
-        title={"Редактировать данные оборудования"}
+        title={"Редактировать данные профиля"}
         inputs={addOfficeData}
         data={modalEditData}
         setData={setModalEditData}
