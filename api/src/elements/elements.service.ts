@@ -5,13 +5,18 @@ import { RolesService } from 'src/roles/roles.service';
 import { FilesService } from 'src/files/files.service';
 import { CreateElementDto } from './dto/create-element-dto';
 import { UpdateElementDto } from './dto/update-element-dto';
+import { ElementsReserved } from './elements-reserved.model';
+import { Sequelize } from 'sequelize-typescript';
+import { CreateReservedDto } from './dto/create-reserved-dto';
 
 @Injectable()
 export class ElementsService {
   constructor(
     @InjectModel(Element) private elementRepository: typeof Element,
-    private rolesService: RolesService,
     private fileService: FilesService,
+    @InjectModel(ElementsReserved)
+    private readonly elementsReservedRepository: typeof ElementsReserved,
+    private readonly sequelize: Sequelize,
   ) {}
 
   async create(dto: CreateElementDto, image: Express.Multer.File) {
@@ -65,5 +70,21 @@ export class ElementsService {
   async delete(id: string) {
     const element = await this.elementRepository.destroy({ where: { id } });
     return element;
+  }
+
+  async createReserved(dto: CreateReservedDto) {
+    console.log('dto', dto);
+    const element = await this.elementsReservedRepository.create(dto);
+    return element;
+  }
+
+  async getReserveds(date: string, elementId: string) {
+    console.log('date', date);
+    console.log('elementId', elementId);
+    const reserveds = await this.elementsReservedRepository.findAll({
+      where: { date, elementId },
+      include: { all: true },
+    });
+    return reserveds;
   }
 }

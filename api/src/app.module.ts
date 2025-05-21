@@ -24,6 +24,7 @@ import { Problem } from './problems/problems.model';
 import { ProblemsModule } from './problems/problems.module';
 import { To } from './tos/tos.model';
 import { TosModule } from './tos/tos.module';
+import { ElementsReserved } from './elements/elements-reserved.model';
 
 @Module({
   controllers: [],
@@ -54,6 +55,7 @@ import { TosModule } from './tos/tos.module';
         Element,
         Problem,
         To,
+        ElementsReserved,
       ],
       autoLoadModels: true,
     }),

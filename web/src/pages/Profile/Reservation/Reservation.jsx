@@ -8,89 +8,80 @@ import {
   TimePicker,
 } from "@mui/x-date-pickers";
 import ruLocale from "date-fns/locale/ru";
-import { format } from "date-fns";
-import isWithinInterval from "date-fns/isWithinInterval";
-import { parse } from "date-fns";
+import { format, isWithinInterval, parse, parseISO } from "date-fns";
 import ConvasSpace from "../../Constructor/modules/ConvasSpace/ConvasSpace";
+import { useSelector } from "react-redux";
+import { apiCreateReserveds, apiGetReserveds } from "../../../api/apirequests";
+import { useQuery } from "@tanstack/react-query";
 
 function Reservation() {
+  const user = useSelector((state) => state.user.user.data);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [sendReservation, setSendReservation] = useState(false);
-  console.log("selectedRoom", selectedRoom);
+  const [reservedsDate, setReservedsDate] = useState([]);
 
-  const testReserved = [
-    {
-      date: "2025-05-21",
-      startTime: "10:00",
-      endTime: "12:00",
-      userId: "12sdkfnqowwejnfjklwqef",
-      user: {
-        id: "12sdkfnqowwejnfjklwqef",
-        name: "Вася",
-        surname: "Пупкин",
-        patronymic: "Петрович",
-        email: "H8u9d@example.com",
-        position: "Преподаватель",
-      },
-    },
-    {
-      date: "2025-05-21",
-      startTime: "14:30",
-      endTime: "16:10",
-      userId: "12sdkweffnqowfjklwqef",
-      user: {
-        id: "12sdkweffnqowfjklwqef",
-        name: "Николай",
-        surname: "Каменский",
-        patronymic: "Григорьевич",
-        email: "osilejf@example.com",
-        position: "Администратор",
-      },
-    },
-  ];
+  const { data: reserveds, refetch: refetchReserveds } = useQuery({
+    queryKey: ["reserveds", selectedDate, selectedRoom?.id],
+    queryFn: () =>
+      apiGetReserveds(
+        selectedDate?.toLocaleDateString("ru-RU"),
+        selectedRoom?.id
+      ),
+    staleTime: Infinity,
+    enabled: !!selectedRoom?.id && !!selectedDate,
+  });
+
+  useEffect(() => {
+    setReservedsDate(reserveds?.data || []);
+  }, [reserveds]);
+
+  useEffect(() => {
+    refetchReserveds();
+  }, [selectedDate]);
 
   const userColors = [
-    "#90caf9", // Голубой
-    "#a5d6a7", // Зеленый
-    "#ffcc80", // Оранжевый
-    "#f48fb1", // Розовый
-    "#ce93d8", // Фиолетовый
-    "#ffe082", // Желтый
-    "#80cbc4", // Бирюзовый
+    "#90caf9",
+    "#a5d6a7",
+    "#ffcc80",
+    "#f48fb1",
+    "#ce93d8",
+    "#ffe082",
+    "#80cbc4",
   ];
 
   const getUserColor = (userId) => {
-    // Берем индекс из суммы char-кодов userId
     const hash = [...userId].reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return userColors[hash % userColors.length];
   };
 
   const renderTimeSlots = () => {
-    const hours = Array.from({ length: 24 }, (_, i) => 0 + i); // 08:00 — 17:00
+    const hours = Array.from({ length: 24 }, (_, i) => i);
     const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
 
     return hours.map((hour) => {
       const timeLabel = `${hour.toString().padStart(2, "0")}:00`;
 
-      // Проверка, есть ли бронирование в этот час
-      const reservation = testReserved.find((res) => {
-        if (res.date !== selectedDateStr) return false;
+      const reservation = reservedsDate?.find((res) => {
+        // Преобразуем "22.05.2025" -> "2025-05-22"
+        const parsedDate = parse(res.date, "dd.MM.yyyy", new Date());
+        const resDateStr = format(parsedDate, "yyyy-MM-dd");
+        if (resDateStr !== selectedDateStr) return false;
 
         const slotStart = parse(
-          `${res.date} ${res.startTime}`,
-          "yyyy-MM-dd HH:mm",
+          `${resDateStr} ${res.startTime}`,
+          "yyyy-MM-dd HH:mm:ss",
           new Date()
         );
         const slotEnd = parse(
-          `${res.date} ${res.endTime}`,
-          "yyyy-MM-dd HH:mm",
+          `${resDateStr} ${res.endTime}`,
+          "yyyy-MM-dd HH:mm:ss",
           new Date()
         );
         const currentHour = parse(
-          `${res.date} ${timeLabel}`,
+          `${resDateStr} ${timeLabel}`,
           "yyyy-MM-dd HH:mm",
           new Date()
         );
@@ -108,13 +99,15 @@ function Reservation() {
       return (
         <div key={hour} className={styles.slot}>
           <div className={styles.slotLabel}>{timeLabel}</div>
-          {reservation && (
+          {reservation && reservation.user && (
             <div
               className={styles.reservedBlock}
               style={{ backgroundColor: bgColor }}
             >
-              {reservation.user.name} {reservation.user.surname}{" "}
-              {reservation.startTime} - {reservation.endTime}
+              {reservation.user.name} {reservation.user.surname}
+              <br />
+              {reservation.startTime.slice(0, 5)} -{" "}
+              {reservation.endTime.slice(0, 5)}
             </div>
           )}
         </div>
@@ -129,37 +122,38 @@ function Reservation() {
     selectedDate
   ) => {
     if (!startTime || !endTime || !selectedDate) return false;
-    // Привязываем время к выбранной дате
+
     const start = new Date(selectedDate);
     start.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
     const end = new Date(selectedDate);
     end.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
-    // ⛔ Проверка: если время окончания раньше или равно началу — недопустимо
-    if (end <= start) {
-      return false;
-    }
-    const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
-    const hasOverlap = reservations.some((res) => {
-      if (res.date !== selectedDateStr) return false;
+
+    if (end <= start) return false;
+
+    return !reservations?.some((res) => {
+      const resDate = parse(res.date, "dd.MM.yyyy", new Date());
+      const resDateStr = format(resDate, "yyyy-MM-dd");
+      const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
+
+      if (resDateStr !== selectedDateStr) return false;
+
       const resStart = parse(
-        `${res.date} ${res.startTime}`,
-        "yyyy-MM-dd HH:mm",
+        `${resDateStr} ${res.startTime}`,
+        "yyyy-MM-dd HH:mm:ss",
         new Date()
       );
       const resEnd = parse(
-        `${res.date} ${res.endTime}`,
-        "yyyy-MM-dd HH:mm",
+        `${resDateStr} ${res.endTime}`,
+        "yyyy-MM-dd HH:mm:ss",
         new Date()
       );
-      const overlap =
-        (start >= resStart && start < resEnd) || // начало внутри чужого интервала
-        (end > resStart && end <= resEnd) || // конец внутри чужого интервала
-        (start <= resStart && end >= resEnd); // полностью перекрывает чужой интервал
-      return overlap;
-    });
 
-    const result = !hasOverlap;
-    return result;
+      return (
+        (start >= resStart && start < resEnd) ||
+        (end > resStart && end <= resEnd) ||
+        (start <= resStart && end >= resEnd)
+      );
+    });
   };
 
   useEffect(() => {
@@ -167,12 +161,27 @@ function Reservation() {
       const available = isTimeRangeAvailable(
         startTime,
         endTime,
-        testReserved,
+        reservedsDate,
         selectedDate
       );
       setSendReservation(available);
     }
   }, [startTime, endTime, selectedDate]);
+
+  const funReserved = () => {
+    const data = {
+      startTime: startTime?.toLocaleTimeString("ru-RU"),
+      endTime: endTime?.toLocaleTimeString("ru-RU"),
+      date: selectedDate?.toLocaleDateString("ru-RU"),
+      elementId: selectedRoom?.id,
+      userId: user?.id,
+    };
+    apiCreateReserveds(data).then((res) => {
+      if (res.status === 201) {
+        refetchReserveds();
+      }
+    });
+  };
 
   return (
     <div className={styles.Reservation}>
@@ -226,19 +235,19 @@ function Reservation() {
                   sx={{ mt: 2 }}
                   variant="contained"
                   color="primary"
-                  onClick={() => {
-                    console.log("Дата:", selectedDate);
-                    console.log("Промежуток:", startTime, "—", endTime);
-                  }}
+                  onClick={funReserved}
                   disabled={!sendReservation}
                 >
                   Забронировать
                 </Button>
-                <div className={styles.selected_room}>
-                  <span>Выбранный объект:</span>
-                  <p>Название: {selectedRoom?.name}</p>
-                  <p>Тип: {selectedRoom?.type}</p>
-                </div>
+
+                {selectedRoom && (
+                  <div className={styles.selected_room}>
+                    <span>Выбранный объект:</span>
+                    <p>Название: {selectedRoom?.name}</p>
+                    <p>Тип: {selectedRoom?.type}</p>
+                  </div>
+                )}
               </Grid>
             </Grid>
           </LocalizationProvider>
@@ -260,6 +269,7 @@ function Reservation() {
           </Grid>
         </div>
       </div>
+
       <div className={styles.canvas_container}>
         <ConvasSpace noedit={true} setSelectedRoom={setSelectedRoom} />
       </div>

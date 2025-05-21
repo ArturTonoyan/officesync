@@ -235,3 +235,16 @@ export const apiEditTo = async (id, data) => {
 export const apiDeleteTo = async (id) => {
   return await apiRequest("delete", `/tos/${id}`);
 };
+
+//! создание бронирования
+export const apiCreateReserveds = async (data) => {
+  return await apiRequest("post", `/elements/reserveds`, data);
+};
+
+//! получение всех бронирований по параметрам
+export const apiGetReserveds = async (date, elementId) => {
+  return await apiRequest(
+    "get",
+    `/elements/reserveds?date=${date}&elementId=${elementId}`
+  );
+};

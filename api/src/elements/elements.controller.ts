@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
@@ -15,6 +16,7 @@ import { Roles } from 'src/auth/roles-auth-decorator';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { CreateElementDto } from './dto/create-element-dto';
 import { UpdateElementDto } from './dto/update-element-dto';
+import { CreateReservedDto } from './dto/create-reserved-dto';
 
 @Controller('elements')
 export class ElementsController {
@@ -57,5 +59,18 @@ export class ElementsController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.elementsService.delete(id);
+  }
+
+  @Post('/reserveds')
+  createReserved(@Body() dto: CreateReservedDto) {
+    return this.elementsService.createReserved(dto);
+  }
+
+  @Get('/reserveds')
+  getReserveds(
+    @Query('date') date: string,
+    @Query('elementId') elementId: string,
+  ) {
+    return this.elementsService.getReserveds(date, elementId);
   }
 }

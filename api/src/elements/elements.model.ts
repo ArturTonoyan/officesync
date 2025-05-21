@@ -4,9 +4,11 @@ import {
   DataType,
   Table,
   ForeignKey,
+  HasOne,
 } from 'sequelize-typescript';
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
+import { ElementsReserved } from './elements-reserved.model';
 
 interface ElementCreationAttrs {
   //! для создание модели необходимы тольок эти поля
@@ -116,4 +118,7 @@ export class Element extends Model<Element, ElementCreationAttrs> {
     allowNull: true, //! не может быть пустым если false
   })
   isLocked: boolean;
+
+  @HasOne(() => ElementsReserved)
+  reserved: ElementsReserved;
 }
