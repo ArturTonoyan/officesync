@@ -248,3 +248,13 @@ export const apiGetReserveds = async (date, elementId) => {
     `/elements/reserveds?date=${date}&elementId=${elementId}`
   );
 };
+
+//! получение всех моих бронирований
+export const apiGetReservedsMy = async (userId) => {
+  return await apiRequest("get", `/elements/reserveds/${userId}`);
+};
+
+//! удаление бронирования
+export const apiDeleteReserved = async (id) => {
+  return await apiRequest("delete", `/elements/reserveds/${id}`);
+};

@@ -10,14 +10,30 @@
     width: 600px;
     border: 1px solid #9d9e9f99;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     background-color: #fff;
     padding: 20px;
     border-radius: 12px;
+    .top {
+      display: flex;
+      flex-direction: row;
+
+      span {
+        margin-right: 20px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        @include HoverActive;
+        margin-bottom: 20px;
+      }
+    }
+    .bottom {
+      display: flex;
+      flex-direction: row;
+      @include ScrollBar;
+    }
     .left {
       width: 55%;
-      .selected_room {
-      }
     }
     .right {
       width: 45%;

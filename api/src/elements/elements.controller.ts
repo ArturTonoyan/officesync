@@ -73,4 +73,14 @@ export class ElementsController {
   ) {
     return this.elementsService.getReserveds(date, elementId);
   }
+
+  @Get('/reserveds/:userId')
+  getMyReserveds(@Param('userId') userId: string) {
+    return this.elementsService.getMyReserveds(userId);
+  }
+
+  @Delete('/reserveds/:id')
+  deleteReserved(@Param('id') id: string) {
+    return this.elementsService.deleteReserved(id);
+  }
 }

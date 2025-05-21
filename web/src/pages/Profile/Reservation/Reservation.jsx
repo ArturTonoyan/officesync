@@ -1,6 +1,6 @@
 import styles from "./Reservation.module.scss";
 import { useEffect, useState } from "react";
-import { Box, Grid, Typography, Button, TextField } from "@mui/material";
+import { Box, Grid, Typography, Button, TextField, Card } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import {
   LocalizationProvider,
@@ -11,11 +11,17 @@ import ruLocale from "date-fns/locale/ru";
 import { format, isWithinInterval, parse, parseISO } from "date-fns";
 import ConvasSpace from "../../Constructor/modules/ConvasSpace/ConvasSpace";
 import { useSelector } from "react-redux";
-import { apiCreateReserveds, apiGetReserveds } from "../../../api/apirequests";
+import {
+  apiCreateReserveds,
+  apiDeleteReserved,
+  apiGetReserveds,
+  apiGetReservedsMy,
+} from "../../../api/apirequests";
 import { useQuery } from "@tanstack/react-query";
 
 function Reservation() {
   const user = useSelector((state) => state.user.user.data);
+  const [selectedModal, setSelectedModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
@@ -32,6 +38,13 @@ function Reservation() {
       ),
     staleTime: Infinity,
     enabled: !!selectedRoom?.id && !!selectedDate,
+  });
+
+  const { data: reservedsMy, refetch: refetchReservedsMy } = useQuery({
+    queryKey: ["reserveds/userId", user?.id],
+    queryFn: () => apiGetReservedsMy(user?.id),
+    staleTime: Infinity,
+    enabled: !!user?.id,
   });
 
   useEffect(() => {
@@ -179,6 +192,16 @@ function Reservation() {
     apiCreateReserveds(data).then((res) => {
       if (res.status === 201) {
         refetchReserveds();
+        refetchReservedsMy();
+      }
+    });
+  };
+
+  const deleteReserved = (id) => {
+    apiDeleteReserved(id).then((res) => {
+      if (res.status === 200) {
+        refetchReserveds();
+        refetchReservedsMy();
       }
     });
   };
@@ -187,88 +210,164 @@ function Reservation() {
     <div className={styles.Reservation}>
       <h1>Бронирование кабинетов</h1>
 
-      <div className={styles.reserved_component}>
-        <div className={styles.left}>
-          <LocalizationProvider
-            dateAdapter={AdapterDateFns}
-            adapterLocale={ruLocale}
+      {selectedModal ? (
+        <div className={styles.reserved_component} style={{ height: "75vh" }}>
+          <div className={styles.top}>
+            <span onClick={() => setSelectedModal(false)}>Забронировать</span>
+            <span onClick={() => setSelectedModal(true)}>Мои бронирования</span>
+          </div>
+          <div
+            className={styles.bottom}
+            style={{ overflowY: "auto", height: "100%" }}
           >
-            <Grid container spacing={2} sx={{ height: "100%" }}>
-              <Grid
-                item
-                xs={4}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "100%",
-                }}
-              >
-                <Typography variant="h6">Выбор даты</Typography>
-                <DateCalendar
-                  value={selectedDate}
-                  onChange={(newDate) => setSelectedDate(newDate)}
-                />
-
-                <Box mt={2}>
-                  <Typography variant="body1">Время начала</Typography>
-                  <TimePicker
-                    value={startTime}
-                    onChange={setStartTime}
-                    renderInput={(params) => (
-                      <TextField fullWidth {...params} />
-                    )}
-                  />
-                </Box>
-                <Box mt={2}>
-                  <Typography variant="body1">Время окончания</Typography>
-                  <TimePicker
-                    value={endTime}
-                    onChange={setEndTime}
-                    renderInput={(params) => (
-                      <TextField fullWidth {...params} />
-                    )}
-                  />
-                </Box>
-
-                <Button
-                  sx={{ mt: 2 }}
-                  variant="contained"
-                  color="primary"
-                  onClick={funReserved}
-                  disabled={!sendReservation}
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+              {reservedsMy?.data?.length === 0 && (
+                <Typography variant="body1">
+                  У вас пока нет бронирований.
+                </Typography>
+              )}
+              {reservedsMy?.data?.map((res) => (
+                <Card
+                  key={res.id}
+                  sx={{
+                    minWidth: 250,
+                    maxWidth: 300,
+                    padding: 2,
+                    border: "1px solid #ccc",
+                    borderRadius: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  Забронировать
-                </Button>
-
-                {selectedRoom && (
-                  <div className={styles.selected_room}>
-                    <span>Выбранный объект:</span>
-                    <p>Название: {selectedRoom?.name}</p>
-                    <p>Тип: {selectedRoom?.type}</p>
-                  </div>
-                )}
-              </Grid>
-            </Grid>
-          </LocalizationProvider>
+                  <Typography variant="h6" gutterBottom>
+                    {res.element?.name || "Без названия"}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Тип: {res.element?.type || "—"}
+                  </Typography>
+                  <Typography variant="body2" mt={1}>
+                    Дата: {res.date}
+                  </Typography>
+                  <Typography variant="body2">
+                    Время: {res.startTime.slice(0, 5)} —{" "}
+                    {res.endTime.slice(0, 5)}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    sx={{ mt: 2 }}
+                    onClick={() => deleteReserved(res.id)}
+                  >
+                    Удалить
+                  </Button>
+                </Card>
+              ))}
+            </Box>
+          </div>
         </div>
-        <div className={styles.right}>
-          <Grid item xs={8}>
-            <Typography variant="h5">
-              {selectedDate?.toLocaleDateString("ru-RU")}
-            </Typography>
-            <Box
-              sx={{
-                borderLeft: "1px solid #ccc",
-                height: "80vh",
-                overflowY: "auto",
+      ) : (
+        <div className={styles.reserved_component}>
+          <div className={styles.top}>
+            <span
+              onClick={() => {
+                setSelectedModal(false);
               }}
             >
-              {renderTimeSlots()}
-            </Box>
-          </Grid>
+              Забронировать
+            </span>
+            <span
+              onClick={() => {
+                setSelectedModal(true);
+              }}
+            >
+              Мои бронирования
+            </span>
+          </div>
+          <div className={styles.bottom}>
+            <div className={styles.left}>
+              <LocalizationProvider
+                dateAdapter={AdapterDateFns}
+                adapterLocale={ruLocale}
+              >
+                <Grid container spacing={2} sx={{ height: "100%" }}>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <Typography variant="h6">Выбор даты</Typography>
+                    <DateCalendar
+                      value={selectedDate}
+                      onChange={(newDate) => setSelectedDate(newDate)}
+                    />
+
+                    <Box mt={2}>
+                      <Typography variant="body1">Время начала</Typography>
+                      <TimePicker
+                        value={startTime}
+                        onChange={setStartTime}
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                      />
+                    </Box>
+                    <Box mt={2}>
+                      <Typography variant="body1">Время окончания</Typography>
+                      <TimePicker
+                        value={endTime}
+                        onChange={setEndTime}
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                      />
+                    </Box>
+
+                    <Button
+                      sx={{ mt: 2 }}
+                      variant="contained"
+                      color="primary"
+                      onClick={funReserved}
+                      disabled={!sendReservation}
+                    >
+                      Забронировать
+                    </Button>
+
+                    {selectedRoom && (
+                      <div className={styles.selected_room}>
+                        <span>Выбранный объект:</span>
+                        <p>Название: {selectedRoom?.name}</p>
+                        <p>Тип: {selectedRoom?.type}</p>
+                      </div>
+                    )}
+                  </Grid>
+                </Grid>
+              </LocalizationProvider>
+            </div>
+            <div className={styles.right}>
+              <Grid item xs={8}>
+                <Typography variant="h5">
+                  {selectedDate?.toLocaleDateString("ru-RU")}
+                </Typography>
+                <Box
+                  sx={{
+                    borderLeft: "1px solid #ccc",
+                    height: "75vh",
+                    overflowY: "auto",
+                  }}
+                >
+                  {renderTimeSlots()}
+                </Box>
+              </Grid>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className={styles.canvas_container}>
         <ConvasSpace noedit={true} setSelectedRoom={setSelectedRoom} />

@@ -87,4 +87,19 @@ export class ElementsService {
     });
     return reserveds;
   }
+
+  async getMyReserveds(userId: string) {
+    const reserveds = await this.elementsReservedRepository.findAll({
+      where: { userId },
+      include: { all: true },
+    });
+    return reserveds;
+  }
+
+  async deleteReserved(id: string) {
+    const element = await this.elementsReservedRepository.destroy({
+      where: { id },
+    });
+    return element;
+  }
 }
