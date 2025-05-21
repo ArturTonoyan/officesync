@@ -30,7 +30,11 @@ function Header() {
         )}
       </div>
       <div className={styles.auth}>
-        <button onClick={() => navigate("/authorization")}>
+        <button
+          onClick={() => {
+            userEmail ? navigate("/profile") : navigate("/authorization");
+          }}
+        >
           {userEmail ? "Личный кабинет" : "Вход"}
         </button>
       </div>
