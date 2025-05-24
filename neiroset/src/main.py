@@ -7,7 +7,7 @@ import os
 import numpy as np
 from sklearn.metrics import mean_squared_error
 import pandas as pd
-
+ 
 def main():
     # Устройство для вычислений
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

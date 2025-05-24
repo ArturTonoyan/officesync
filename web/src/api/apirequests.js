@@ -1,17 +1,19 @@
 import api from "./axios";
 export const server = process.env.REACT_APP_API_URL || "http://localhost:3004";
+const neiroServer = process.env.REACT_APP_NEIRO_URL || "http://localhost:3014";
 
 // Универсальная функция для выполнения запросов
 export const apiRequest = async (
   method,
   endpoint,
   data = null,
-  headers = {}
+  headers = {},
+  serv = server
 ) => {
   try {
     const config = {
       method,
-      url: `${server}${endpoint}`,
+      url: `${serv}${endpoint}`,
       headers,
       data,
     };
@@ -257,4 +259,9 @@ export const apiGetReservedsMy = async (userId) => {
 //! удаление бронирования
 export const apiDeleteReserved = async (id) => {
   return await apiRequest("delete", `/elements/reserveds/${id}`);
+};
+
+//! обращение к нейронной сети
+export const apiPostNeural = async (data) => {
+  return await apiRequest("post", `/predict`, data, {}, neiroServer);
 };

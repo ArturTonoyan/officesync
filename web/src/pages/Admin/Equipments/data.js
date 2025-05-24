@@ -117,6 +117,11 @@ export const tableHeader = [
     key: "floor",
   },
   {
+    name: "Офис",
+    key: "office",
+    type: "text",
+  },
+  {
     name: "Сотрудник",
     key: "user",
   },
@@ -143,6 +148,14 @@ export const tableHeader = [
   {
     name: "Фото",
     key: "image",
+  },
+  {
+    name: "Износ",
+    key: "wear",
+  },
+  {
+    name: "Вероятность выхода из строя",
+    key: "prob",
   },
 ];
 

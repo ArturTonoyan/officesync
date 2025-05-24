@@ -38,13 +38,9 @@ def fitness_function(model, data_loader, criterion):
 
 # Генетический алгоритм для оптимизации нейронной сети
 def run_genetic_algorithm(model, data_loader, population_size=50, generations=100, mutation_rate=0.1, lr=0.001):
-    input_size = model.fc1.in_features
     # Инициализация популяции: случайные веса модели
     population = [np.random.uniform(-1, 1, model.parameters().__len__()) for _ in range(population_size)]
-    
-    optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
-    
     for generation in range(generations):
         fitness_scores = []
         

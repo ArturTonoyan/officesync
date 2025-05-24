@@ -25,7 +25,7 @@ function Header() {
         ))}
         {userRole === "ADMIN" && (
           <a key={0} href="/admin">
-            Админ
+            Главная
           </a>
         )}
       </div>

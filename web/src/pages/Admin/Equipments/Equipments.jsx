@@ -13,6 +13,7 @@ import {
   apiGetFloors,
   apiGetOffices,
   apiGetUsers,
+  apiPostNeural,
   apiUpdateEquipment,
 } from "../../../api/apirequests";
 
@@ -91,16 +92,31 @@ function Equipments({ noedit }) {
           ?.filter((el) => el.userId === user?.id)
           .map((item) => ({
             ...item,
-            office: offices?.data?.find((el) => el.id === item.officeId)?.name,
-            floor: floors?.data?.find((el) => el.id === item.floorId)?.name,
-            user: users?.data?.find((el) => el.id === item.userId)?.name,
+            office: item?.office?.name + " " + item?.office?.address,
+            floor: item?.floor?.name,
+            user:
+              item?.user?.name +
+              " " +
+              item?.user?.surname +
+              " " +
+              item?.user?.patronymic +
+              " " +
+              item?.user?.email,
           }));
       } else {
         qdat = equipments?.data.map((item) => ({
           ...item,
-          office: offices?.data?.find((el) => el.id === item.officeId)?.name,
-          floor: floors?.data?.find((el) => el.id === item.floorId)?.name,
-          user: users?.data?.find((el) => el.id === item.userId)?.name,
+          office: item?.office?.name + " " + item?.office?.address,
+
+          floor: item?.floor?.name,
+          user:
+            item?.user?.name +
+            " " +
+            item?.user?.surname +
+            " " +
+            item?.user?.patronymic +
+            " " +
+            item?.user?.email,
         }));
       }
       setTableData(qdat);
@@ -164,6 +180,54 @@ function Equipments({ noedit }) {
       }
     });
   };
+
+  useEffect(() => {
+    console.log("equipments?.data", equipments?.data);
+    const dataEq = equipments?.data?.map((item) => ({
+      id: item?.id,
+      currentOperationTime: item?.currentWarranty || 0,
+      maxOperationTime: item?.maxWarranty || 0,
+      equipmentCost: item?.cost || 0,
+      cost: item?.cost + item?.currentWarranty || 0,
+      operatingViolations: item?.problems?.length || 0,
+      completedMaintenance: item?.problems?.[0]?.createAt?.split("T")[0] || 0,
+      maintenanceFrequency: 1000,
+      lastTO: "2025-06-25",
+    }));
+    if (dataEq?.length > 0) {
+      apiPostNeural({
+        targetDate: "2029-06-27",
+        items: dataEq,
+      }).then((res) => {
+        if (res?.status === 200) {
+          const newData = equipments?.data?.map((item, index) => {
+            const prob = res?.data?.[index]?.probability_on_date;
+            const wear = res?.data?.[index]?.wear;
+            return {
+              ...item,
+              office: item?.office?.name + " " + item?.office?.address,
+
+              floor: item?.floor?.name,
+              user:
+                item?.user?.name +
+                " " +
+                item?.user?.surname +
+                " " +
+                item?.user?.patronymic +
+                " " +
+                item?.user?.email,
+              prob: prob != null ? (prob * 100).toFixed(2) + "%" : "-",
+              wear: wear != null ? (wear * 100).toFixed(2) + "%" : "-",
+            };
+          });
+          setTableData(newData);
+          setOriginalData(newData);
+        }
+        // setTableData(qdat);
+        // setOriginalData(qdat);
+      });
+    }
+  }, [equipments]);
 
   return (
     <div className={styles.Equipments}>
