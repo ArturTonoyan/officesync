@@ -14,6 +14,8 @@ function Table({
 }) {
   const [openList, setOpenList] = useState(null);
 
+  console.log("tableData", tableData);
+
   const getTdData = (key, row) => {
     if (key === "imageUrl" || key === "image")
       return row[key] ? (
@@ -26,12 +28,14 @@ function Table({
             const link = document.createElement("a");
             link.href = row[key];
             link.target = "_blank";
-
             link.click();
+          }}
+          onError={(e) => {
+            e.target.style.display = "none";
           }}
         />
       ) : (
-        <>Нет фото</>
+        <></>
       );
     if (key === "contract") {
       return row[key] ? (
@@ -49,6 +53,7 @@ function Table({
         <>Нет контакта</>
       );
     }
+
     return row[key];
   };
 
@@ -65,7 +70,16 @@ function Table({
         </thead>
         <tbody>
           {tableData?.map((row, indexRow) => (
-            <tr key={indexRow}>
+            <tr
+              key={indexRow}
+              className={
+                parseFloat(row?.wear) > 70
+                  ? styles?.trRed
+                  : parseFloat(row?.wear) > 50
+                  ? styles?.trYellow
+                  : ""
+              }
+            >
               <td>{indexRow + 1}</td>
               {tableHeader.slice(1).map((columnKey, indexCol) => (
                 <td name={columnKey.key} key={indexCol}>

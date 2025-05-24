@@ -12,16 +12,16 @@ def preprocess(data, target_date: str):
     
     # Добавляем новый признак для дней до targetDate
     data.days_since_last_to = days_since_last_to
-
+    
     # Преобразуем все необходимые данные в числовой формат (например, cost, maxOperationTime)
     features = [
-        data.currentOperationTime/ 5000,
-        data.maxOperationTime/ 10000,
+        data.currentOperationTime/ 500,
+        data.maxOperationTime/ 100,
         data.equipmentCost/ 10000,
-        data.cost/ 5000,
+        data.cost/ 50000,
         data.operatingViolations/ 10,
         data.maintenanceFrequency / 500,
-        data.days_since_last_to/ 20  # Новый признак
+        data.days_since_last_to/ 2000  # Новый признак
     ]
     
     return features

@@ -1,8 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import random
-import numpy as np
 
 # Определение модели
 class EquipmentFailureModel(nn.Module):
@@ -35,44 +32,6 @@ def fitness_function(model, data_loader, criterion):
             loss_wear = criterion(wear_pred, targets[2])
             total_loss += (loss_year + loss_date + loss_wear).item()
     return total_loss / len(data_loader)
-
-# Генетический алгоритм для оптимизации нейронной сети
-def run_genetic_algorithm(model, data_loader, population_size=50, generations=100, mutation_rate=0.1, lr=0.001):
-    # Инициализация популяции: случайные веса модели
-    population = [np.random.uniform(-1, 1, model.parameters().__len__()) for _ in range(population_size)]
-    criterion = nn.MSELoss()
-    for generation in range(generations):
-        fitness_scores = []
-        
-        # Оценка приспособленности для каждого индивида (модели с разными весами)
-        for ind in population:
-            set_weights_to_model(model, ind)  # Устанавливаем веса модели
-            fitness = fitness_function(model, data_loader, criterion)
-            fitness_scores.append(fitness)
-        
-        # Селекция — выбираем лучшие особи (top 20%)
-        sorted_population = [x for _, x in sorted(zip(fitness_scores, population), key=lambda x: x[0])]
-        survivors = sorted_population[:population_size // 5]
-
-        # Скрещивание и мутация
-        new_population = survivors.copy()
-        while len(new_population) < population_size:
-            parent1, parent2 = random.sample(survivors, 2)
-            crossover_point = random.randint(1, len(parent1) - 1)
-            child = np.concatenate((parent1[:crossover_point], parent2[crossover_point:]))
-
-            # Мутация
-            if random.random() < mutation_rate:
-                mutation_index = random.randint(0, len(child) - 1)
-                child[mutation_index] += np.random.normal()
-
-            new_population.append(child)
-
-        population = new_population
-
-    # Выбираем лучшего кандидата
-    best_individual = min(population, key=lambda ind: fitness_function(model, data_loader, criterion))
-    set_weights_to_model(model, best_individual)  # Устанавливаем лучшие веса модели
 
 # Функция для установки весов модели
 def set_weights_to_model(model, weights):

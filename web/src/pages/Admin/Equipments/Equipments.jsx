@@ -182,27 +182,36 @@ function Equipments({ noedit }) {
   };
 
   useEffect(() => {
-    console.log("equipments?.data", equipments?.data);
+    const futureDate = new Date();
+    const selDat = new Date();
+    selDat.setDate(selDat.getDate() + 7);
+    futureDate.setDate(futureDate.getDate() + 100);
     const dataEq = equipments?.data?.map((item) => ({
       id: item?.id,
-      currentOperationTime: item?.currentWarranty || 0,
-      maxOperationTime: item?.maxWarranty || 0,
+      currentOperationTime: item?.currentWarranty || 1000,
+      maxOperationTime: item?.maxWarranty || 5000,
       equipmentCost: item?.cost || 0,
-      cost: item?.cost + item?.currentWarranty || 0,
-      operatingViolations: item?.problems?.length || 0,
-      completedMaintenance: item?.problems?.[0]?.createAt?.split("T")[0] || 0,
-      maintenanceFrequency: 1000,
-      lastTO: "2025-06-25",
+      cost: item?.cost / 10 || 2000,
+      operatingViolations: item?.problems?.length || 1,
+      completedMaintenance: item?.to?.length,
+      maintenanceFrequency: 100,
+      lastTO: futureDate?.toISOString().split("T")[0],
     }));
+
     if (dataEq?.length > 0) {
       apiPostNeural({
-        targetDate: "2029-06-27",
+        targetDate: selDat?.toISOString().split("T")[0],
         items: dataEq,
       }).then((res) => {
         if (res?.status === 200) {
           const newData = equipments?.data?.map((item, index) => {
-            const prob = res?.data?.[index]?.probability_on_date;
-            const wear = res?.data?.[index]?.wear;
+            let wear;
+            wear = (res?.data?.[index]?.wear * 100).toFixed(2);
+            if (item.maxWarranty - item.currentWarranty < 400)
+              wear = (
+                100 -
+                (item.maxWarranty - item.currentWarranty) / 12
+              ).toFixed(2);
             return {
               ...item,
               office: item?.office?.name + " " + item?.office?.address,
@@ -216,8 +225,7 @@ function Equipments({ noedit }) {
                 item?.user?.patronymic +
                 " " +
                 item?.user?.email,
-              prob: prob != null ? (prob * 100).toFixed(2) + "%" : "-",
-              wear: wear != null ? (wear * 100).toFixed(2) + "%" : "-",
+              wear: wear != null ? wear + "%" : "-",
             };
           });
           setTableData(newData);
@@ -247,9 +255,11 @@ function Equipments({ noedit }) {
             value: ["name", "address"],
           },
           floor: {
-            data: floors?.data,
+            data: floors?.data?.filter(
+              (item) => item.officeId === createData?.officeId
+            ),
             key: "floorId",
-            value: ["name", "address"],
+            value: ["name", "number"],
           },
           user: {
             data: users?.data,
@@ -273,9 +283,11 @@ function Equipments({ noedit }) {
             value: ["name", "address"],
           },
           floor: {
-            data: floors?.data,
+            data: floors?.data?.filter(
+              (item) => item.officeId === modalEditData?.officeId
+            ),
             key: "floorId",
-            value: ["name", "address"],
+            value: ["name", "number"],
           },
           user: {
             data: users?.data,

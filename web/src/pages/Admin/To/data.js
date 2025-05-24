@@ -68,6 +68,11 @@ export const addOfficeData = [
 
 export const tableHeader = [
   {
+    name: "№",
+    key: "number",
+    type: "text",
+  },
+  {
     name: "Оборудование",
     key: "equipment",
   },
@@ -94,5 +99,9 @@ export const tableHeader = [
   {
     name: "Неполадка",
     key: "problem",
+  },
+  {
+    name: "Дата создания",
+    key: "createdAt",
   },
 ];

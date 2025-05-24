@@ -75,6 +75,7 @@ function Tos({ noedit }) {
             image: item?.image ? `${server}/${item?.image}` : null,
             imageUrl: item?.image ? `${server}/${item?.image}` : null,
             problem: item.problem?.description,
+            createdAt: item.createdAt.split("T")[0],
           }));
       } else {
         qdat = tos?.data.map((item) => ({
@@ -90,6 +91,7 @@ function Tos({ noedit }) {
           image: item?.image ? `${server}/${item?.image}` : null,
           imageUrl: item?.image ? `${server}/${item?.image}` : null,
           problem: item.problem?.description,
+          createdAt: item.createdAt.split("T")[0],
         }));
       }
 

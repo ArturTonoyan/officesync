@@ -12,6 +12,7 @@ import { Element } from 'src/elements/elements.model';
 import { Floors } from 'src/floors/floors.model';
 import { Office } from 'src/offices/offices.model';
 import { Problem } from 'src/problems/problems.model';
+import { To } from 'src/tos/tos.model';
 import { User } from 'src/users/users.model';
 
 interface EquipmentCreationAttrs {
@@ -120,6 +121,9 @@ export class Equipment extends Model<Equipment, EquipmentCreationAttrs> {
   @HasMany(() => Problem)
   problems: Problem[];
 
+  @HasMany(() => To)
+  to: To[];
+
   @BelongsTo(() => User)
   user: User;
 
@@ -128,7 +132,4 @@ export class Equipment extends Model<Equipment, EquipmentCreationAttrs> {
 
   @BelongsTo(() => Office)
   office: Office;
-
-  @BelongsTo(() => Company)
-  company: Company;
 }

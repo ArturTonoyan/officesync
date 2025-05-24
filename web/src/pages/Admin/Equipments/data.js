@@ -83,16 +83,6 @@ export const addOfficeData = [
     key: "currentWarranty",
     type: "text",
   },
-  {
-    name: "Состояние",
-    key: "state",
-    type: "text",
-  },
-  {
-    name: "Фото",
-    key: "image",
-    type: "text",
-  },
 ];
 
 export const tableHeader = [
@@ -141,62 +131,13 @@ export const tableHeader = [
     name: "Текущая наработка",
     key: "currentWarranty",
   },
-  {
-    name: "Состояние",
-    key: "state",
-  },
-  {
-    name: "Фото",
-    key: "image",
-  },
+
   {
     name: "Износ",
     key: "wear",
   },
-  {
-    name: "Вероятность выхода из строя",
-    key: "prob",
-  },
-];
-
-export const testData = [
-  {
-    number: "1",
-    name: "Название",
-    inventoryNumber: "Инвентарный номер",
-    type: "Тип",
-    floor: "Этаж",
-    employee: "Сотрудник",
-    description: "Описание",
-    cost: "Стоимость",
-    maxWarranty: "Максимальная наработка",
-    currentWarranty: "Текущая наработка",
-    state: "Состояние",
-  },
-  {
-    number: "2",
-    name: "Название",
-    inventoryNumber: "Инвентарный номер",
-    type: "Тип",
-    floor: "Этаж",
-    employee: "Сотрудник",
-    description: "Описание",
-    cost: "Стоимость",
-    maxWarranty: "Максимальная наработка",
-    currentWarranty: "Текущая наработка",
-    state: "Состояние",
-  },
-  {
-    number: "3",
-    name: "Название",
-    inventoryNumber: "Инвентарный номер",
-    type: "Тип",
-    floor: "Этаж",
-    employee: "Сотрудник",
-    description: "Описание",
-    cost: "Стоимость",
-    maxWarranty: "Максимальная наработка",
-    currentWarranty: "Текущая наработка",
-    state: "Состояние",
-  },
+  // {
+  //   name: "Вероятность выхода из строя",
+  //   key: "prob",
+  // },
 ];
