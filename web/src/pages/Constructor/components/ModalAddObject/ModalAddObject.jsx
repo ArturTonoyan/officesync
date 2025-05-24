@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import styles from "./ModalAddObject.module.scss";
 import arrow from "@assets/images/icons/arrowMini.svg";
 import { addEquipmentData, typesNoEquipment } from "./data";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
 import { useDispatch, useSelector } from "react-redux";
 import { addObjectApi } from "../../../../store/convaSlice/conva.Slice";
@@ -44,10 +44,23 @@ function ModalAddObject({ title, show, setShow }) {
   const user = useSelector((state) => state.user.user.data);
   const floorId = useSelector((state) => state.conva.floors.selected);
   const dispatch = useDispatch();
+  const refList = useRef(null);
 
   const [modalAllIcons, setModalAllIcons] = useState(false);
   const [showDropdown, setShowDropdown] = useState(null);
   const [data, setData] = useState(defaultData);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (refList.current && !refList.current.contains(event.target)) {
+        setShowDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const { data: equipments } = useQuery({
     queryKey: ["equipments/all/id", user?.companyId],
@@ -193,7 +206,7 @@ function ModalAddObject({ title, show, setShow }) {
             <>
               <img className={styles.arrow} src={arrow} alt="arrow" />
               {showDropdown === item.key && (
-                <div className={styles.list}>
+                <div className={styles.list} ref={refList}>
                   {renderDropdownList(item.key)}
                 </div>
               )}

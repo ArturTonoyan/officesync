@@ -131,7 +131,7 @@ export const tableHeader = [
   },
   {
     name: "Руководитель",
-    key: "directorId",
+    key: "director",
   },
   {
     name: "Тип собственности",

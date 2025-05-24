@@ -63,10 +63,7 @@ function Offices() {
     if (query?.data) {
       let tabDat = query?.data.map((el) => ({
         ...el,
-        directorId: funGetUserFio(
-          el?.users?.find((u) => u.id === el.directorId)
-        ),
-        renter: funGetUserFio(el?.users?.find((u) => u.id === el.renterId)),
+        director: funGetUserFio(el?.users?.find((u) => u.id === el.directorId)),
         usersCount: el?.users?.length,
         floorsCount: el?.floors?.length,
         devices: el?.eqipments?.length,
@@ -134,7 +131,16 @@ function Offices() {
     console.log("param", param);
     if (param.key === "edit") {
       setModalEditShow(true);
-      setModalEditData(param.row);
+      setModalEditData({
+        ...param.row,
+        director: param.row.directorId
+          ? users?.data?.find((u) => u.id === param.row.directorId)?.name +
+            " " +
+            users?.data?.find((u) => u.id === param.row.directorId)?.surname +
+            " " +
+            users?.data?.find((u) => u.id === param.row.directorId)?.patronymic
+          : null,
+      });
     }
     if (param.key === "delete") {
       funDeleteOffice(param.row.id);

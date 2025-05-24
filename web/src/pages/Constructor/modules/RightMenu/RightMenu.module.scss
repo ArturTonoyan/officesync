@@ -73,6 +73,12 @@
       display: flex;
       flex-direction: column;
       padding: 10px 20px;
+      button {
+        @include ButtonRedBorder;
+        border: torem(1px) solid #b32020 !important;
+        padding: 4px;
+        border-bottom: 12px;
+      }
     }
   }
 }

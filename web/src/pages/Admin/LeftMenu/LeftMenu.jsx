@@ -79,10 +79,10 @@ function LeftMenu() {
         </div>
         <div className={styles.container_bottom}>
           <ul className={styles.list_item}>
-            <li>
+            {/* <li>
               <img src={paramIcon} alt="img" />
               <span>Настройки</span>
-            </li>
+            </li> */}
             <li onClick={() => navigate("/profile")}>
               <img src={userIcon} alt="img" />
               <span>Профиль</span>

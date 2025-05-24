@@ -6,6 +6,7 @@ import errorsIcon from "@assets/images/leftMenu/errors.svg";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import editIcon from "@assets/images/icons/editProfile.svg";
+import exit from "@assets/images/icons/exit.svg";
 import nophoto from "@assets/images/icons/noavatar.jpg";
 import { apiUpdateUserProfile, server } from "../../../api/apirequests";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
@@ -125,8 +126,14 @@ function LeftMenu({ funUpdUser }) {
             <span className={styles.position}>{user?.position}</span>
           </div>
           <div className={styles.buttons}>
+            <button
+              className={styles.edit}
+              onClick={() => navigate("/authorization")}
+            >
+              <img src={exit} alt="edit" />
+            </button>
             <button className={styles.edit} onClick={funClickEdit}>
-              <img src={editIcon} alt="edit" />
+              <img src={editIcon} alt="exit" />
             </button>
           </div>
         </div>

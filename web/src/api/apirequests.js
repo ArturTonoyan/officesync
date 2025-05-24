@@ -22,7 +22,7 @@ export const apiRequest = async (
     return response;
   } catch (error) {
     console.error("Ошибка при выполнении запроса:", error);
-    throw error; // Пробрасываем ошибку дальше для обработки
+    return error; // Пробрасываем ошибку дальше для обработки
   }
 };
 

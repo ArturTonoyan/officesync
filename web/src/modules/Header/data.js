@@ -1,6 +1,6 @@
 export const nav = [
-  {
-    name: "О нас",
-    link: "/",
-  },
+  // {
+  //   name: "О нас",
+  //   link: "/",
+  // },
 ];

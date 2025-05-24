@@ -19,6 +19,10 @@
   }
   .nav {
     display: flex;
+    flex-direction: row;
+    justify-content: end;
+    width: calc(100% - 287px - 224px);
+
     gap: 100px;
     a {
       text-decoration: none;

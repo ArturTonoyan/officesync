@@ -50,7 +50,9 @@
   .objects {
     display: flex;
     flex-direction: column;
-
+    overflow-y: auto;
+    @include ScrollBar;
+    height: calc(100% - 150px);
     .object {
       display: flex;
       flex-direction: row;

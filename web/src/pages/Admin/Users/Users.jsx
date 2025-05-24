@@ -73,13 +73,14 @@ function Users() {
         ...item,
         fio: `${item.surname} ${item.name} ${item.patronymic}`,
         role: item.roles?.map((role) => role.description).join(", "),
-        office: item?.office?.name,
+        office: offices?.data?.find((office) => office.id === item.officeId)
+          ?.name,
         floor: item?.floor?.name,
       }));
       setTableData(qdata);
       setOriginalData(qdata);
     }
-  }, [users?.data]);
+  }, [users?.data, offices]);
 
   //! удаление сотрудника
   const funDeleteUser = (id) => {
