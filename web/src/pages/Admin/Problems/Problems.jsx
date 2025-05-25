@@ -58,6 +58,7 @@ function Problems({ noedit }) {
             equipment:
               item.equipment?.name + " " + item.equipment?.inventoryNumber,
             imageUrl: item?.image ? `${server}/${item?.image}` : null,
+            toname: item?.to?.description,
           }));
       } else {
         qdat = problems?.data.map((item) => ({
@@ -71,6 +72,7 @@ function Problems({ noedit }) {
           equipment:
             item.equipment?.name + " " + item.equipment?.inventoryNumber,
           imageUrl: item?.image ? `${server}/${item?.image}` : null,
+          toname: item?.to?.description,
         }));
       }
       setTableData(qdat);

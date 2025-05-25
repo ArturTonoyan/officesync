@@ -20,6 +20,7 @@ import { setUserData } from "./store/userSlice/user.Slice";
 import Profile from "./pages/Profile/Profile";
 import CompanyInfo from "./pages/Profile/CompanyInfo/CompanyInfo";
 import Reservation from "./pages/Profile/Reservation/Reservation";
+import Analytics from "./pages/Admin/Analytics/Analytics";
 
 function App() {
   const queryClient = new QueryClient();
@@ -65,6 +66,7 @@ function App() {
                   <Route path="equipments" element={<Equipments />}></Route>
                   <Route path="problems" element={<Problems />}></Route>
                   <Route path="to" element={<To />}></Route>
+                  <Route path="analytics" element={<Analytics />}></Route>
                 </Route>
                 <Route path="/constructor" element={<Constructor />}></Route>
                 <Route

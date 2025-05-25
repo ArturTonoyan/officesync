@@ -10,7 +10,7 @@ import {
 } from "../../../../store/convaSlice/conva.Slice";
 import { AnimatePresence, motion } from "framer-motion";
 
-function TopMenu({ offices, floors, funSave, funDownload }) {
+function TopMenu({ offices, floors, funSave, funDownload, noedit }) {
   const selectOffice = useSelector(
     (state) => state.conva.offices.selectedObject
   );
@@ -39,10 +39,26 @@ function TopMenu({ offices, floors, funSave, funDownload }) {
   };
 
   return (
-    <div className={styles.TopMenu}>
-      <div className={styles.icon} onClick={() => navigate("/")}>
-        <img src={logo} alt="logo" />
-      </div>
+    <div
+      className={styles.TopMenu}
+      style={
+        noedit
+          ? {
+              background: "none",
+              width: "max-content",
+              backgroundColor: "inherit",
+              left: "auto",
+              right: "0",
+            }
+          : {}
+      }
+    >
+      {!noedit && (
+        <div className={styles.icon} onClick={() => navigate("/")}>
+          <img src={logo} alt="logo" />
+        </div>
+      )}
+
       <div className={styles.office}>
         <div className={styles.container_list}>
           <button onClick={() => funLicstCLick("office")}>
@@ -89,12 +105,14 @@ function TopMenu({ offices, floors, funSave, funDownload }) {
           </AnimatePresence>
         </div>
       </div>
-      <div className={styles.param}>
-        <button className={styles.download} onClick={funDownload}>
-          Скачать
-        </button>
-        <button onClick={funSave}>Сохранить</button>
-      </div>
+      {!noedit && (
+        <div className={styles.param}>
+          <button className={styles.download} onClick={funDownload}>
+            Скачать
+          </button>
+          <button onClick={funSave}>Сохранить</button>
+        </div>
+      )}
     </div>
   );
 }

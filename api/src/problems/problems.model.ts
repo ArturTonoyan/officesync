@@ -9,6 +9,7 @@ import {
 } from 'sequelize-typescript';
 import { Company } from 'src/companies/companies.model';
 import { Equipment } from 'src/equipments/equipments.model';
+import { To } from 'src/tos/tos.model';
 import { User } from 'src/users/users.model';
 
 interface ProblemCreationAttrs {
@@ -72,4 +73,7 @@ export class Problem extends Model<Problem, ProblemCreationAttrs> {
 
   @BelongsTo(() => Equipment)
   equipment: Equipment;
+
+  @HasOne(() => To)
+  to: To;
 }

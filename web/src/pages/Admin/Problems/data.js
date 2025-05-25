@@ -76,6 +76,6 @@ export const tableHeader = [
   },
   {
     name: "ТО",
-    key: "to",
+    key: "toname",
   },
 ];

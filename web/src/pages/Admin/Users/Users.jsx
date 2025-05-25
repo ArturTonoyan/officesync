@@ -12,6 +12,7 @@ import {
   apiGetRoles,
   apiGetUsers,
   apiUpdateUser,
+  server,
 } from "../../../api/apirequests";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
@@ -76,6 +77,7 @@ function Users() {
         office: offices?.data?.find((office) => office.id === item.officeId)
           ?.name,
         floor: item?.floor?.name,
+        image: `${server}/${item.image}`,
       }));
       setTableData(qdata);
       setOriginalData(qdata);

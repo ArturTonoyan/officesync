@@ -1,0 +1,18 @@
+.Analytics {
+  .content {
+    @include FormContainer;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 40px;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .diagram {
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    margin-bottom: 40px;
+  }
+}

@@ -48,6 +48,11 @@ function LeftMenu() {
       title: "ТО",
       navigate: "/admin/to",
     },
+    {
+      icon: paramIcon,
+      title: "Аналитика",
+      navigate: "/admin/analytics",
+    },
   ];
 
   return (

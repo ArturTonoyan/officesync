@@ -147,14 +147,13 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
       {!noedit && <LeftMenu />}
 
       {/* Top Menu */}
-      {!noedit && (
-        <TopMenu
-          floors={floors}
-          offices={offices}
-          funSave={funSave}
-          funDownload={handleDownload}
-        />
-      )}
+      <TopMenu
+        floors={floors}
+        offices={offices}
+        funSave={funSave}
+        funDownload={handleDownload}
+        noedit={noedit}
+      />
 
       {/* Modals */}
       <ModalAddObject
