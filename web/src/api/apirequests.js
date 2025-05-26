@@ -263,5 +263,5 @@ export const apiDeleteReserved = async (id) => {
 
 //! обращение к нейронной сети
 export const apiPostNeural = async (data) => {
-  return await apiRequest("post", `/predict`, data, {}, neiroServer);
+  return await apiRequest("post", `/predict_wear`, data, {}, neiroServer);
 };

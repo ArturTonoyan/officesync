@@ -188,30 +188,19 @@ function Equipments({ noedit }) {
     futureDate.setDate(futureDate.getDate() + 100);
     const dataEq = equipments?.data?.map((item) => ({
       id: item?.id,
-      currentOperationTime: item?.currentWarranty || 1000,
-      maxOperationTime: item?.maxWarranty || 5000,
-      equipmentCost: item?.cost || 0,
-      cost: item?.cost / 10 || 2000,
-      operatingViolations: item?.problems?.length || 1,
-      completedMaintenance: item?.to?.length,
-      maintenanceFrequency: 100,
-      lastTO: futureDate?.toISOString().split("T")[0],
+      currentOperatingTime: item?.currentWarranty,
+      maximumOperatingTime: item?.maxWarranty,
+      age: Number((item?.currentWarranty / 3000).toFixed(0)),
+      numberTo: item?.to?.length,
     }));
 
     if (dataEq?.length > 0) {
-      apiPostNeural({
-        targetDate: selDat?.toISOString().split("T")[0],
-        items: dataEq,
-      }).then((res) => {
+      apiPostNeural(dataEq).then((res) => {
         if (res?.status === 200) {
           const newData = equipments?.data?.map((item, index) => {
-            let wear;
-            wear = (res?.data?.[index]?.wear * 100).toFixed(2);
-            if (item.maxWarranty - item.currentWarranty < 400)
-              wear = (
-                100 -
-                (item.maxWarranty - item.currentWarranty) / 12
-              ).toFixed(2);
+            let wear = res?.data
+              ?.find((el) => el.id === item?.id)
+              ?.wear.toFixed(0);
             return {
               ...item,
               office: item?.office?.name + " " + item?.office?.address,
@@ -225,7 +214,7 @@ function Equipments({ noedit }) {
                 item?.user?.patronymic +
                 " " +
                 item?.user?.email,
-              wear: wear != null ? wear + "%" : "-",
+              wear: wear != null ? wear - 10 + "%" : "-",
             };
           });
           setTableData(newData);
