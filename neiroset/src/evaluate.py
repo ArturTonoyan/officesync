@@ -80,7 +80,7 @@ if __name__ == "__main__":
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(BASE_DIR, "wear_model.pth")
     scaler_path = os.path.join(BASE_DIR, "scaler", "scaler.pkl")
-    data_path = os.path.join(BASE_DIR, "data", "generated_dataset.csv")
+    data_path = os.path.join(BASE_DIR, "data", "generated_dataset2.csv")
 
     # Загрузка scaler и данных
     scaler = joblib.load(scaler_path)
