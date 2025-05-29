@@ -12,6 +12,7 @@ import {
   apiEditProblem,
   apiGetEquipments,
   apiGetProblems,
+  apiPostNeural,
   server,
 } from "../../../api/apirequests";
 
@@ -26,7 +27,11 @@ function Problems({ noedit }) {
   const [modalEditShow, setModalEditShow] = useState(false);
   const [modalEditData, setModalEditData] = useState({});
 
-  const { data: problems, refetch: refetchProblems } = useQuery({
+  const {
+    data: problems,
+    refetch: refetchProblems,
+    isLoading: isLoadingProblems,
+  } = useQuery({
     queryKey: ["problems/all/id", user?.companyId],
     queryFn: () => apiGetProblems(user?.companyId),
     staleTime: Infinity, //! не обновлять
@@ -50,11 +55,13 @@ function Problems({ noedit }) {
           .map((item) => ({
             ...item,
             user:
-              item.user?.name +
-              " " +
-              item.user?.surname +
-              " " +
-              item.user?.patronymic,
+              item?.status === "Автозаявка"
+                ? "Нейросеть"
+                : (item.user?.name || "") +
+                  " " +
+                  (item.user?.surname || "") +
+                  " " +
+                  (item.user?.patronymic || ""),
             equipment:
               item.equipment?.name + " " + item.equipment?.inventoryNumber,
             imageUrl: item?.image ? `${server}/${item?.image}` : null,
@@ -64,11 +71,13 @@ function Problems({ noedit }) {
         qdat = problems?.data.map((item) => ({
           ...item,
           user:
-            item.user?.name +
-            " " +
-            item.user?.surname +
-            " " +
-            item.user?.patronymic,
+            item?.status === "Автозаявка"
+              ? "Нейросеть"
+              : (item.user?.name || "") +
+                " " +
+                (item.user?.surname || "") +
+                " " +
+                (item.user?.patronymic || ""),
           equipment:
             item.equipment?.name + " " + item.equipment?.inventoryNumber,
           imageUrl: item?.image ? `${server}/${item?.image}` : null,
@@ -154,7 +163,7 @@ function Problems({ noedit }) {
     }
   };
 
-  //! удаление офиса
+  //! удаление
   const funDelete = (id) => {
     apiDeleteProblem(id).then((res) => {
       if (res.status === 200) {
@@ -163,9 +172,68 @@ function Problems({ noedit }) {
     });
   };
 
+  useEffect(() => {
+    if (!isLoadingProblems) {
+      const futureDate = new Date();
+      const selDat = new Date();
+      selDat.setDate(selDat.getDate() + 7);
+      futureDate.setDate(futureDate.getDate() + 100);
+      const dataEq = equipments?.data?.map((item) => ({
+        id: item?.id,
+        currentOperatingTime: item?.currentWarranty,
+        maximumOperatingTime: item?.maxWarranty,
+        age: Number((item?.currentWarranty / 3000).toFixed(0)),
+        numberTo: item?.to?.length,
+      }));
+
+      if (dataEq?.length > 0) {
+        apiPostNeural(dataEq).then((res) => {
+          if (res?.status === 200) {
+            const newData = equipments?.data?.map((item, index) => {
+              let wear = res?.data
+                ?.find((el) => el.id === item?.id)
+                ?.wear.toFixed(0);
+              if (
+                wear > 84 &&
+                !problems?.data?.find((el) => el.equipmentId === item?.id)
+              ) {
+                const formData = new FormData();
+                const fields = {
+                  equipmentId: item?.id,
+                  status: "Автозаявка",
+                  urgency: "Срочно",
+                  description:
+                    "Критический износ оборудования " +
+                    wear +
+                    "%, необходимо провести техническое обслуживание!",
+                  companyId: user?.companyId,
+                };
+                Object.entries(fields).forEach(([key, value]) => {
+                  if (value !== undefined && value !== null) {
+                    formData.append(key, value);
+                  }
+                });
+                apiCreateProblem(formData).then((res) => {
+                  console.log("res", res);
+                  if (res.status === 201) {
+                    setModalShow(false);
+                    setCreateData({});
+                    refetchProblems();
+                  }
+                });
+              }
+            });
+          }
+          // setTableData(qdat);
+          // setOriginalData(qdat);
+        });
+      }
+    }
+  }, [equipments]);
+
   return (
     <div className={styles.Problems}>
-      <h1>Неполадки</h1>
+      <h1>Заявки на ремонт</h1>
       <ModalAddOfice
         show={modalShow}
         setShow={setModalShow}

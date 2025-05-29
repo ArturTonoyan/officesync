@@ -73,7 +73,7 @@ function Table({
               className={
                 parseFloat(row?.wear) > 70
                   ? styles?.trRed
-                  : parseFloat(row?.wear) > 50
+                  : parseFloat(row?.wear) > 50 || row?.status === "Автозаявка"
                   ? styles?.trYellow
                   : ""
               }

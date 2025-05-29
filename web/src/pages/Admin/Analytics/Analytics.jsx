@@ -70,7 +70,7 @@ function Analytics() {
         </div>
         <div className={styles.diagram}>
           <h2>Бронирования</h2>
-          {users?.data && <AnalyticsChart usageData={reserveds?.data} />}
+          {reserveds?.data && <AnalyticsChart usageData={reserveds?.data} />}
         </div>
         <div className={styles.diagram}>
           <h2>Сотрудники</h2>

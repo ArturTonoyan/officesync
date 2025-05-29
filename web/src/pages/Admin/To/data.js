@@ -54,7 +54,7 @@ export const addOfficeData = [
     type: "file",
   },
   {
-    name: "Неполадка",
+    name: "Заявка на ремонт",
     key: "problem",
     type: "text",
   },
