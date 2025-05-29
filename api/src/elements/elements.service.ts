@@ -8,6 +8,8 @@ import { UpdateElementDto } from './dto/update-element-dto';
 import { ElementsReserved } from './elements-reserved.model';
 import { Sequelize } from 'sequelize-typescript';
 import { CreateReservedDto } from './dto/create-reserved-dto';
+import { User } from 'src/users/users.model';
+import { Equipment } from 'src/equipments/equipments.model';
 
 @Injectable()
 export class ElementsService {
@@ -54,6 +56,18 @@ export class ElementsService {
   async getAllByFloor(id: string) {
     const elements = await this.elementRepository.findAll({
       where: { floorId: id },
+      include: [
+        {
+          model: Equipment,
+          include: [
+            {
+              model: User, // замени на свой класс модели пользователя
+            },
+          ],
+        },
+        ElementsReserved,
+        // другие ассоциации, если нужно
+      ],
     });
     return elements;
   }
@@ -79,10 +93,16 @@ export class ElementsService {
   }
 
   async getReserveds(date: string, elementId: string) {
-    console.log('date', date);
-    console.log('elementId', elementId);
     const reserveds = await this.elementsReservedRepository.findAll({
       where: { date, elementId },
+      include: { all: true },
+    });
+    return reserveds;
+  }
+
+  async getReservedsElement(elementId: string) {
+    const reserveds = await this.elementsReservedRepository.findAll({
+      where: { elementId },
       include: { all: true },
     });
     return reserveds;

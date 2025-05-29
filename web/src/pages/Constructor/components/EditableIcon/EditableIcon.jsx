@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Image, Transformer } from "react-konva";
+import { Image, Label, Tag, Text, Transformer } from "react-konva";
 import { useDispatch, useSelector } from "react-redux";
 import useImage from "use-image";
 import {
@@ -9,6 +9,7 @@ import {
 import { typesNoEquipment } from "../ModalAddObject/data";
 
 const EditableIcon = ({ object, noedit, setSelectedRoom }) => {
+  const [showListInfo, setShowListInfo] = useState(false);
   const GRID_SIZE = 10;
   const ROTATE_STEP = 5; // шаг поворота в градусах
 
@@ -91,8 +92,37 @@ const EditableIcon = ({ object, noedit, setSelectedRoom }) => {
     );
   };
 
+  const infoText = object.equipment
+    ? `Название: ${object.equipment.name}
+Описание: ${object.equipment.description}
+Инв. номер: ${object.equipment.inventoryNumber}
+Стоимость: ${object.equipment.cost}₽
+Наработка: ${object.equipment.currentWarranty}/${object.equipment.maxWarranty}
+Дата: ${new Date(object.equipment.createdAt).toLocaleDateString()}`
+    : null;
+
   return (
     <>
+      {showListInfo && infoText && (
+        <Label x={object.x + 50} y={object.y - 10}>
+          <Tag
+            fill="white"
+            stroke="black"
+            cornerRadius={4}
+            shadowColor="black"
+            shadowBlur={5}
+            shadowOffset={{ x: 2, y: 2 }}
+            shadowOpacity={0.2}
+          />
+          <Text
+            text={infoText}
+            fontSize={12}
+            padding={5}
+            fill="black"
+            width={200}
+          />
+        </Label>
+      )}
       <Image
         image={image}
         draggable={!object.isLocked && !noedit}
@@ -118,13 +148,17 @@ const EditableIcon = ({ object, noedit, setSelectedRoom }) => {
         }
         ref={imageRef}
         onMouseEnter={() => {
+          setShowListInfo(true);
           if (noedit) {
             typesNoEquipment.includes(object.type) && setIsHovered(true);
           } else {
             setIsHovered(true);
           }
         }}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setShowListInfo(false);
+        }}
         shadowColor={isHovered ? "blue" : ""}
         shadowBlur={isHovered ? 5 : 0}
         shadowOpacity={isHovered ? 0.6 : 0}

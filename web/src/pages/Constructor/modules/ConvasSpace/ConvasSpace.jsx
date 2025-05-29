@@ -17,10 +17,10 @@ import { useQuery } from "@tanstack/react-query";
 import {
   apiEddElements,
   apiGetElements,
-  apiGetEquipments,
   apiGetFloors,
   apiGetOffices,
 } from "../../../../api/apirequests";
+
 function ConvasSpace({ noedit, setSelectedRoom }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user.data);
@@ -28,13 +28,7 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
   const [scale, setScale] = useState(1);
   const stageRef = useRef(null);
   const [modalAddEquipment, setModalAddEquipment] = useState(false);
-
-  const { data: equipments, refetch: refetchEquipments } = useQuery({
-    queryKey: ["equipments/all/id", user?.companyId],
-    queryFn: () => apiGetEquipments(user?.companyId),
-    staleTime: Infinity, //! не обновлять
-    enabled: !!user?.companyId,
-  });
+  const [editData, setEditData] = useState(null);
 
   const { data: offices, refetch: refetchOffices } = useQuery({
     queryKey: ["offices/all/id", user?.companyId],
@@ -141,7 +135,12 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
       <Scale scale={scale} setScale={setScale} />
 
       {/* Right Menu */}
-      {!noedit && <RightMenu />}
+      {!noedit && (
+        <RightMenu
+          setModalAddEquipment={setModalAddEquipment}
+          setEditItem={setEditData}
+        />
+      )}
 
       {/* Left Menu */}
       {!noedit && <LeftMenu />}
@@ -157,9 +156,11 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
 
       {/* Modals */}
       <ModalAddObject
+        editData={editData}
+        setEditData={setEditData}
         show={modalAddEquipment}
         setShow={setModalAddEquipment}
-        title={"Добавить объект"}
+        title={editData?.id ? "Редактировать объект" : "Добавить объект"}
       />
     </div>
   );

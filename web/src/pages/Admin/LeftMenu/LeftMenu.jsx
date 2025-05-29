@@ -40,7 +40,7 @@ function LeftMenu() {
 
     {
       icon: errorsIcon,
-      title: "Неполадки",
+      title: "Заявки на ремонт",
       navigate: "/admin/problems",
     },
     {

@@ -62,7 +62,7 @@ function LeftMenu({ funUpdUser }) {
 
     {
       icon: errorsIcon,
-      title: "Неполадки",
+      title: "Заявки на ремонт",
       navigate: "/profile/problems",
     },
     {

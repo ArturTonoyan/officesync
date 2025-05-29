@@ -74,6 +74,11 @@ export class ElementsController {
     return this.elementsService.getReserveds(date, elementId);
   }
 
+  @Get('/reserveds/:elementId')
+  getReservedsElement(@Param('elementId') elementId: string) {
+    return this.elementsService.getReservedsElement(elementId);
+  }
+
   @Get('/reserveds/:userId')
   getMyReserveds(@Param('userId') userId: string) {
     return this.elementsService.getMyReserveds(userId);

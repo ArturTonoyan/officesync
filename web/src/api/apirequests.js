@@ -256,6 +256,11 @@ export const apiGetReservedsMy = async (userId) => {
   return await apiRequest("get", `/elements/reserveds/${userId}`);
 };
 
+//! получение всех бронирований елемента
+export const apiGetReservedsElements = async (elementId) => {
+  return await apiRequest("get", `/elements/reserveds/${elementId}`);
+};
+
 //! удаление бронирования
 export const apiDeleteReserved = async (id) => {
   return await apiRequest("delete", `/elements/reserveds/${id}`);

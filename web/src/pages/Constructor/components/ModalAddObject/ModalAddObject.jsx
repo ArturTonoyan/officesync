@@ -40,7 +40,7 @@ const defaultData = {
   isLocked: false,
 };
 
-function ModalAddObject({ title, show, setShow }) {
+function ModalAddObject({ editData, setEditData, title, show, setShow }) {
   const user = useSelector((state) => state.user.user.data);
   const floorId = useSelector((state) => state.conva.floors.selected);
   const dispatch = useDispatch();
@@ -49,6 +49,27 @@ function ModalAddObject({ title, show, setShow }) {
   const [modalAllIcons, setModalAllIcons] = useState(false);
   const [showDropdown, setShowDropdown] = useState(null);
   const [data, setData] = useState(defaultData);
+
+  useEffect(() => {
+    if (editData) {
+      setData({
+        ...editData,
+        equipment: editData.equipment?.name,
+        user: editData.equipment
+          ? editData.equipment?.user?.surname +
+            " " +
+            editData.equipment?.user?.name +
+            " " +
+            editData.equipment?.user?.patronymic +
+            " " +
+            editData.equipment?.user?.email
+          : "",
+        icon: editData.image,
+      });
+    } else {
+      setData(defaultData);
+    }
+  }, [editData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -123,13 +144,16 @@ function ModalAddObject({ title, show, setShow }) {
       floorId,
       image: data.icon,
     }).forEach(([key, value]) => formData.append(key, value));
-
-    apiEddElement(formData).then((res) => {
-      if (res.status === 201) {
-        dispatch(addObjectApi({ data: res.data }));
-        setData(defaultData);
-      }
-    });
+    if (editData) {
+      setEditData(null);
+    } else {
+      apiEddElement(formData).then((res) => {
+        if (res.status === 201) {
+          dispatch(addObjectApi({ data: res.data }));
+          setData(defaultData);
+        }
+      });
+    }
   };
 
   const renderDropdownList = (key) => {
@@ -251,6 +275,7 @@ function ModalAddObject({ title, show, setShow }) {
                 onClick={() => {
                   setShow(false);
                   setData(defaultData);
+                  setEditData(null);
                 }}
               >
                 Отменить

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./RightMenu.module.scss";
 import arrow from "@assets/images/icons/arrow.svg";
 import { inputs } from "./data";
@@ -7,13 +7,17 @@ import {
   setDataBySelected,
   deleteObject,
 } from "../../../../store/convaSlice/conva.Slice";
-import { apiDeleteElement } from "../../../../api/apirequests";
-function RightMenu() {
+import {
+  apiDeleteElement,
+  apiGetReservedsElements,
+} from "../../../../api/apirequests";
+function RightMenu({ setModalAddEquipment, setEditItem }) {
   const dispatch = useDispatch();
   const item = useSelector((state) => state.conva.objects.selectedObject);
   const [openMenu, setOpenMenu] = useState(true);
   const [editData, setEditData] = useState(null);
   const [value, setValue] = useState("");
+  const [reserveds, setReserved] = useState([]);
 
   const funChangeData = (key, value) => {
     dispatch(setDataBySelected({ key, value }));
@@ -26,6 +30,16 @@ function RightMenu() {
       }
     });
   };
+
+  useEffect(() => {
+    if (item?.id) {
+      apiGetReservedsElements(item?.id).then((res) => {
+        if (res?.status === 200) {
+          setReserved(res?.data);
+        }
+      });
+    }
+  }, [item?.id]);
 
   return (
     <div
@@ -76,10 +90,88 @@ function RightMenu() {
         </>
       )}
       {item?.id && (
+        <div className={styles.object_info}>
+          <h4>Информация елемента</h4>
+          <div className={styles.scroll}>
+            <div className={styles.object_info_container}>
+              <h4>Объект</h4>
+              <div className={styles.text_box}>
+                <span className={styles.name}>Название</span>
+                <span className={styles.value}>{item?.name}</span>
+              </div>
+              <div className={styles.text_box}>
+                <span className={styles.name}>Тип</span>
+                <span className={styles.value}>{item?.type}</span>
+              </div>
+              {item?.equipment && (
+                <div className={styles.equipment_block}>
+                  <h4>Оборудование</h4>
+                  <div className={styles.text_box}>
+                    <span className={styles.name}>Название</span>
+                    <span className={styles.value}>
+                      {item?.equipment?.name}
+                    </span>
+                  </div>
+                  <div className={styles.text_box}>
+                    <span className={styles.name}>Инв. номер</span>
+                    <span className={styles.value}>
+                      {" "}
+                      {item?.equipment?.inventoryNumber}
+                    </span>
+                  </div>
+                  <div className={styles.text_box}>
+                    <span className={styles.name}>Цена</span>
+                    <span className={styles.value}>
+                      {item?.equipment?.cost} руб
+                    </span>
+                  </div>
+                  <div className={styles.text_box}>
+                    <span className={styles.name}>Описание</span>
+                    <span className={styles.value}>
+                      {item?.equipment?.description}
+                    </span>
+                  </div>
+                  <div className={styles.text_box}>
+                    <span className={styles.name}>Наработка</span>
+                    <span className={styles.value}>
+                      {item?.equipment?.currentWarranty} /{" "}
+                      {item?.equipment?.maxWarranty}
+                    </span>
+                  </div>
+                  <div className={styles.text_box}>
+                    <h4>Сотрудник</h4>
+                    <span className={styles.value}>
+                      {item?.equipment?.user?.surname +
+                        " " +
+                        item?.equipment?.user?.name +
+                        " " +
+                        item?.equipment?.user?.patronymic +
+                        " " +
+                        item?.equipment?.user?.email}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {item?.id && (
         <div className={styles.actions}>
           <h4>Действия</h4>
           <div className={styles.actions_container}>
-            <button onClick={funDelete}>Удалить</button>
+            <button onClick={funDelete} className={styles.delete}>
+              Удалить
+            </button>
+            <button
+              onClick={() => {
+                setModalAddEquipment(true);
+                setEditItem(item);
+              }}
+              className={styles.edit}
+            >
+              Редактировать
+            </button>
           </div>
         </div>
       )}
