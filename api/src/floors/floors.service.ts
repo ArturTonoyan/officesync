@@ -13,6 +13,7 @@ export class FloorsService {
   constructor(
     @InjectModel(Floors) private floorsRepository: typeof Floors,
     private rolesService: RolesService,
+    private fileService: FilesService,
   ) {}
 
   async create(dto: CreateFloorsDto) {
@@ -71,6 +72,24 @@ export class FloorsService {
       return floor;
     } catch (error) {
       console.error('Ошибка при обновлении этажа:', error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async updateImage(id: string, image: Express.Multer.File) {
+    try {
+      const floor = await this.floorsRepository.findOne({ where: { id } });
+      if (!floor) {
+        throw new Error('Этаж не найден');
+      }
+      if (image) {
+        const fileName = await this.fileService.createFile(image); // Сохранение файла и получение имени
+        floor.image = fileName; // Обновление DTO с именем файла
+      }
+      await floor.save();
+      return floor;
+    } catch (error) {
+      console.error('Ошибка при обновлении изображения этажа:', error);
       throw new InternalServerErrorException(error.message);
     }
   }

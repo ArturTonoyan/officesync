@@ -5,6 +5,7 @@ import {
   apiGetFloors,
   apiGetOffices,
   apiGetProblems,
+  apiGetReserveds,
   apiGetTos,
   apiGetUsers,
 } from "../../../api/apirequests";
@@ -14,6 +15,7 @@ import EquipmentWarrantyChart from "./Components/EquipmentWarrantyChart/Equipmen
 import OfficeChart from "./Components/OfficeChart/OfficeChart";
 import DonutChart from "./Components/DonutChart/DonutChart";
 import EquipmentProblems3DChart from "./Components/EquipmentProblems3DChart/EquipmentProblems3DChart";
+import AnalyticsChart from "./Components/AnalyticsChart/AnalyticsChart";
 
 function Analytics() {
   const user = useSelector((state) => state.user.user.data);
@@ -25,12 +27,11 @@ function Analytics() {
     enabled: !!user?.companyId,
   });
 
-  //   const { data: problems, refetch: refetchProblems } = useQuery({
-  //     queryKey: ["problems/all/id", user?.companyId],
-  //     queryFn: () => apiGetProblems(user?.companyId),
-  //     staleTime: Infinity, //! не обновлять
-  //     enabled: !!user?.companyId,
-  //   });
+  const { data: reserveds } = useQuery({
+    queryKey: ["problems/all/id"],
+    queryFn: () => apiGetReserveds("", ""),
+    staleTime: Infinity, //! не обновлять
+  });
 
   const { data: equipments, refetch: refetchEquipments } = useQuery({
     queryKey: ["equipments/all/id", user?.companyId],
@@ -53,13 +54,6 @@ function Analytics() {
     enabled: !!user?.companyId,
   });
 
-  //   const { data: tos, refetch: refetchTos } = useQuery({
-  //     queryKey: ["tos/all/id", user?.companyId],
-  //     queryFn: () => apiGetTos(user?.companyId),
-  //     staleTime: Infinity, //! не обновлять
-  //     enabled: !!user?.companyId,
-  //   });
-
   return (
     <div className={styles.Analytics}>
       <h1>Аналитика</h1>
@@ -73,6 +67,10 @@ function Analytics() {
         <div className={styles.diagram}>
           <h2>Этажи</h2>
           {floors?.data && <EquipmentWarrantyChart floors={floors?.data} />}
+        </div>
+        <div className={styles.diagram}>
+          <h2>Бронирования</h2>
+          {users?.data && <AnalyticsChart usageData={reserveds?.data} />}
         </div>
         <div className={styles.diagram}>
           <h2>Сотрудники</h2>

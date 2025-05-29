@@ -32,21 +32,25 @@ export class ElementsService {
 
   async createMany(dtos: UpdateElementDto[]) {
     const createdElements = [];
-    console.log('dtos', dtos);
 
-    for (let i = 0; i < dtos.length; i++) {
-      const dto = dtos[i];
-      let element = null;
+    for (const dto of dtos) {
       const el = await this.elementRepository.findOne({
         where: { id: dto.id },
       });
+      let element;
+
       if (el) {
-        element = await this.elementRepository.update(dto, {
+        await this.elementRepository.update(dto, {
+          where: { id: dto.id },
+        });
+        // повторно получаем обновлённый объект
+        element = await this.elementRepository.findOne({
           where: { id: dto.id },
         });
       } else {
         element = await this.elementRepository.create(dto);
       }
+
       createdElements.push(element);
     }
 
@@ -93,10 +97,18 @@ export class ElementsService {
   }
 
   async getReserveds(date: string, elementId: string) {
-    const reserveds = await this.elementsReservedRepository.findAll({
-      where: { date, elementId },
-      include: { all: true },
-    });
+    let reserveds = [];
+    if (!date || !elementId) {
+      reserveds = await this.elementsReservedRepository.findAll({
+        include: { all: true },
+      });
+    } else {
+      reserveds = await this.elementsReservedRepository.findAll({
+        where: { date, elementId },
+        include: { all: true },
+      });
+    }
+
     return reserveds;
   }
 

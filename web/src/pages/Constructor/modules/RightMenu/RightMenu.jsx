@@ -58,7 +58,6 @@ function RightMenu({ setModalAddEquipment, setEditItem }) {
       </div>
       {item?.id && (
         <>
-          <h4>Позиция</h4>
           <div className={styles.position}>
             {inputs.map((el, index) => (
               <div className={styles.input_box} name={el.key}>
@@ -103,6 +102,26 @@ function RightMenu({ setModalAddEquipment, setEditItem }) {
                 <span className={styles.name}>Тип</span>
                 <span className={styles.value}>{item?.type}</span>
               </div>
+              {reserveds?.length > 0 && <h4>Бронирования</h4>}
+              {reserveds.map((item, index) => (
+                <div className={styles.text_box} key={index}>
+                  <span className={styles.name}>Бронь {index + 1}</span>
+                  <span className={styles.value}>Дата: {item?.date}</span>
+
+                  <span className={styles.value}>
+                    Время: {item?.startTime?.slice(0, 5)} -{" "}
+                    {item?.endTime?.slice(0, 5)}
+                  </span>
+                  <span className={styles.value}>
+                    Пользователь:{" "}
+                    {item?.user?.surname +
+                      " " +
+                      item?.user?.name +
+                      " " +
+                      item?.user?.patronymic}
+                  </span>
+                </div>
+              ))}
               {item?.equipment && (
                 <div className={styles.equipment_block}>
                   <h4>Оборудование</h4>

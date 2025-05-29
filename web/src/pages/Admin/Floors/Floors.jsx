@@ -10,6 +10,7 @@ import {
   apiGetFloors,
   apiGetOffices,
   apiUpdateFloor,
+  server,
 } from "../../../api/apirequests";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
@@ -54,6 +55,7 @@ function Floors() {
         office: offices?.data?.find((el) => el.id === item.officeId)?.name,
         users: item.users?.length,
         devices: item.eqipments?.length,
+        image: `${server}/${item.image}`,
       }));
       setTableData(qdat);
       setOriginalData(qdat);
@@ -168,6 +170,8 @@ function Floors() {
         setModalShow={setModalShow}
         shearchParam={shearchParam}
         setShearchParam={setShearchParam}
+        tableData={tableData}
+        tableHeader={tableHeader}
       />
       <div className={styles.content}>
         <Table

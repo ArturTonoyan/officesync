@@ -10,7 +10,6 @@ import {
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
 import { ElementsReserved } from './elements-reserved.model';
-import { User } from 'src/users/users.model';
 
 interface ElementCreationAttrs {
   //! для создание модели необходимы тольок эти поля

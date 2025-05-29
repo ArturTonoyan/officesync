@@ -97,7 +97,7 @@ export const tableHeader = [
     key: "image",
   },
   {
-    name: "Неполадка",
+    name: "Заявка на ремонт",
     key: "problem",
   },
   {

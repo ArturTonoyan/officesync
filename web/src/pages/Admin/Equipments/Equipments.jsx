@@ -290,6 +290,8 @@ function Equipments({ noedit }) {
         shearchParam={shearchParam}
         setShearchParam={setShearchParam}
         noedit={noedit}
+        tableData={tableData}
+        tableHeader={tableHeader}
       />
       <div className={styles.content}>
         <Table

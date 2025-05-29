@@ -40,6 +40,11 @@ export class Floors extends Model<Floors, FloorsCreationAttrs> {
   })
   number: number;
 
+  @Column({
+    type: DataType.STRING,
+  })
+  image: string;
+
   @ForeignKey(() => Office)
   @Column({
     type: DataType.UUID,

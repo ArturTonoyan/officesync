@@ -134,6 +134,13 @@ export const apiUpdateFloor = async (data, id) => {
   return await apiRequest("put", `/floors/${id}`, data);
 };
 
+//! загрузка фото этажа
+export const apiUpdateFloorImage = async (image, id) => {
+  return await apiRequest("put", `/floors/upload_image/${id}`, image, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
 //! удаление этажа
 export const apiDeleteFloor = async (id) => {
   return await apiRequest("delete", `/floors/${id}`);

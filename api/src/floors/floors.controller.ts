@@ -45,6 +45,16 @@ export class FloorsController {
   }
 
   @Roles('ADMIN')
+  @UseInterceptors(FileInterceptor('image'))
+  @Put('upload_image/:id')
+  updateImage(
+    @Param('id') id: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.floorsService.updateImage(id, image);
+  }
+
+  @Roles('ADMIN')
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.floorsService.delete(id);

@@ -1,7 +1,14 @@
 import styles from "./HeadBlock.module.scss";
 import lupa from "@assets/images/icons/lupa.svg";
+import { handleExportExcel } from "../../../../utils/functions/funcions";
 
-function HeadBlock({ shearchParam, setShearchParam, setModalShow }) {
+function HeadBlock({
+  tableData,
+  tableHeader,
+  shearchParam,
+  setShearchParam,
+  setModalShow,
+}) {
   return (
     <div className={styles.HeadBlock}>
       <div className={styles.left_block}>
@@ -14,6 +21,13 @@ function HeadBlock({ shearchParam, setShearchParam, setModalShow }) {
         />
       </div>
       <div className={styles.right_block}>
+        <button
+          className={styles.save}
+          style={{ marginRight: "15px" }}
+          onClick={() => handleExportExcel(tableData, tableHeader)}
+        >
+          📁 Экспорт в Excel
+        </button>
         <button className={styles.save} onClick={() => setModalShow(true)}>
           + Добавить офис
         </button>

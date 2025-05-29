@@ -19,6 +19,7 @@ import {
   apiGetElements,
   apiGetFloors,
   apiGetOffices,
+  apiUpdateFloorImage,
 } from "../../../../api/apirequests";
 
 function ConvasSpace({ noedit, setSelectedRoom }) {
@@ -29,6 +30,7 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
   const stageRef = useRef(null);
   const [modalAddEquipment, setModalAddEquipment] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [saveAction, setSaveAction] = useState(false);
 
   const { data: offices, refetch: refetchOffices } = useQuery({
     queryKey: ["offices/all/id", user?.companyId],
@@ -91,16 +93,38 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
   };
 
   //! сохранить карту
-  const funSave = () => {
+  const funSave = async () => {
+    setSaveAction(true);
     const qerydata = conva?.objects?.data?.map((obj) => ({
       ...obj,
       floorId: conva?.floors?.selected,
     }));
-    console.log("qerydata", qerydata);
-    apiEddElements(qerydata).then((res) => {
-      console.log("res", res);
-    });
+    apiEddElements(qerydata);
   };
+
+  useEffect(() => {
+    if (saveAction) {
+      const saveImage = async () => {
+        const uri = stageRef.current.toDataURL({
+          mimeType: "image/png",
+          pixelRatio: 2, // можно увеличить качество
+        });
+
+        const blob = await fetch(uri).then((res) => res.blob());
+
+        const formData = new FormData();
+        formData.append("image", blob, "canvas.png");
+
+        await apiUpdateFloorImage(formData, conva?.floors?.selected).then(
+          () => {
+            setSaveAction(false);
+          }
+        );
+      };
+
+      saveImage();
+    }
+  }, [saveAction]);
 
   return (
     <div className={styles.ConvasSpace}>
@@ -119,9 +143,10 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
           {conva.objects.data &&
             [...conva.objects.data]
               .sort((a, b) => a.zIndex - b.zIndex)
-              .map((object) => (
+              .map((object, index) => (
                 <EditableIcon
-                  key={object.id}
+                  saveAction={saveAction}
+                  key={index}
                   object={object}
                   noedit={noedit}
                   setSelectedRoom={setSelectedRoom}

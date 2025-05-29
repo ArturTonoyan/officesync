@@ -74,4 +74,9 @@ export const tableHeader = [
     key: "devices",
     type: "text",
   },
+  {
+    name: "План этажа",
+    key: "image",
+    type: "text",
+  },
 ];

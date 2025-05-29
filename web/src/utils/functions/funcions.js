@@ -1,3 +1,6 @@
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 //! преобразуем фио в строку
 export const fioToString = (name, surname, patronymic) => {
   let fio = "";
@@ -167,4 +170,34 @@ export const funAllSearch = (text, originalData) => {
   } else {
     return [...originalData]; // Сбрасываем фильтр
   }
+};
+
+//! экспорт в excel
+export const handleExportExcel = (tableData, tableHeader) => {
+  const exportData = tableData.map((row, idx) => {
+    const rowData = { "№": idx + 1 };
+    tableHeader.slice(1).forEach((col) => {
+      rowData[col.name] = row[col.key];
+    });
+    return rowData;
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+  // Задание ширины колонок (в символах)
+  worksheet["!cols"] = [
+    { wch: 5 }, // ширина для "№"
+    ...tableHeader.slice(1).map(() => ({ wch: 25 })), // остальные колонки по 25 символов
+  ];
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Таблица");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const file = new Blob([excelBuffer], { type: "application/octet-stream" });
+  saveAs(file, "table_export.xlsx");
 };

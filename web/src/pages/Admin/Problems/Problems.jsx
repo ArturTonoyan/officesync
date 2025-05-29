@@ -203,6 +203,8 @@ function Problems({ noedit }) {
         setModalShow={setModalShow}
         shearchParam={shearchParam}
         setShearchParam={setShearchParam}
+        tableData={tableData}
+        tableHeader={tableHeader}
       />
       <div className={styles.content}>
         <Table

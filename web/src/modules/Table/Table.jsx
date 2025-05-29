@@ -14,8 +14,6 @@ function Table({
 }) {
   const [openList, setOpenList] = useState(null);
 
-  console.log("tableData", tableData);
-
   const getTdData = (key, row) => {
     if (key === "imageUrl" || key === "image")
       return row[key] ? (

@@ -8,12 +8,16 @@ import {
 } from "../../../../store/convaSlice/conva.Slice";
 import { typesNoEquipment } from "../ModalAddObject/data";
 
-const EditableIcon = ({ object, noedit, setSelectedRoom }) => {
+const EditableIcon = ({ saveAction, object, noedit, setSelectedRoom }) => {
   const [showListInfo, setShowListInfo] = useState(false);
   const GRID_SIZE = 10;
   const ROTATE_STEP = 5; // шаг поворота в градусах
 
   const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    setShowListInfo(saveAction);
+  }, [saveAction]);
 
   const dispatch = useDispatch();
   const isSelected =
