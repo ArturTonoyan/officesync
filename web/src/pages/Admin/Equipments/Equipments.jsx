@@ -122,7 +122,7 @@ function Equipments({ noedit }) {
       setTableData(qdat);
       setOriginalData(qdat);
     }
-  }, [equipments?.data]);
+  }, [equipments?.data, noedit]);
 
   //! функция создания
   const funCreate = () => {
@@ -186,13 +186,27 @@ function Equipments({ noedit }) {
     const selDat = new Date();
     selDat.setDate(selDat.getDate() + 7);
     futureDate.setDate(futureDate.getDate() + 100);
-    const dataEq = equipments?.data?.map((item) => ({
-      id: item?.id,
-      currentOperatingTime: item?.currentWarranty,
-      maximumOperatingTime: item?.maxWarranty,
-      age: Number((item?.currentWarranty / 3000).toFixed(0)),
-      numberTo: item?.to?.length,
-    }));
+    let dataEq = [];
+
+    if (noedit) {
+      dataEq = equipments?.data
+        ?.filter((el) => el.userId === user?.id)
+        ?.map((item) => ({
+          id: item?.id,
+          currentOperatingTime: item?.currentWarranty,
+          maximumOperatingTime: item?.maxWarranty,
+          age: Number((item?.currentWarranty / 3000).toFixed(0)),
+          numberTo: item?.to?.length,
+        }));
+    } else {
+      dataEq = equipments?.data?.map((item) => ({
+        id: item?.id,
+        currentOperatingTime: item?.currentWarranty,
+        maximumOperatingTime: item?.maxWarranty,
+        age: Number((item?.currentWarranty / 3000).toFixed(0)),
+        numberTo: item?.to?.length,
+      }));
+    }
 
     if (dataEq?.length > 0) {
       apiPostNeural(dataEq).then((res) => {

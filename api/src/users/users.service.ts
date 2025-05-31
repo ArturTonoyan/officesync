@@ -7,6 +7,7 @@ import { AddRoleDto } from './dto/add-role.dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { FilesService } from 'src/files/files.service';
 import { Role } from 'src/roles/roles.model';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -26,14 +27,30 @@ export class UsersService {
   }
 
   async createUserAdmin(dto: CreateUserDto) {
-    if (!dto.role) {
+    const candidate = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
+
+    if (candidate) {
+      throw new HttpException(
+        'Пользователь с таким email уже существует',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!dto.roleId) {
       throw new HttpException('Роль не указана', HttpStatus.BAD_REQUEST);
     }
-    const user = await this.userRepository.create(dto);
-    let role;
-    role = await this.rolesService.getRoleByValue(dto.role);
+    const hashPassword = await bcrypt.hash(dto.password, 5);
+    const user = await this.userRepository.create({
+      ...dto,
+      password: hashPassword,
+    });
+
+    const role = await this.rolesService.getRoleById(dto.roleId);
     await user.$set('roles', [role.id]);
     user.roles = [role];
+
     return user;
   }
 

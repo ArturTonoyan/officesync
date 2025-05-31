@@ -8,4 +8,5 @@ export class CreateUserDto {
   readonly password: string;
   @IsString({ message: 'Должно быть строкой' }) //! валидация
   role: string;
+  roleId: string;
 }

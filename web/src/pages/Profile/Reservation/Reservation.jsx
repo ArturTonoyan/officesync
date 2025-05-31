@@ -48,6 +48,9 @@ function Reservation() {
   });
 
   useEffect(() => {
+    refetchReservedsMy();
+  }, []);
+  useEffect(() => {
     setReservedsDate(reserveds?.data || []);
   }, [reserveds]);
 
@@ -218,7 +221,7 @@ function Reservation() {
           </div>
           <div
             className={styles.bottom}
-            style={{ overflowY: "auto", height: "100%" }}
+            style={{ overflowY: "auto", height: "300px" }}
           >
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
               {reservedsMy?.data?.length === 0 && (

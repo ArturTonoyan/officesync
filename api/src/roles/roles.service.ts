@@ -37,6 +37,10 @@ export class RolesService implements OnModuleInit {
     return role;
   }
 
+  async getRoleById(id: string) {
+    const role = await this.roleRepository.findOne({ where: { id } });
+    return role;
+  }
   async getAll() {
     const roles = await this.roleRepository.findAll();
     return roles;

@@ -37,7 +37,6 @@ export class UsersController {
     return this.usersService.createUserAdmin(userDto);
   }
 
-  @Roles('ADMIN') //! ограничение по ролям
   @Get('/all/:id')
   @UseGuards(RolesGuard)
   getAllByCompanyId(@Param('id') id: string) {

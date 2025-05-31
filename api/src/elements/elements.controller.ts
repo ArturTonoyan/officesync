@@ -79,7 +79,7 @@ export class ElementsController {
     return this.elementsService.getReservedsElement(elementId);
   }
 
-  @Get('/reserveds/:userId')
+  @Get('/reserveds/my/:userId')
   getMyReserveds(@Param('userId') userId: string) {
     return this.elementsService.getMyReserveds(userId);
   }

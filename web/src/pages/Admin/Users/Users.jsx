@@ -98,6 +98,9 @@ function Users() {
     let data = {
       ...createUserData,
       companyId: user.companyId,
+      role: roles?.data?.find(
+        (role) => role.description === createUserData.roleId
+      )?.value,
     };
     console.log("createUserData", createUserData);
 
@@ -146,7 +149,7 @@ function Users() {
           role: {
             data: roles?.data,
             key: "roleId",
-            obj: { key: "role", value: "value" },
+            obj: { key: "role", value: "description" },
             value: ["description"],
           },
           office: {
@@ -172,7 +175,7 @@ function Users() {
         setShow={setModalEditShow}
         funSave={funUpdateUser}
         setData={setModalEditData}
-        title={"Изменить данные сотрудника"}
+        title={"Редактировать данные сотрудника"}
         inputs={editOfficeData}
         lists={{
           role: {

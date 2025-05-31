@@ -105,7 +105,7 @@ export class User extends Model<User, UserCreationAttrs> {
   @HasMany(() => Problem)
   problems: Problem[];
 
-  @HasOne(() => Office)
+  @BelongsTo(() => Office)
   office: Office;
 
   @BelongsTo(() => Floors)

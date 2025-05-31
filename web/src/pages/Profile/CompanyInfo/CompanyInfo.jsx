@@ -6,8 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 
 function CompanyInfo({ funUpdUser }) {
   const user = useSelector((state) => state.user.user.data);
-  const office = useSelector((state) => state.user.user.data.office);
-  const floor = useSelector((state) => state.user.user.data.floor);
+  const office = useSelector((state) => state.user.user.data?.office);
+  const floor = useSelector((state) => state.user.user.data?.floor);
   const { data: users, refetch: refetchUsers } = useQuery({
     queryKey: ["users/all", user?.companyId],
     queryFn: () => apiGetUsers(user?.companyId),

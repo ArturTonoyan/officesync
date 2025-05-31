@@ -53,43 +53,42 @@ function App() {
               element={<Registration funUpdUser={funUpdUser} />}
             ></Route>
             <Route path="/" element={<AboutUs />}></Route>
-            {userRole === "ADMIN" && (
-              <>
-                <Route path="/admin" element={<Admin />}>
-                  <Route
-                    path=""
-                    element={<Company funUpdUser={funUpdUser} />}
-                  ></Route>
-                  <Route path="offices" element={<Offices />}></Route>
-                  <Route path="floors" element={<Floors />}></Route>
-                  <Route path="users" element={<Users />}></Route>
-                  <Route path="equipments" element={<Equipments />}></Route>
-                  <Route path="problems" element={<Problems />}></Route>
-                  <Route path="to" element={<To />}></Route>
-                  <Route path="analytics" element={<Analytics />}></Route>
-                </Route>
-                <Route path="/constructor" element={<Constructor />}></Route>
+
+            <>
+              <Route path="/admin" element={<Admin />}>
                 <Route
-                  path="/profile"
-                  element={<Profile funUpdUser={funUpdUser} />}
-                >
-                  <Route
-                    path=""
-                    element={<CompanyInfo funUpdUser={funUpdUser} />}
-                  ></Route>
-                  <Route
-                    path="equipments"
-                    element={<Equipments noedit={true} />}
-                  ></Route>
-                  <Route
-                    path="problems"
-                    element={<Problems noedit={true} />}
-                  ></Route>
-                  <Route path="to" element={<To noedit={true} />}></Route>
-                  <Route path="reservation" element={<Reservation />}></Route>
-                </Route>
-              </>
-            )}
+                  path=""
+                  element={<Company funUpdUser={funUpdUser} />}
+                ></Route>
+                <Route path="offices" element={<Offices />}></Route>
+                <Route path="floors" element={<Floors />}></Route>
+                <Route path="users" element={<Users />}></Route>
+                <Route path="equipments" element={<Equipments />}></Route>
+                <Route path="problems" element={<Problems />}></Route>
+                <Route path="to" element={<To />}></Route>
+                <Route path="analytics" element={<Analytics />}></Route>
+              </Route>
+              <Route path="/constructor" element={<Constructor />}></Route>
+              <Route
+                path="/profile"
+                element={<Profile funUpdUser={funUpdUser} />}
+              >
+                <Route
+                  path=""
+                  element={<CompanyInfo funUpdUser={funUpdUser} />}
+                ></Route>
+                <Route
+                  path="equipments"
+                  element={<Equipments noedit={true} />}
+                ></Route>
+                <Route
+                  path="problems"
+                  element={<Problems noedit={true} />}
+                ></Route>
+                <Route path="to" element={<To noedit={true} />}></Route>
+                <Route path="reservation" element={<Reservation />}></Route>
+              </Route>
+            </>
           </Routes>
         </main>
       </BrowserRouter>

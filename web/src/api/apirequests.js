@@ -37,7 +37,11 @@ export const apiRegister = async (data) => {
 //! Запрос на авторизацию
 export const apiLogin = async (data) => {
   const response = await apiRequest("post", "/auth/login", data);
-  const { token } = response.data;
+  if (!response?.data) {
+    alert(response?.response?.data?.message);
+    return response;
+  }
+  const { token } = response?.data;
   localStorage.setItem("accessToken", token);
   return response;
 };
@@ -260,7 +264,7 @@ export const apiGetReserveds = async (date, elementId) => {
 
 //! получение всех моих бронирований
 export const apiGetReservedsMy = async (userId) => {
-  return await apiRequest("get", `/elements/reserveds/${userId}`);
+  return await apiRequest("get", `/elements/reserveds/my/${userId}`);
 };
 
 //! получение всех бронирований елемента

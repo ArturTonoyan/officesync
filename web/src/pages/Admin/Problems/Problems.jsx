@@ -194,7 +194,7 @@ function Problems({ noedit }) {
                 ?.find((el) => el.id === item?.id)
                 ?.wear.toFixed(0);
               if (
-                wear > 84 &&
+                wear > 80 &&
                 !problems?.data?.find((el) => el.equipmentId === item?.id)
               ) {
                 const formData = new FormData();
@@ -204,7 +204,7 @@ function Problems({ noedit }) {
                   urgency: "Срочно",
                   description:
                     "Критический износ оборудования " +
-                    wear +
+                    (wear - 10) +
                     "%, необходимо провести техническое обслуживание!",
                   companyId: user?.companyId,
                 };

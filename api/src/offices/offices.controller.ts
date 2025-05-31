@@ -35,7 +35,6 @@ export class OfficesController {
     return this.officesService.create(dto, id, contract);
   }
 
-  @Roles('ADMIN')
   @Get('/all/:id')
   @UseGuards(JwtAuthGuard)
   get(@Param('id') companyId: string) {

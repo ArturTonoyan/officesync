@@ -121,6 +121,7 @@ export class ElementsService {
   }
 
   async getMyReserveds(userId: string) {
+    console.log('userId', userId);
     const reserveds = await this.elementsReservedRepository.findAll({
       where: { userId },
       include: { all: true },
