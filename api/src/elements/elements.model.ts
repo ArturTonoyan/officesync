@@ -10,6 +10,7 @@ import {
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
 import { ElementsReserved } from './elements-reserved.model';
+import { User } from 'src/users/users.model';
 
 interface ElementCreationAttrs {
   //! для создание модели необходимы тольок эти поля
@@ -59,6 +60,12 @@ export class Element extends Model<Element, ElementCreationAttrs> {
     allowNull: true,
   })
   floorId: string;
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+  })
+  userId: string;
 
   @Column({
     type: DataType.STRING,
@@ -125,4 +132,7 @@ export class Element extends Model<Element, ElementCreationAttrs> {
 
   @BelongsTo(() => Equipment)
   equipment: Equipment;
+
+  @BelongsTo(() => User)
+  user: User;
 }

@@ -95,11 +95,14 @@ function TopMenu({ offices, floors, funSave, funDownload, noedit }) {
                 animate={{ height: "auto", overflow: "hidden" }}
                 exit={{ height: 0, overflow: "hidden" }}
               >
-                {floors?.data?.map((item) => (
-                  <li key={item.id} onClick={() => funSelectFloor(item.id)}>
-                    {item.name}
-                  </li>
-                ))}
+                {selectOffice?.floors &&
+                  [...selectOffice?.floors]
+                    ?.sort((a, b) => a.number - b.number)
+                    ?.map((item) => (
+                      <li key={item.id} onClick={() => funSelectFloor(item.id)}>
+                        {item.name}
+                      </li>
+                    ))}
               </motion.ul>
             )}
           </AnimatePresence>

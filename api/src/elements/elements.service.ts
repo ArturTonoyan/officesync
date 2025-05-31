@@ -78,11 +78,17 @@ export class ElementsService {
 
   async update(id: string, dto: CreateElementDto, image: Express.Multer.File) {
     if (image) {
-      const fileName = await this.fileService.createFile(image); // Сохранение файла и получение имени
-      dto.image = fileName; // Обновление DTO с именем файла
+      const fileName = await this.fileService.createFile(image); // Сохраняем изображение
+      dto.image = fileName; // Добавляем имя файла в DTO
     }
-    const element = await this.elementRepository.update(dto, { where: { id } });
-    return element;
+
+    await this.elementRepository.update(dto, { where: { id } });
+
+    // Получаем и возвращаем обновлённый элемент
+    const updatedElement = await this.elementRepository.findOne({
+      where: { id },
+    });
+    return updatedElement;
   }
 
   async delete(id: string) {

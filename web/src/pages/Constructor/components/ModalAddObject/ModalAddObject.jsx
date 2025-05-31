@@ -5,22 +5,55 @@ import { addEquipmentData, typesNoEquipment } from "./data";
 import { useEffect, useRef, useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
 import { useDispatch, useSelector } from "react-redux";
-import { addObjectApi } from "../../../../store/convaSlice/conva.Slice";
+import {
+  addObjectApi,
+  setSelected,
+} from "../../../../store/convaSlice/conva.Slice";
 import {
   apiEddElement,
   apiGetEquipments,
   apiGetUsers,
+  apiUpdateElement,
 } from "../../../../api/apirequests";
 import { useQuery } from "@tanstack/react-query";
 
 const types = [
-  "Кабинет",
-  "Переговорная",
-  "Рабочее место",
-  "Мебель",
-  "Техника",
-  "Сотрудник",
-  "Другое",
+  {
+    value: "Этаж",
+    zIndex: 100,
+  },
+  {
+    value: "Кабинет",
+    zIndex: 300,
+  },
+  {
+    value: "Переговорная",
+    zIndex: 300,
+  },
+  {
+    value: "Рабочее место",
+    zIndex: 300,
+  },
+  {
+    value: "Мебель",
+    zIndex: 400,
+  },
+  {
+    value: "Оборудование",
+    zIndex: 500,
+  },
+  {
+    value: "Сотрудник",
+    zIndex: 600,
+  },
+  {
+    value: "Дверь",
+    zIndex: 900,
+  },
+  {
+    value: "Другое",
+    zIndex: 450,
+  },
 ];
 
 const defaultData = {
@@ -40,29 +73,113 @@ const defaultData = {
   isLocked: false,
 };
 
-function ModalAddObject({ editData, setEditData, title, show, setShow }) {
+function ModalAddObject({
+  funGetElem,
+  editData,
+  setEditData,
+  title,
+  show,
+  setShow,
+}) {
+  const selectetObject = useSelector(
+    (state) => state.conva.objects.selectedObject
+  );
   const user = useSelector((state) => state.user.user.data);
   const floorId = useSelector((state) => state.conva.floors.selected);
   const dispatch = useDispatch();
   const refList = useRef(null);
+  const [copiedData, setCopiedData] = useState(null);
 
   const [modalAllIcons, setModalAllIcons] = useState(false);
   const [showDropdown, setShowDropdown] = useState(null);
   const [data, setData] = useState(defaultData);
+  console.log("copiedData", copiedData);
+
+  const { data: usersQuery } = useQuery({
+    queryKey: ["users/all/id", user?.companyId],
+    queryFn: () => apiGetUsers(user?.companyId),
+    staleTime: Infinity, //! не обновлять
+    enabled: !!user?.companyId,
+  });
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (
+        (e.ctrlKey && e.key === "c") ||
+        (e.ctrlKey && e.key === "с") ||
+        (e.metaKey && e.key === "C") ||
+        (e.metaKey && e.key === "С")
+      ) {
+        if (selectetObject) {
+          setCopiedData(selectetObject);
+        }
+      }
+
+      if (
+        (e.ctrlKey && e.key === "v") ||
+        (e.ctrlKey && e.key === "в") ||
+        (e.metaKey && e.key === "V") ||
+        (e.metaKey && e.key === "В")
+      ) {
+        console.log("вставить");
+        if (copiedData) {
+          // создаем новый объект с новыми координатами
+          const newObject = {
+            ...copiedData,
+            x: copiedData.x + 20,
+            y: copiedData.y + 20,
+            name: copiedData.name,
+          };
+          delete newObject.id;
+
+          //! убираем все что имеет null
+          for (const key in newObject) {
+            if (newObject[key] === null) {
+              delete newObject[key];
+            }
+          }
+
+          // формируем formData и отправляем в API
+          const formData = new FormData();
+          Object.entries({
+            ...newObject,
+            name: newObject.name || "Новый объект",
+            floorId,
+          }).forEach(([key, value]) => formData.append(key, value));
+
+          apiEddElement(formData).then((res) => {
+            if (res.status === 201) {
+              dispatch(addObjectApi({ data: res.data }));
+              dispatch(setSelected(res?.data?.id));
+            } else {
+              console.warn("Ошибка при сохранении копии");
+            }
+          });
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [copiedData, selectetObject, floorId, dispatch]);
 
   useEffect(() => {
     if (editData) {
       setData({
         ...editData,
         equipment: editData.equipment?.name,
-        user: editData.equipment
-          ? editData.equipment?.user?.surname +
+        user: usersQuery?.data?.find((u) => u.id === editData.userId)
+          ? (usersQuery?.data?.find((u) => u.id === editData.userId)?.surname ||
+              "") +
             " " +
-            editData.equipment?.user?.name +
+            (usersQuery?.data?.find((u) => u.id === editData.userId)?.name ||
+              "") +
             " " +
-            editData.equipment?.user?.patronymic +
+            (usersQuery?.data?.find((u) => u.id === editData.userId)
+              ?.patronymic || "") +
             " " +
-            editData.equipment?.user?.email
+            (usersQuery?.data?.find((u) => u.id === editData.userId)?.email ||
+              "")
           : "",
         icon: editData.image,
       });
@@ -130,6 +247,12 @@ function ModalAddObject({ editData, setEditData, title, show, setShow }) {
         equipment: `${value.name} ${value.inventoryNumber}`,
         equipmentId: value.id,
       }));
+    } else if (key === "type") {
+      setData((prev) => ({
+        ...prev,
+        [key]: value?.value,
+        zIndex: value?.zIndex,
+      }));
     } else {
       setData((prev) => ({ ...prev, [key]: value }));
     }
@@ -137,15 +260,30 @@ function ModalAddObject({ editData, setEditData, title, show, setShow }) {
 
   const handleSave = () => {
     setShow(false);
+    const dat = { ...data };
     const formData = new FormData();
+    //! убираем все что имеет null
+    for (const key in dat) {
+      if (dat[key] === null) {
+        delete dat[key];
+      }
+      if (dat[key] === undefined) {
+        delete dat[key];
+      }
+    }
     Object.entries({
-      ...data,
-      name: data.name || "Новый объект",
+      ...dat,
+      name: dat.name || "Новый объект",
       floorId,
-      image: data.icon,
+      image: dat.icon,
     }).forEach(([key, value]) => formData.append(key, value));
     if (editData) {
-      setEditData(null);
+      apiUpdateElement(editData.id, formData).then((res) => {
+        if (res.status === 200) {
+          dispatch(addObjectApi({ data: res.data }));
+          funGetElem();
+        }
+      });
     } else {
       apiEddElement(formData).then((res) => {
         if (res.status === 201) {
@@ -167,7 +305,7 @@ function ModalAddObject({ editData, setEditData, title, show, setShow }) {
         {list.map((item, index) => {
           const label =
             key === "type"
-              ? item
+              ? item.value
               : key === "equipment"
               ? `${item.name} ${item.inventoryNumber}`
               : `${item.surname} ${item.name} ${item.patronymic} ${item.email}`;

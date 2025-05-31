@@ -186,6 +186,13 @@ export const apiEddElement = async (data) => {
   });
 };
 
+//! обновить обьект карты
+export const apiUpdateElement = async (id, data) => {
+  return await apiRequest("put", `/elements/${id}`, data, {
+    "Content-Type": "multipart/form-data",
+  });
+};
+
 //! сохранить все обьекты карты
 export const apiEddElements = async (data) => {
   return await apiRequest("post", `/elements/bulk`, data);

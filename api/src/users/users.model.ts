@@ -10,6 +10,7 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 import { Company } from 'src/companies/companies.model';
+import { Element } from 'src/elements/elements.model';
 import { Equipment } from 'src/equipments/equipments.model';
 import { Floors } from 'src/floors/floors.model';
 import { Office } from 'src/offices/offices.model';

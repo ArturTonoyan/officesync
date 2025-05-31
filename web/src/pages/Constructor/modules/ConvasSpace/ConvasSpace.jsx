@@ -74,13 +74,17 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
     dispatch(setSelected(null));
   };
 
-  useEffect(() => {
+  //! функция обновления элементов
+  const funGetElem = () => {
     if (conva?.floors?.selected) {
       apiGetElements(conva?.floors?.selected).then((res) => {
         console.log("res", res);
         if (res.status === 200) dispatch(setObjects({ data: res.data }));
       });
     }
+  };
+  useEffect(() => {
+    funGetElem();
   }, [conva?.floors?.selected]);
 
   //! сохранение фотки в виде пнг
@@ -181,6 +185,7 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
 
       {/* Modals */}
       <ModalAddObject
+        funGetElem={funGetElem}
         editData={editData}
         setEditData={setEditData}
         show={modalAddEquipment}

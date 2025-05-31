@@ -108,8 +108,14 @@ const ConvaSlice = createSlice({
 
     setSelectedOffice(state, action) {
       const { id, offices } = action.payload;
+      const office = offices.find((obj) => obj.id === id);
+      console.log("offices", offices);
       state.offices.selected = id;
-      state.offices.selectedObject = offices.find((obj) => obj.id === id);
+      state.offices.selectedObject = office;
+      state.floors.selected =
+        [...office.floors]?.sort((a, b) => a.number - b.number)[0]?.id || null;
+      state.floors.selectedObject =
+        [...office.floors]?.sort((a, b) => a.number - b.number)[0] || null;
     },
 
     setSelectedFloor(state, action) {

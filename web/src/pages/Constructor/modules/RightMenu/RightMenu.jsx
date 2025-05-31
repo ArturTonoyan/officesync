@@ -10,9 +10,12 @@ import {
 import {
   apiDeleteElement,
   apiGetReservedsElements,
+  apiGetUsers,
 } from "../../../../api/apirequests";
+import { useQuery } from "@tanstack/react-query";
 function RightMenu({ setModalAddEquipment, setEditItem }) {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user.data);
   const item = useSelector((state) => state.conva.objects.selectedObject);
   const [openMenu, setOpenMenu] = useState(true);
   const [editData, setEditData] = useState(null);
@@ -41,6 +44,13 @@ function RightMenu({ setModalAddEquipment, setEditItem }) {
     }
   }, [item?.id]);
 
+  const { data: users } = useQuery({
+    queryKey: ["users/all/id", user?.companyId],
+    queryFn: () => apiGetUsers(user?.companyId),
+    staleTime: Infinity, //! не обновлять
+    enabled: !!user?.companyId,
+  });
+
   return (
     <div
       className={`${styles.RightMenu} ${
@@ -60,7 +70,7 @@ function RightMenu({ setModalAddEquipment, setEditItem }) {
         <>
           <div className={styles.position}>
             {inputs.map((el, index) => (
-              <div className={styles.input_box} name={el.key}>
+              <div className={styles.input_box} name={el.key} key={index}>
                 <span className={styles.name}>{el.name}</span>
                 <div className={styles.input}>
                   <input
@@ -101,6 +111,19 @@ function RightMenu({ setModalAddEquipment, setEditItem }) {
               <div className={styles.text_box}>
                 <span className={styles.name}>Тип</span>
                 <span className={styles.value}>{item?.type}</span>
+              </div>
+              <div className={styles.text_box}>
+                <span className={styles.name}>Закреплен за:</span>
+                <span className={styles.value}>
+                  {(users?.data?.find((i) => i.id === item?.userId)?.name ||
+                    "") +
+                    " " +
+                    (users?.data?.find((i) => i.id === item?.userId)?.surname ||
+                      "") +
+                    " " +
+                    (users?.data?.find((i) => i.id === item?.userId)
+                      ?.patronymic || "")}
+                </span>
               </div>
               {reserveds?.length > 0 && <h4>Бронирования</h4>}
               {reserveds.map((item, index) => (
