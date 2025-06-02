@@ -57,8 +57,8 @@ function ConvasSpace({ noedit, setSelectedRoom }) {
     if (newScale < 0.1) {
       newScale = 0.1;
     }
-    if (newScale > 1.5) {
-      newScale = 1.5;
+    if (newScale > 2) {
+      newScale = 2;
     }
     setScale(newScale);
 

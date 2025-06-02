@@ -105,10 +105,10 @@ function ModalAddObject({
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (
-        (e.ctrlKey && e.key === "c") ||
         (e.ctrlKey && e.key === "с") ||
-        (e.metaKey && e.key === "C") ||
-        (e.metaKey && e.key === "С")
+        (e.ctrlKey && e.key === "c") ||
+        (e.metaKey && e.key === "С") ||
+        (e.metaKey && e.key === "C")
       ) {
         if (selectetObject) {
           setCopiedData(selectetObject);
@@ -117,9 +117,9 @@ function ModalAddObject({
 
       if (
         (e.ctrlKey && e.key === "v") ||
-        (e.ctrlKey && e.key === "в") ||
+        (e.ctrlKey && e.key === "м") ||
         (e.metaKey && e.key === "V") ||
-        (e.metaKey && e.key === "В")
+        (e.metaKey && e.key === "М")
       ) {
         console.log("вставить");
         if (copiedData) {

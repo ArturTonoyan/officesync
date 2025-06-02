@@ -16,7 +16,7 @@ function Table({
 
   const getTdData = (key, row) => {
     if (key === "imageUrl" || key === "image")
-      return row[key] ? (
+      return row[key] && !row[key].includes("null") ? (
         <img
           className={styles.imgUrl}
           src={row[key]}
@@ -33,7 +33,7 @@ function Table({
           }}
         />
       ) : (
-        <></>
+        <>Нет фото</>
       );
     if (key === "contract") {
       return row[key] ? (
@@ -52,7 +52,7 @@ function Table({
       );
     }
 
-    return row[key];
+    return row[key] ? row[key] : <>__</>;
   };
 
   return (

@@ -47,7 +47,7 @@ function Equipments({ noedit }) {
     if (shearchParam.trim() !== "") {
       const filteredData = originalData.filter((item) =>
         Object.values(item).some((value) =>
-          value.toString().toLowerCase().includes(shearchParam.toLowerCase())
+          value?.toString()?.toLowerCase()?.includes(shearchParam.toLowerCase())
         )
       );
       setTableData(filteredData);

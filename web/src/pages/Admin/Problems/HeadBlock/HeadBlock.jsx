@@ -29,7 +29,7 @@ function HeadBlock({
           📁 Экспорт в Excel
         </button>
         <button className={styles.save} onClick={() => setModalShow(true)}>
-          + Добавить неполадку
+          + Создать заявку на ремонт
         </button>
       </div>
     </div>
