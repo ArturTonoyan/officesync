@@ -219,10 +219,7 @@ function Reservation() {
             <span onClick={() => setSelectedModal(false)}>Забронировать</span>
             <span onClick={() => setSelectedModal(true)}>Мои бронирования</span>
           </div>
-          <div
-            className={styles.bottom}
-            style={{ overflowY: "auto", height: "300px" }}
-          >
+          <div className={styles.bottom} style={{ overflowY: "auto" }}>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
               {reservedsMy?.data?.length === 0 && (
                 <Typography variant="body1">
@@ -235,6 +232,7 @@ function Reservation() {
                   sx={{
                     minWidth: 250,
                     maxWidth: 300,
+                    height: 200,
                     padding: 2,
                     border: "1px solid #ccc",
                     borderRadius: 2,
