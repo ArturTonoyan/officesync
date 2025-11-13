@@ -17,7 +17,7 @@ function CompanyInfo({ funUpdUser }) {
   console.log("user", user);
   return (
     <div className={styles.CompanyInfo}>
-      <Company funUpdUser={funUpdUser} noedit={true} />
+      <Company funUpdUser={funUpdUser} noedit={false} />
       <div className={styles.ofice_floor}>
         <div className={styles.office}>
           <h2>Мой офис</h2>
