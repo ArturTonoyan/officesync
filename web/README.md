@@ -24,6 +24,20 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
+## Monitoring (Sentry)
+
+Для мониторинга клиентских ошибок добавлена интеграция с Sentry.
+
+Добавьте переменные в `.env`:
+
+```env
+REACT_APP_SENTRY_DSN=your_frontend_sentry_dsn
+REACT_APP_SENTRY_TRACES_SAMPLE_RATE=0.1
+REACT_APP_ENABLE_CLIENT_LOGS=true
+```
+
+Если `REACT_APP_SENTRY_DSN` не задан, отправка событий в Sentry отключена.
+
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 

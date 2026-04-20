@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import styles from "./Chat.module.scss";
 import { apiAskChat } from "../../../api/apirequests";
+import { createLogger } from "../../../utils/logger";
 
 const TOPICS = [
   { value: "company", label: "Компания" },
@@ -13,6 +14,7 @@ const TOPICS = [
 ];
 
 function Chat() {
+  const logger = createLogger("chat-ui");
   const [topic, setTopic] = useState("equipments");
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,18 +37,35 @@ function Chat() {
       return;
     }
 
+    const startedAt = Date.now();
+
     const userMessage = { role: "user", content: trimmedQuestion };
     setMessages((prev) => [...prev, userMessage]);
     setQuestion("");
     setLoading(true);
 
     try {
+      logger.info("chat_question_sent", {
+        topic,
+        questionLength: trimmedQuestion.length,
+      });
+
       const response = await apiAskChat({ topic, question: trimmedQuestion });
       const answer =
         response?.data?.answer || "Не удалось получить ответ от сервера.";
 
+      logger.info("chat_answer_received", {
+        topic,
+        durationMs: Date.now() - startedAt,
+      });
+
       setMessages((prev) => [...prev, { role: "assistant", content: answer }]);
     } catch (error) {
+      logger.error("chat_request_failed", error, {
+        topic,
+        durationMs: Date.now() - startedAt,
+      });
+
       const serverMessage =
         error?.response?.data?.message ||
         "Произошла ошибка при запросе к чату. Попробуйте еще раз.";

@@ -1,6 +1,13 @@
 import api from "./axios";
+import { createLogger } from "../utils/logger";
 export const server = process.env.REACT_APP_API_URL || "http://localhost:3004";
 const neiroServer = process.env.REACT_APP_NEIRO_URL || "http://localhost:3014";
+const logger = createLogger("api");
+
+const trackedEndpoints = ["/chat/ask", "/equipments"];
+
+const isTrackedEndpoint = (endpoint = "") =>
+  trackedEndpoints.some((prefix) => endpoint.startsWith(prefix));
 
 // Универсальная функция для выполнения запросов
 export const apiRequest = async (
@@ -10,6 +17,8 @@ export const apiRequest = async (
   headers = {},
   serv = server,
 ) => {
+  const startedAt = Date.now();
+
   try {
     const config = {
       method,
@@ -18,10 +27,31 @@ export const apiRequest = async (
       data,
     };
 
+    if (isTrackedEndpoint(endpoint)) {
+      logger.info("request_started", {
+        method,
+        endpoint,
+      });
+    }
+
     const response = await api(config);
+
+    if (isTrackedEndpoint(endpoint)) {
+      logger.info("request_finished", {
+        method,
+        endpoint,
+        status: response?.status,
+        durationMs: Date.now() - startedAt,
+      });
+    }
+
     return response;
   } catch (error) {
-    console.error("Ошибка при выполнении запроса:", error);
+    logger.error("request_failed", error, {
+      method,
+      endpoint,
+      durationMs: Date.now() - startedAt,
+    });
     return error; // Пробрасываем ошибку дальше для обработки
   }
 };

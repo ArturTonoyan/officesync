@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/sequelize';
@@ -25,6 +26,8 @@ type ChatTopic =
 
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
+
   constructor(
     private readonly configService: ConfigService,
     @InjectModel(Company) private readonly companyRepository: typeof Company,
@@ -40,10 +43,16 @@ export class ChatService {
   async ask(dto: AskChatDto, companyId?: string) {
     const topic = dto.topic as ChatTopic;
     const question = dto.question.trim();
+    const startedAt = Date.now();
 
     if (!question) {
+      this.logger.warn('Rejected chat request with empty question');
       throw new BadRequestException('Вопрос не может быть пустым');
     }
+
+    this.logger.log(
+      `Preparing chat answer topic=${topic}, companyId=${companyId || 'n/a'}, questionLength=${question.length}`,
+    );
 
     const topicData = await this.getTopicData(topic, companyId);
     const preparedData = this.prepareContextData(topicData);
@@ -53,6 +62,10 @@ export class ChatService {
       question,
       contextData: preparedData,
     });
+
+    this.logger.log(
+      `Chat answer ready topic=${topic}, recordsCount=${Array.isArray(topicData) ? topicData.length : topicData ? 1 : 0}, durationMs=${Date.now() - startedAt}`,
+    );
 
     return {
       topic,
@@ -174,6 +187,7 @@ export class ChatService {
       this.configService.get<string>('GROQ_MODEL') || 'openai/gpt-oss-120b';
 
     if (!apiKey) {
+      this.logger.error('GROQ_API_KEY is not configured');
       throw new InternalServerErrorException(
         'Не задан GROQ_API_KEY в переменных окружения',
       );
@@ -207,6 +221,9 @@ export class ChatService {
 
     if (!response.ok) {
       const errorText = await response.text();
+      this.logger.error(
+        `Groq request failed status=${response.status}, topic=${params.topic}`,
+      );
       throw new InternalServerErrorException(
         `Ошибка Groq: ${response.status} ${errorText}`,
       );

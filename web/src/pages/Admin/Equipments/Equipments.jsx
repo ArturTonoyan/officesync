@@ -16,6 +16,9 @@ import {
   apiPostNeural,
   apiUpdateEquipment,
 } from "../../../api/apirequests";
+import { createLogger } from "../../../utils/logger";
+
+const logger = createLogger("equipments-ui");
 
 function Equipments({ noedit }) {
   const user = useSelector((state) => state.user.user.data);
@@ -126,6 +129,11 @@ function Equipments({ noedit }) {
 
   //! функция создания
   const funCreate = () => {
+    logger.info("equipment_create_started", {
+      companyId: user?.companyId,
+      officeId: createData?.officeId,
+    });
+
     const formData = new FormData();
     formData.append("name", createData.name);
     formData.append("inventoryNumber", createData.inventoryNumber);
@@ -141,18 +149,29 @@ function Equipments({ noedit }) {
     formData.append("officeId", createData.officeId);
     formData.append("companyId", user?.companyId);
     apiCreateEquipment(formData).then((res) => {
-      console.log("res", res);
       if (res.status === 201) {
+        logger.info("equipment_create_success", {
+          companyId: user?.companyId,
+        });
         setModalShow(false);
         setCreateData({});
         refetchEquipments();
+      } else {
+        logger.warn("equipment_create_failed", {
+          status: res?.status,
+          companyId: user?.companyId,
+        });
       }
     });
   };
 
   //! при клике в контекстном меню
   const funParamClick = (param) => {
-    console.log("param", param);
+    logger.info("equipment_action_click", {
+      action: param?.key,
+      id: param?.row?.id,
+    });
+
     if (param.key === "edit") {
       setModalEditShow(true);
       setModalEditData(param.row);
@@ -164,19 +183,43 @@ function Equipments({ noedit }) {
 
   //! обновление оборудования
   const funUpdate = () => {
+    logger.info("equipment_update_started", {
+      id: modalEditData?.id,
+    });
+
     apiUpdateEquipment(modalEditData, modalEditData.id).then((res) => {
       if (res.status === 200) {
+        logger.info("equipment_update_success", {
+          id: modalEditData?.id,
+        });
         setModalEditShow(false);
         refetchEquipments();
+      } else {
+        logger.warn("equipment_update_failed", {
+          id: modalEditData?.id,
+          status: res?.status,
+        });
       }
     });
   };
 
   //! удаление оборудования
   const funDelete = (id) => {
+    logger.info("equipment_delete_started", {
+      id,
+    });
+
     apiDeleteEquipment(id).then((res) => {
       if (res.status === 200) {
+        logger.info("equipment_delete_success", {
+          id,
+        });
         refetchEquipments();
+      } else {
+        logger.warn("equipment_delete_failed", {
+          id,
+          status: res?.status,
+        });
       }
     });
   };
@@ -209,8 +252,16 @@ function Equipments({ noedit }) {
     }
 
     if (dataEq?.length > 0) {
+      logger.info("wear_prediction_started", {
+        total: dataEq.length,
+      });
+
       apiPostNeural(dataEq).then((res) => {
         if (res?.status === 200) {
+          logger.info("wear_prediction_success", {
+            total: dataEq.length,
+          });
+
           const newData = equipments?.data?.map((item, index) => {
             let wear = res?.data
               ?.find((el) => el.id === item?.id)
@@ -233,6 +284,11 @@ function Equipments({ noedit }) {
           });
           setTableData(newData);
           setOriginalData(newData);
+        } else {
+          logger.warn("wear_prediction_failed", {
+            status: res?.status,
+            total: dataEq.length,
+          });
         }
         // setTableData(qdat);
         // setOriginalData(qdat);
