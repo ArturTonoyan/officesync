@@ -50,8 +50,11 @@ function Equipments({ noedit }) {
     if (shearchParam.trim() !== "") {
       const filteredData = originalData.filter((item) =>
         Object.values(item).some((value) =>
-          value?.toString()?.toLowerCase()?.includes(shearchParam.toLowerCase())
-        )
+          value
+            ?.toString()
+            ?.toLowerCase()
+            ?.includes(shearchParam.toLowerCase()),
+        ),
       );
       setTableData(filteredData);
     } else {
@@ -315,7 +318,7 @@ function Equipments({ noedit }) {
           },
           floor: {
             data: floors?.data?.filter(
-              (item) => item.officeId === createData?.officeId
+              (item) => item.officeId === createData?.officeId,
             ),
             key: "floorId",
             value: ["name", "number"],
@@ -343,7 +346,7 @@ function Equipments({ noedit }) {
           },
           floor: {
             data: floors?.data?.filter(
-              (item) => item.officeId === modalEditData?.officeId
+              (item) => item.officeId === modalEditData?.officeId,
             ),
             key: "floorId",
             value: ["name", "number"],
