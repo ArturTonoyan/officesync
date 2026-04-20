@@ -21,12 +21,13 @@ import Profile from "./pages/Profile/Profile";
 import CompanyInfo from "./pages/Profile/CompanyInfo/CompanyInfo";
 import Reservation from "./pages/Profile/Reservation/Reservation";
 import Analytics from "./pages/Admin/Analytics/Analytics";
+import Chat from "./pages/Admin/Chat/Chat";
 
 function App() {
   const queryClient = new QueryClient();
   const dispatch = useDispatch();
   const userRole = useSelector(
-    (state) => state.user.user.data?.roles?.[0]?.value
+    (state) => state.user.user.data?.roles?.[0]?.value,
   );
 
   const funUpdUser = () => {
@@ -67,6 +68,7 @@ function App() {
                 <Route path="problems" element={<Problems />}></Route>
                 <Route path="to" element={<To />}></Route>
                 <Route path="analytics" element={<Analytics />}></Route>
+                <Route path="chat" element={<Chat />}></Route>
               </Route>
               <Route path="/constructor" element={<Constructor />}></Route>
               <Route

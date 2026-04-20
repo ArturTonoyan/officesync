@@ -8,7 +8,7 @@ export const apiRequest = async (
   endpoint,
   data = null,
   headers = {},
-  serv = server
+  serv = server,
 ) => {
   try {
     const config = {
@@ -265,7 +265,7 @@ export const apiCreateReserveds = async (data) => {
 export const apiGetReserveds = async (date, elementId) => {
   return await apiRequest(
     "get",
-    `/elements/reserveds?date=${date}&elementId=${elementId}`
+    `/elements/reserveds?date=${date}&elementId=${elementId}`,
   );
 };
 
@@ -287,4 +287,9 @@ export const apiDeleteReserved = async (id) => {
 //! обращение к нейронной сети
 export const apiPostNeural = async (data) => {
   return await apiRequest("post", `/predict_wear`, data, {}, neiroServer);
+};
+
+//! запрос к AI-чату
+export const apiAskChat = async (data) => {
+  return await apiRequest("post", `/chat/ask`, data);
 };

@@ -1,13 +1,6 @@
 import { useState } from "react";
 import ReactECharts from "echarts-for-react";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Box,
-  Typography,
-} from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, Box } from "@mui/material";
 
 const OfficeEquipmentChart = ({ data }) => {
   const [selectedOffice, setSelectedOffice] = useState("all");
@@ -24,10 +17,10 @@ const OfficeEquipmentChart = ({ data }) => {
 
   const officeNames = filteredData?.map((office) => office.name);
   const equipmentCounts = filteredData?.map(
-    (office) => office?.eqipments?.length
+    (office) => office?.eqipments?.length,
   );
   const totalCosts = filteredData?.map((office) =>
-    office?.eqipments?.reduce((sum, eq) => sum + (eq.cost || 0), 0)
+    office?.eqipments?.reduce((sum, eq) => sum + (eq.cost || 0), 0),
   );
 
   const option = {

@@ -53,6 +53,11 @@ function LeftMenu() {
       title: "Аналитика",
       navigate: "/admin/analytics",
     },
+    {
+      icon: paramIcon,
+      title: "AI-чат",
+      navigate: "/admin/chat",
+    },
   ];
 
   return (
@@ -84,10 +89,6 @@ function LeftMenu() {
         </div>
         <div className={styles.container_bottom}>
           <ul className={styles.list_item}>
-            {/* <li>
-              <img src={paramIcon} alt="img" />
-              <span>Настройки</span>
-            </li> */}
             <li onClick={() => navigate("/profile")}>
               <img src={userIcon} alt="img" />
               <span>Профиль</span>
