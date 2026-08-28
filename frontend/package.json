@@ -1,0 +1,48 @@
+{
+  "name": "officesync-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "lint": "eslint --fix 'src/**/*.{ts,tsx}' && prettier --write 'src/**/*.{ts,tsx}'"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.1.0",
+    "@mui/x-date-pickers": "^8.3.1",
+    "@reduxjs/toolkit": "^2.6.1",
+    "@sentry/react": "^10.49.0",
+    "@tanstack/react-query": "^5.70.0",
+    "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
+    "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.2",
+    "echarts-gl": "^2.0.9",
+    "file-saver": "^2.0.5",
+    "framer-motion": "^12.6.2",
+    "konva": "^9.3.20",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-konva": "^19.0.3",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.4.1",
+    "redux-persist": "^6.0.0",
+    "use-image": "^1.1.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "sass": "^1.87.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.4"
+  }
+}
