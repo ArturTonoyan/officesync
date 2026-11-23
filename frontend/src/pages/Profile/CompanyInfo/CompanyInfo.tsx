@@ -1,6 +1,5 @@
 import { useAppSelector } from "@store/hooks";
 import Company from "../../Admin/Company/Company";
-import styles from "./CompanyInfo.module.scss";
 import { apiGetUsers } from "../../../api/apirequests";
 import { useQuery } from "@tanstack/react-query";
 
@@ -16,18 +15,26 @@ function CompanyInfo({ funUpdUser }) {
   });
   console.log("user", user);
   return (
-    <div className={styles.CompanyInfo}>
+    <div className="mb-[100px]">
       <Company funUpdUser={funUpdUser} noedit={false} />
-      <div className={styles.ofice_floor}>
-        <div className={styles.office}>
-          <h2>Мой офис</h2>
-          <div className={styles.office_info}>
+      <div className="flex flex-row">
+        <div className="mr-10">
+          <h2 className="mt-10 text-[28px]">Мой офис</h2>
+          <div className="mt-10 box-border flex h-max w-max flex-col items-start p-[60px]">
             <div>
-              <span>Название: {office?.name}</span>
-              <span>Адрес: {office?.address}</span>
-              <span>Телефон: {office?.phone}</span>
-              <span>Тип: {office?.typeOwnership}</span>
-              <span>
+              <span className="flex pb-[18px] text-lg font-medium text-fg">
+                Название: {office?.name}
+              </span>
+              <span className="flex pb-[18px] text-lg font-medium text-fg">
+                Адрес: {office?.address}
+              </span>
+              <span className="flex pb-[18px] text-lg font-medium text-fg">
+                Телефон: {office?.phone}
+              </span>
+              <span className="flex pb-[18px] text-lg font-medium text-fg">
+                Тип: {office?.typeOwnership}
+              </span>
+              <span className="flex pb-[18px] text-lg font-medium text-fg">
                 Директор:{" "}
                 {
                   users?.data?.find((item) => item.id === office?.directorId)
@@ -45,12 +52,16 @@ function CompanyInfo({ funUpdUser }) {
             </div>
           </div>
         </div>
-        <div className={styles.office}>
-          <h2>Мой этаж</h2>
-          <div className={styles.office_info}>
+        <div className="mr-10">
+          <h2 className="mt-10 text-[28px]">Мой этаж</h2>
+          <div className="mt-10 box-border flex h-max w-max flex-col items-start p-[60px]">
             <div>
-              <span>Название: {floor?.name}</span>
-              <span>Номер: {floor?.number}</span>
+              <span className="flex pb-[18px] text-lg font-medium text-fg">
+                Название: {floor?.name}
+              </span>
+              <span className="flex pb-[18px] text-lg font-medium text-fg">
+                Номер: {floor?.number}
+              </span>
             </div>
           </div>
         </div>

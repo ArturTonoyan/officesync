@@ -1,123 +1,98 @@
-import styles from "./TopMenu.module.scss";
 import logo from "@assets/images/logo/logo.svg";
 import { useNavigate } from "react-router-dom";
-import arrow from "@assets/images/icons/arrowMini.svg";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useAppSelector } from "@store/hooks";
-import {
-  setSelectedFloor,
-  setSelectedOffice,
-} from "../../../../store/convaSlice/conva.Slice";
-import { AnimatePresence, motion } from "framer-motion";
+import { Button } from "@components/ui";
+import { cn } from "@utils/cn";
+import type { ReactNode } from "react";
 
-function TopMenu({ offices, floors, funSave, funDownload, noedit }) {
+type Props = {
+  funSave: () => void;
+  funDownload: () => void;
+  noedit?: boolean;
+  modeToggle?: ReactNode;
+  /** оставлены для совместимости с вызовами */
+  offices?: unknown;
+  floors?: unknown;
+};
+
+function TopMenu({ funSave, funDownload, noedit, modeToggle }: Props) {
   const selectOffice = useAppSelector(
-    (state) => state.conva.offices.selectedObject
-  );
-  const selectFloor = useAppSelector((state) => state.conva.floors.selectedObject);
+    (state) => state.conva.offices.selectedObject,
+  ) as { name?: string } | null;
+  const selectFloor = useAppSelector(
+    (state) => state.conva.floors.selectedObject,
+  ) as { name?: string; number?: number } | null;
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [listShow, setListShow] = useState(null);
 
-  const funLicstCLick = (item) => {
-    if (item === listShow) {
-      setListShow(null);
-      return;
-    }
-    setListShow(item);
-  };
-
-  const funSelectOffice = (id) => {
-    dispatch(setSelectedOffice({ id, offices: offices.data }));
-    setListShow(null);
-  };
-
-  const funSelectFloor = (id) => {
-    dispatch(setSelectedFloor({ id, floors: floors.data }));
-    setListShow(null);
-  };
+  const officeName = selectOffice?.name || "Офис";
+  const floorName =
+    selectFloor?.name ||
+    (selectFloor?.number != null ? `${selectFloor.number} этаж` : "Этаж");
 
   return (
-    <div
-      className={styles.TopMenu}
-      style={
-        noedit
-          ? {
-              background: "none",
-              width: "max-content",
-              backgroundColor: "inherit",
-              left: "auto",
-              right: "0",
-            }
-          : {}
-      }
+    <header
+      className={cn(
+        "fixed top-0 z-[100] flex h-16 items-center gap-4 border-b border-line bg-elevated px-4",
+        noedit ? "right-0 left-auto w-max border-0 bg-transparent" : "inset-x-0",
+      )}
     >
       {!noedit && (
-        <div className={styles.icon} onClick={() => navigate("/")}>
-          <img src={logo} alt="logo" />
+        <>
+          <button
+            type="button"
+            className="flex shrink-0 items-center transition-opacity hover:opacity-70"
+            onClick={() => navigate("/")}
+            aria-label="На главную"
+          >
+            <img src={logo} alt="OfficeSync" className="h-10 w-auto max-w-[220px] object-contain object-left" />
+          </button>
+
+          <Button
+            variant="secondary"
+            className="h-9 shrink-0"
+            onClick={() => navigate("/catalog")}
+          >
+            ← Каталог
+          </Button>
+
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-semibold tracking-[-0.01em] text-fg">
+              {officeName}
+              <span className="mx-2 font-medium text-fg-muted">·</span>
+              {floorName}
+            </p>
+            <p className="truncate text-[11px] font-medium text-fg-muted">
+              Редактирование карты · сменить этаж можно в каталоге
+            </p>
+          </div>
+        </>
+      )}
+
+      {noedit && (
+        <div className="min-w-0 px-2">
+          <p className="truncate text-[13px] font-semibold text-fg">
+            {officeName}
+            <span className="mx-2 text-fg-muted">·</span>
+            {floorName}
+          </p>
         </div>
       )}
 
-      <div className={styles.office}>
-        <div className={styles.container_list}>
-          <button onClick={() => funLicstCLick("office")}>
-            <span>{selectOffice?.name}</span>
-            <img src={arrow} alt="arrow" />
-          </button>
-          <AnimatePresence>
-            {listShow === "office" && (
-              <motion.ul
-                className={styles.list}
-                initial={{ height: 0, overflow: "auto" }}
-                animate={{ height: "auto", overflow: "hidden" }}
-                exit={{ height: 0, overflow: "hidden" }}
-              >
-                {offices?.data?.map((item) => (
-                  <li key={item.id} onClick={() => funSelectOffice(item.id)}>
-                    {item.name}
-                  </li>
-                ))}
-              </motion.ul>
-            )}
-          </AnimatePresence>
-        </div>
-        <div className={styles.container_list}>
-          <button onClick={() => funLicstCLick("floor")}>
-            <span>{selectFloor?.name}</span>
-            <img src={arrow} alt="arrow" />
-          </button>
-          <AnimatePresence>
-            {listShow === "floor" && (
-              <motion.ul
-                className={styles.list}
-                initial={{ height: 0, overflow: "auto" }}
-                animate={{ height: "auto", overflow: "hidden" }}
-                exit={{ height: 0, overflow: "hidden" }}
-              >
-                {selectOffice?.floors &&
-                  [...selectOffice?.floors]
-                    ?.sort((a, b) => a.number - b.number)
-                    ?.map((item) => (
-                      <li key={item.id} onClick={() => funSelectFloor(item.id)}>
-                        {item.name}
-                      </li>
-                    ))}
-              </motion.ul>
-            )}
-          </AnimatePresence>
-        </div>
+      <div className="ml-auto flex shrink-0 items-center gap-2">
+        {modeToggle}
+        {!noedit && (
+          <>
+            <Button variant="secondary" className="h-9" onClick={funDownload}>
+              Экспорт
+            </Button>
+            <Button className="h-9" onClick={funSave}>
+              Сохранить
+            </Button>
+          </>
+        )}
       </div>
-      {!noedit && (
-        <div className={styles.param}>
-          <button className={styles.download} onClick={funDownload}>
-            Скачать
-          </button>
-          <button onClick={funSave}>Сохранить</button>
-        </div>
-      )}
-    </div>
+    </header>
   );
 }
 

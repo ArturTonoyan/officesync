@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import styles from "./To.module.scss";
 import { addOfficeData, paramMenu, tableHeader } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
@@ -184,7 +183,7 @@ function Tos({ noedit }) {
   };
 
   return (
-    <div className={styles.To}>
+    <div>
       <h1>Техническое обслуживание</h1>
       <ModalAddOfice
         show={modalShow}
@@ -247,7 +246,7 @@ function Tos({ noedit }) {
         tableData={tableData}
         tableHeader={tableHeader}
       />
-      <div className={styles.content}>
+      <div className="mt-5 w-full min-w-0 box-border overflow-x-auto">
         <Table
           prewData={[]}
           tableData={tableData}

@@ -1,4 +1,3 @@
-import styles from "./FileComponent.module.scss";
 import { useEffect, useState } from "react";
 import trashIcon from "@assets/images/icons/trashBeliy.svg";
 import fileIcon from "@assets/images/AdminPanel/file.svg";
@@ -7,8 +6,8 @@ import pdfIconImport from "@assets/images/AdminPanel/pdfImport.svg";
 import docIcon from "@assets/images/AdminPanel/doc.svg";
 import dragingIcon from "@assets/images/AdminPanel/dragging.svg";
 import { decodeFileName } from "../../utils/functions/funcions";
-// import { server } from "../../../apirequests/apirequests";
-// import { decodeFileName } from "../../../utils/functions/funcions";
+import { cn } from "@utils/cn";
+
 const server = "http://localhost:3000";
 
 function FileComponent(props) {
@@ -22,16 +21,13 @@ function FileComponent(props) {
 
   async function setFileFromPath(filePath, inputElement) {
     try {
-      // Загружаем файл
       const response = await fetch(filePath);
       const blob = await response.blob();
 
-      // Создаем объект File
       const file = new File([blob], filePath.split("/").pop(), {
         type: blob.type,
       });
 
-      // Используем DataTransfer API для вставки в input
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
       inputElement.files = dataTransfer.files;
@@ -49,30 +45,26 @@ function FileComponent(props) {
       setFileName(props.logoHeader.split("\\").pop());
     }
   }, [props.logoHeader]);
-  //! при клике на загрузить логотип хедера открываем инпут для загрузки файла
+
   const funFileHeaderClick = () => {
     document.getElementById(props.name).click();
   };
 
-  //! функция изменения хедер иконки
   const funChangeLogoHeader = (file) => {
-    //! проверка на размер файла
     if (props.fileSize) {
-      const maxSizeInBytes = props.fileSize * 1024 * 1024; // 20 MB in bytes
+      const maxSizeInBytes = props.fileSize * 1024 * 1024;
       if (file && file.size > maxSizeInBytes) {
         setErrorSize(true);
         return;
       }
     }
 
-    // const file = event.target.files[0];
     if (file && !props.typeFile?.find((el) => el === file.type)) {
       alert(`Пожалуйста, выберите только ${props.typeFile}-файл.`);
-      //   event.target.value = ""; // Сбрасываем выбранный файл
       setLogoHeader(null);
       props.setData(null, props.itemKey);
     } else if (file) {
-      const fileUrl = URL.createObjectURL(file); // Создаем временный URL для файла
+      const fileUrl = URL.createObjectURL(file);
       setIsVisibleNoFileHeader(false);
       setTimeout(() => {
         setLogoHeader(fileUrl);
@@ -85,19 +77,15 @@ function FileComponent(props) {
     }
   };
 
-  //! определяем соотношение фото
   const handleImageLoad = (event) => {
     const img = event.target;
     if (img.naturalHeight > img.naturalWidth) {
-      // Вертикальное изображение
       setImageStyleHeader({ height: "100%", width: "auto" });
     } else {
-      // Горизонтальное изображение
       setImageStyleHeader({ width: "100%", height: "auto" });
     }
   };
 
-  //! удалаение файла
   const funDeleteFile = () => {
     setIsVisibleHeader(false);
     setTimeout(() => {
@@ -114,9 +102,7 @@ function FileComponent(props) {
     }, 500);
   };
 
-  //! обработка загрузки через drag-and-drop
   const handleDrop = (event) => {
-    // если файла нет то тогда можно загрузить
     if (logoHeader) return;
     event.preventDefault();
     setIsDragging(false);
@@ -133,7 +119,6 @@ function FileComponent(props) {
   };
 
   const handleDragLeave = (event) => {
-    // Check if the drag is leaving the entire container
     if (!event.currentTarget.contains(event.relatedTarget)) {
       setIsDragging(false);
       setTimeout(() => {
@@ -148,28 +133,45 @@ function FileComponent(props) {
     }
   };
 
+  const logoFadeClass = cn(
+    "scale-95 opacity-0 transition-[opacity,transform] duration-500",
+    isVisibleHeader === true && "scale-100 opacity-100",
+    isVisibleHeader === null && "opacity-0 transition-none",
+  );
+
+  const innerFadeClass = cn(
+    "flex h-full w-full scale-[0.97] flex-col items-center justify-center gap-2.5 p-4 opacity-0 transition-[opacity,transform] duration-[350ms]",
+    isVisibleNoFileHeader === true && "scale-100 opacity-100",
+    isVisibleNoFileHeader === null && "opacity-0 transition-none",
+  );
+
+  const dragOverlayClass = cn(
+    "absolute inset-0 z-[400] flex h-full w-full items-center justify-center bg-[rgba(17,17,17,0.04)] opacity-0 transition-opacity duration-150",
+    isDragging === true && "opacity-100",
+    isDragging === null && "opacity-0",
+  );
+
+  const dragContentClass = cn(
+    "transition-opacity duration-150",
+    isDragging !== null ? "opacity-0" : "opacity-100",
+  );
+
   return (
     <div
-      className={styles.FileComponent}
+      className="relative flex h-full w-full"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {logoHeader ? (
-        <div className={styles.container_file}>
+        <div className="relative flex h-full w-full items-center justify-center rounded-sm border-0 bg-transparent">
           {props.icon === "png" && (
-            <div className={styles.container_file_inner}>
+            <div className="flex h-1/2 w-1/2 items-center justify-center">
               <img
                 src={logoHeader}
                 onClick={funOpenFile}
                 alt="Фото загруженно"
-                className={`${styles.logo} ${
-                  isVisibleHeader
-                    ? styles.visible
-                    : isVisibleHeader === null
-                    ? styles.novisible
-                    : ""
-                }`}
+                className={cn("max-h-full max-w-full object-contain", logoFadeClass)}
                 onError={() => {
                   setLogoHeader(null);
                   setIsVisibleHeader(null);
@@ -180,22 +182,24 @@ function FileComponent(props) {
             </div>
           )}
           {(props.icon === "pdf" || props.icon === "doc") && (
-            <div className={styles.container_file_inner_file}>
+            <div className="flex h-full w-full items-center justify-center overflow-hidden">
               <div
-                className={`${styles.box_logo} ${
-                  isVisibleHeader
-                    ? styles.visible
-                    : isVisibleHeader === null
-                    ? styles.novisible
-                    : ""
-                }`}
+                className={cn(
+                  "flex h-full w-full flex-col items-center justify-center",
+                  logoFadeClass,
+                )}
               >
                 <img
                   onClick={funOpenFile}
                   src={props.icon === "doc" ? docIcon : pdfIconImport}
                   alt="Файл загружен"
+                  className="h-[62px] w-[57px] cursor-pointer max-[769px]:h-[43px] max-[769px]:w-[47px]"
                 />
-                <span name="file_name" onClick={funOpenFile}>
+                <span
+                  name="file_name"
+                  onClick={funOpenFile}
+                  className="mt-2 max-w-[80%] cursor-pointer p-0 text-center text-[13px] font-medium leading-snug tracking-[-0.01em] text-fg-secondary"
+                >
                   {props.fileName ||
                     props.data?.name ||
                     decodeFileName(fileName)}
@@ -204,91 +208,59 @@ function FileComponent(props) {
             </div>
           )}
           {!props.readOnly && (
-            <button className={styles.delete} onClick={() => funDeleteFile()}>
+            <button
+              className="absolute right-3 top-3 box-border cursor-pointer rounded-sm bg-[rgba(17,17,17,0.72)] p-1.5 transition-opacity hover:opacity-60 active:opacity-100 max-[480px]:right-2 max-[480px]:top-2"
+              onClick={() => funDeleteFile()}
+            >
               <img
                 src={trashIcon}
                 alt="Удалить файл"
-                className={`${styles.logo} ${
-                  isVisibleHeader
-                    ? styles.visible
-                    : isVisibleHeader === null
-                    ? styles.novisible
-                    : ""
-                }`}
+                className={cn("h-4 w-4 max-[480px]:h-3.5 max-[480px]:w-3.5", logoFadeClass)}
               />
             </button>
           )}
         </div>
       ) : (
         <div
-          className={styles.container}
+          className="relative flex h-full w-full cursor-pointer items-center justify-center rounded-sm transition-opacity hover:opacity-60 active:opacity-100"
           tabIndex="0"
           onClick={() => (props.readOnly ? null : funFileHeaderClick())}
         >
-          <div
-            className={`${styles.container_inner} ${
-              isVisibleNoFileHeader
-                ? styles.visible
-                : isVisibleNoFileHeader === null
-                ? styles.novisible
-                : ""
-            }`}
-          >
-            <div
-              className={`${styles.is_dragging} ${
-                isDragging
-                  ? styles.is_dragging_opasity
-                  : isDragging === null
-                  ? styles.is_dragging_opasity_no
-                  : ""
-              }`}
-            >
+          <div className={innerFadeClass}>
+            <div className={dragOverlayClass}>
               <img src={dragingIcon} alt="Перетащите в эту область" />
             </div>
             {props.icon === "png" && (
               <img
-                className={
-                  isDragging !== null
-                    ? styles.is_dragging_opasity_no
-                    : styles.is_dragging_opasity
-                }
+                className={cn("h-10 w-10 opacity-45 max-[769px]:h-9 max-[769px]:w-9", dragContentClass)}
                 src={fileIcon}
                 alt="Загрузить файл"
               />
             )}
             {props.icon === "pdf" && (
               <img
-                className={
-                  isDragging !== null
-                    ? styles.is_dragging_opasity_no
-                    : styles.is_dragging_opasity
-                }
+                className={cn("h-10 w-10 opacity-45 max-[769px]:h-9 max-[769px]:w-9", dragContentClass)}
                 src={pdfIcon}
                 alt="Загрузить файл"
               />
             )}
             {props.icon === "doc" && (
               <img
-                className={
-                  isDragging !== null
-                    ? styles.is_dragging_opasity_no
-                    : styles.is_dragging_opasity
-                }
+                className={cn("h-10 w-10 opacity-45 max-[769px]:h-9 max-[769px]:w-9", dragContentClass)}
                 src={docIcon}
                 alt="Загрузить файл"
               />
             )}
             {!errorSize ? (
               <span
-                className={
-                  isDragging !== null
-                    ? styles.is_dragging_opasity_no
-                    : styles.is_dragging_opasity
-                }
+                className={cn(
+                  "m-0 max-w-[220px] text-balance p-0 text-center text-[13px] font-medium leading-snug tracking-[-0.01em] text-fg-muted",
+                  dragContentClass,
+                )}
                 dangerouslySetInnerHTML={{ __html: props.text }}
-              ></span>
+              />
             ) : (
-              <span className={styles.error_size}>
+              <span className="text-tag-red">
                 Размер файла превышает
                 <br />
                 допустимый предел в {props.fileSize} Мб*

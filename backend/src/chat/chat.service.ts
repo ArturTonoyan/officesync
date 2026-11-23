@@ -57,7 +57,7 @@ export class ChatService {
     const topicData = await this.getTopicData(topic, companyId);
     const preparedData = this.prepareContextData(topicData);
 
-    const answer = await this.askGroq({
+    const answer = await this.askOllama({
       topic,
       question,
       contextData: preparedData,
@@ -177,59 +177,55 @@ export class ChatService {
     return result;
   }
 
-  private async askGroq(params: {
+  private async askOllama(params: {
     topic: ChatTopic;
     question: string;
     contextData: string;
   }) {
-    const apiKey = this.configService.get<string>('GROQ_API_KEY');
+    const baseUrl = (
+      this.configService.get<string>('OLLAMA_BASE_URL') ||
+      'http://127.0.0.1:11434'
+    ).replace(/\/$/, '');
     const model =
-      this.configService.get<string>('GROQ_MODEL') || 'openai/gpt-oss-120b';
+      this.configService.get<string>('OLLAMA_MODEL') ||
+      'huihui_ai/qwen2.5-abliterate:14b';
 
-    if (!apiKey) {
-      this.logger.error('GROQ_API_KEY is not configured');
-      throw new InternalServerErrorException(
-        'Не задан GROQ_API_KEY в переменных окружения',
-      );
-    }
-
-    const response = await fetch(
-      'https://api.groq.com/openai/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model,
-          temperature: 0.2,
-          messages: [
-            {
-              role: 'system',
-              content:
-                'Ты корпоративный ассистент. Отвечай строго на русском языке, коротко и по делу. Не выдумывай факты. Если данных в контексте не хватает, честно сообщи об этом.',
-            },
-            {
-              role: 'user',
-              content: `Тема: ${params.topic}\n\nКонтекст данных:\n${params.contextData}\n\nВопрос: ${params.question}`,
-            },
-          ],
-        }),
+    const response = await fetch(`${baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        model,
+        stream: false,
+        options: {
+          temperature: 0.2,
+        },
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Ты корпоративный ассистент OfficeSync. Отвечай строго на русском языке, коротко и по делу. Не выдумывай факты. Если данных в контексте не хватает, честно сообщи об этом.',
+          },
+          {
+            role: 'user',
+            content: `Тема: ${params.topic}\n\nКонтекст данных:\n${params.contextData}\n\nВопрос: ${params.question}`,
+          },
+        ],
+      }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
       this.logger.error(
-        `Groq request failed status=${response.status}, topic=${params.topic}`,
+        `Ollama request failed status=${response.status}, topic=${params.topic}, model=${model}`,
       );
       throw new InternalServerErrorException(
-        `Ошибка Groq: ${response.status} ${errorText}`,
+        `Ошибка Ollama: ${response.status} ${errorText}`,
       );
     }
 
     const data = await response.json();
-    return data?.choices?.[0]?.message?.content || 'Ответ не получен';
+    return data?.message?.content || 'Ответ не получен';
   }
 }

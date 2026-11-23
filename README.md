@@ -79,6 +79,7 @@ flowchart LR
 
 ### ML-сервис
 - FastAPI, Python — прогноз износа оборудования
+- AI-чат (backend) — локальная Ollama (`OLLAMA_BASE_URL`, `OLLAMA_MODEL`)
 
 ---
 

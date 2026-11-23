@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@store/hooks";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "./styles/app.scss";
+import "./index.css";
 import Authorization from "./pages/entrance/Authorization/Authorization";
 import Registration from "./pages/entrance/Registration/Registration";
 import AboutUs from "./pages/AboutUs/AboutUs";
@@ -23,17 +23,16 @@ import CompanyInfo from "./pages/Profile/CompanyInfo/CompanyInfo";
 import Reservation from "./pages/Profile/Reservation/Reservation";
 import Analytics from "./pages/Admin/Analytics/Analytics";
 import Chat from "./pages/Admin/Chat/Chat";
+import Catalog from "./pages/Catalog/Catalog";
 
 function App() {
   const queryClient = new QueryClient();
   const dispatch = useDispatch();
-  const userRole = useAppSelector(
-    (state) => state.user.user.data?.roles?.[0]?.value,
-  );
-
   const funUpdUser = () => {
     apiGetUser().then((res) => {
-      dispatch(setUserData({ data: res.data }));
+      if (res?.data) {
+        dispatch(setUserData({ data: res.data }));
+      }
     });
   };
 
@@ -71,6 +70,7 @@ function App() {
                 <Route path="analytics" element={<Analytics />}></Route>
                 <Route path="chat" element={<Chat />}></Route>
               </Route>
+              <Route path="/catalog" element={<Catalog />}></Route>
               <Route path="/constructor" element={<Constructor />}></Route>
               <Route
                 path="/profile"

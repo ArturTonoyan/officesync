@@ -138,9 +138,7 @@ export const apiCreateOffice = async (data, companyId) => {
 
 //! получение всех офисов
 export const apiGetOffices = async (companyId) => {
-  return await apiRequest("get", `/offices/all/${companyId}`, {
-    "Content-Type": "multipart/form-data",
-  });
+  return await apiRequest("get", `/offices/all/${companyId}`);
 };
 
 //! обновление данных офиса

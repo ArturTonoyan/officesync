@@ -1,6 +1,5 @@
-import styles from "./Reservation.module.scss";
 import { useEffect, useState } from "react";
-import { Box, Grid, Typography, Button, TextField, Card } from "@mui/material";
+import { Box, Grid, Typography, Button as MuiButton, TextField, Card } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import {
   LocalizationProvider,
@@ -18,6 +17,7 @@ import {
   apiGetReservedsMy,
 } from "../../../api/apirequests";
 import { useQuery } from "@tanstack/react-query";
+import { cn } from "@utils/cn";
 
 function Reservation() {
   const user = useAppSelector((state) => state.user.user.data);
@@ -73,6 +73,9 @@ function Reservation() {
     return userColors[hash % userColors.length];
   };
 
+  const tabClass =
+    "mr-5 mb-5 cursor-pointer text-base font-medium transition-opacity hover:opacity-60 active:opacity-100";
+
   const renderTimeSlots = () => {
     const hours = Array.from({ length: 24 }, (_, i) => i);
     const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
@@ -81,7 +84,6 @@ function Reservation() {
       const timeLabel = `${hour.toString().padStart(2, "0")}:00`;
 
       const reservation = reservedsDate?.find((res) => {
-        // Преобразуем "22.05.2025" -> "2025-05-22"
         const parsedDate = parse(res.date, "dd.MM.yyyy", new Date());
         const resDateStr = format(parsedDate, "yyyy-MM-dd");
         if (resDateStr !== selectedDateStr) return false;
@@ -113,11 +115,16 @@ function Reservation() {
         : "transparent";
 
       return (
-        <div key={hour} className={styles.slot}>
-          <div className={styles.slotLabel}>{timeLabel}</div>
+        <div
+          key={hour}
+          className="relative flex h-[60px] items-center border-b border-[#e0e0e0] pl-2 text-sm"
+        >
+          <div className="absolute top-0 left-0 text-xs text-[#999]">
+            {timeLabel}
+          </div>
           {reservation && reservation.user && (
             <div
-              className={styles.reservedBlock}
+              className="absolute top-0 right-2.5 left-[60px] flex h-full items-center rounded px-1 text-xs text-white"
               style={{ backgroundColor: bgColor }}
             >
               {reservation.user.name} {reservation.user.surname}
@@ -209,17 +216,24 @@ function Reservation() {
     });
   };
 
+  const panelClass =
+    "fixed top-20 left-[320px] z-[100] flex w-[600px] flex-col rounded-md border border-[#9d9e9f99] bg-elevated p-5";
+
   return (
-    <div className={styles.Reservation}>
-      <h1>Бронирование кабинетов</h1>
+    <div>
+      <h1 className="mb-10">Бронирование кабинетов</h1>
 
       {selectedModal ? (
-        <div className={styles.reserved_component} style={{ height: "75vh" }}>
-          <div className={styles.top}>
-            <span onClick={() => setSelectedModal(false)}>Забронировать</span>
-            <span onClick={() => setSelectedModal(true)}>Мои бронирования</span>
+        <div className={cn(panelClass, "h-[75vh]")}>
+          <div className="flex flex-row">
+            <span className={tabClass} onClick={() => setSelectedModal(false)}>
+              Забронировать
+            </span>
+            <span className={tabClass} onClick={() => setSelectedModal(true)}>
+              Мои бронирования
+            </span>
           </div>
-          <div className={styles.bottom} style={{ overflowY: "auto" }}>
+          <div className="scrollbar-thin flex flex-row overflow-y-auto">
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
               {reservedsMy?.data?.length === 0 && (
                 <Typography variant="body1">
@@ -254,23 +268,24 @@ function Reservation() {
                     Время: {res.startTime.slice(0, 5)} —{" "}
                     {res.endTime.slice(0, 5)}
                   </Typography>
-                  <Button
+                  <MuiButton
                     variant="outlined"
                     color="error"
                     sx={{ mt: 2 }}
                     onClick={() => deleteReserved(res.id)}
                   >
                     Удалить
-                  </Button>
+                  </MuiButton>
                 </Card>
               ))}
             </Box>
           </div>
         </div>
       ) : (
-        <div className={styles.reserved_component}>
-          <div className={styles.top}>
+        <div className={panelClass}>
+          <div className="flex flex-row">
             <span
+              className={tabClass}
               onClick={() => {
                 setSelectedModal(false);
               }}
@@ -278,6 +293,7 @@ function Reservation() {
               Забронировать
             </span>
             <span
+              className={tabClass}
               onClick={() => {
                 setSelectedModal(true);
               }}
@@ -285,8 +301,8 @@ function Reservation() {
               Мои бронирования
             </span>
           </div>
-          <div className={styles.bottom}>
-            <div className={styles.left}>
+          <div className="scrollbar-thin flex flex-row">
+            <div className="w-[55%]">
               <LocalizationProvider
                 dateAdapter={AdapterDateFns}
                 adapterLocale={ruLocale}
@@ -329,7 +345,7 @@ function Reservation() {
                       />
                     </Box>
 
-                    <Button
+                    <MuiButton
                       sx={{ mt: 2 }}
                       variant="contained"
                       color="primary"
@@ -337,10 +353,10 @@ function Reservation() {
                       disabled={!sendReservation}
                     >
                       Забронировать
-                    </Button>
+                    </MuiButton>
 
                     {selectedRoom && (
-                      <div className={styles.selected_room}>
+                      <div>
                         <span>Выбранный объект:</span>
                         <p>Название: {selectedRoom?.name}</p>
                         <p>Тип: {selectedRoom?.type}</p>
@@ -350,7 +366,7 @@ function Reservation() {
                 </Grid>
               </LocalizationProvider>
             </div>
-            <div className={styles.right}>
+            <div className="scrollbar-thin w-[45%] [&_*]:scrollbar-thin">
               <Grid item xs={8}>
                 <Typography variant="h5">
                   {selectedDate?.toLocaleDateString("ru-RU")}
@@ -370,7 +386,7 @@ function Reservation() {
         </div>
       )}
 
-      <div className={styles.canvas_container}>
+      <div className="max-h-[86vh] overflow-hidden">
         <ConvasSpace noedit={true} setSelectedRoom={setSelectedRoom} />
       </div>
     </div>

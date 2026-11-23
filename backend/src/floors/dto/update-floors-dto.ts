@@ -1,9 +1,15 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateFloorsDto {
-  @IsString({ message: 'Должно быть строкой' }) //! валидация
-  readonly name: string;
+  @IsOptional()
+  @IsString({ message: 'Должно быть строкой' })
+  readonly name?: string;
 
+  @IsOptional()
   @IsNumber({}, { message: 'Должно быть числом' })
-  readonly number: number;
+  readonly number?: number;
+
+  @IsOptional()
+  @IsString({ message: 'Должно быть строкой' })
+  readonly planData?: string;
 }

@@ -28,14 +28,14 @@ export class FloorsController {
     return this.floorsService.create(dto);
   }
 
-  @Get(':id')
-  getOne(@Param('id') id: string) {
-    return this.floorsService.getOne(id);
-  }
-
   @Get('all/:id')
   getAll(@Param('id') id: string) {
     return this.floorsService.getAllByCompanyId(id);
+  }
+
+  @Get(':id')
+  getOne(@Param('id') id: string) {
+    return this.floorsService.getOne(id);
   }
 
   @Roles('ADMIN')

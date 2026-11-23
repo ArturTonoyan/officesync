@@ -49,9 +49,10 @@ const ConvaSlice = createSlice({
 
     //! изменение нескольких параметров обьекта
     setDataManyParams(state, action) {
-      const { values } = action.payload;
+      const { values, id } = action.payload;
+      const targetId = id ?? state.objects.selected;
       const newData = state.objects.data.map((object) => {
-        if (object.id === state.objects.selected) {
+        if (object.id === targetId) {
           return {
             ...object,
             ...values,
@@ -60,10 +61,12 @@ const ConvaSlice = createSlice({
         return object;
       });
       state.objects.data = newData;
-      state.objects.selectedObject = {
-        ...state.objects.selectedObject,
-        ...values,
-      };
+      if (state.objects.selected === targetId) {
+        state.objects.selectedObject = {
+          ...state.objects.selectedObject,
+          ...values,
+        };
+      }
     },
 
     //! изменение объекта по Id

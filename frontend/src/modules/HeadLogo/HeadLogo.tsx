@@ -1,14 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import styles from "./HeadLogo.module.scss";
 import logo from "@assets/images/logo/logo.svg";
 
 function HeadLogo() {
   const navigate = useNavigate();
   return (
-    <div className={styles.HeadLogo}>
+    <div className="p-10">
       <img
         src={logo}
-        style={{ cursor: "pointer" }}
+        className="h-[33px] w-[187px] cursor-pointer"
         alt="logo"
         onClick={() => navigate("/")}
       />

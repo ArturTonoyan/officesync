@@ -1,9 +1,11 @@
 import { useState } from "react";
 import HeadLogo from "../../../modules/HeadLogo/HeadLogo";
 import { inputs } from "./data";
-import styles from "./Registration.module.scss";
 import { apiRegister } from "../../../api/apirequests";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@components/ui";
+import { Input } from "@components/ui";
+import { cn } from "@utils/cn";
 
 function Registration({ funUpdUser }) {
   const navigate = useNavigate();
@@ -31,34 +33,50 @@ function Registration({ funUpdUser }) {
   };
 
   return (
-    <div className={styles.Registration}>
+    <div className="min-h-screen bg-bg bg-[radial-gradient(ellipse_70%_50%_at_10%_0%,rgba(232,246,238,0.55),transparent_55%),radial-gradient(ellipse_60%_40%_at_95%_10%,rgba(240,234,248,0.45),transparent_50%)]">
       <HeadLogo />
-      <div className={styles.container}>
-        <h1>Регистрация</h1>
-        <div className={styles.auth}>
-          <span>Есть аккаунт?</span>
-          <a href="/authorization">Войти</a>
+      <div className="mt-6 w-full">
+        <h1 className="text-center text-[28px] font-bold tracking-[-0.02em] text-fg">
+          Регистрация
+        </h1>
+        <div className="mt-[15px] flex flex-row items-center justify-center">
+          <span className="mr-2.5 text-sm font-normal text-[#989898]">
+            Есть аккаунт?
+          </span>
+          <a className="text-ink" href="/authorization">
+            Войти
+          </a>
         </div>
-        <div className={styles.form}>
+        <div className="mx-auto flex w-[470px] flex-col items-center pt-[30px]">
           {inputs.map((item, index) => (
-            <div className={styles.input_box} name={item.key}>
+            <div key={item.key} className="mb-5 w-full" name={item.key}>
               {item.key === "role" ? (
-                <div className={styles.role}>
-                  <button
+                <div className="flex flex-row overflow-hidden rounded-md bg-bg2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className={cn(
+                      "w-1/2 rounded-none border-0",
+                      data.role === "ADMIN" && "bg-ink text-white hover:bg-ink-hover",
+                    )}
                     onClick={() => funSetData("role", "ADMIN")}
-                    className={data.role === "ADMIN" ? styles.active : ""}
                   >
                     Администратор
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className={cn(
+                      "w-1/2 rounded-none border-0",
+                      data.role === "USER" && "bg-ink text-white hover:bg-ink-hover",
+                    )}
                     onClick={() => funSetData("role", "USER")}
-                    className={data.role === "USER" ? styles.active : ""}
                   >
                     Сотрудник
-                  </button>
+                  </Button>
                 </div>
               ) : (
-                <input
+                <Input
                   key={index}
                   type={item.type}
                   placeholder={item.name}
@@ -69,9 +87,9 @@ function Registration({ funUpdUser }) {
               )}
             </div>
           ))}
-          <button className={styles.save} onClick={funSave}>
+          <Button className="mt-2 w-full" onClick={funSave}>
             Зарегистрироваться
-          </button>
+          </Button>
         </div>
       </div>
     </div>

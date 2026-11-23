@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import styles from "./ModalAddObject.module.scss";
 import arrow from "@assets/images/icons/arrowMini.svg";
+import { Button, Input } from "@components/ui";
+import { cn } from "@utils/cn";
 import { addEquipmentData, typesNoEquipment } from "./data";
 import { useEffect, useRef, useState } from "react";
 import ModalAllIcons from "../../../../modules/ModalAllIcons/ModalAllIcons";
@@ -19,42 +20,16 @@ import {
 import { useQuery } from "@tanstack/react-query";
 
 const types = [
-  {
-    value: "Этаж",
-    zIndex: 100,
-  },
-  {
-    value: "Кабинет",
-    zIndex: 300,
-  },
-  {
-    value: "Переговорная",
-    zIndex: 300,
-  },
-  {
-    value: "Рабочее место",
-    zIndex: 300,
-  },
-  {
-    value: "Мебель",
-    zIndex: 400,
-  },
-  {
-    value: "Оборудование",
-    zIndex: 500,
-  },
-  {
-    value: "Сотрудник",
-    zIndex: 600,
-  },
-  {
-    value: "Дверь",
-    zIndex: 900,
-  },
-  {
-    value: "Другое",
-    zIndex: 450,
-  },
+  { value: "Этаж", zIndex: 100 },
+  { value: "Стена", zIndex: 200 },
+  { value: "Кабинет", zIndex: 300 },
+  { value: "Переговорная", zIndex: 300 },
+  { value: "Рабочее место", zIndex: 550 },
+  { value: "Мебель", zIndex: 400 },
+  { value: "Оборудование", zIndex: 500 },
+  { value: "Сотрудник", zIndex: 600 },
+  { value: "Дверь", zIndex: 900 },
+  { value: "Другое", zIndex: 450 },
 ];
 
 const defaultData = {
@@ -302,7 +277,7 @@ function ModalAddObject({
     if (key === "user") list = users?.data || [];
 
     return (
-      <ul>
+      <ul className="m-0 list-none p-0">
         {list.map((item, index) => {
           const label =
             key === "type"
@@ -313,6 +288,7 @@ function ModalAddObject({
           return (
             <li
               key={index}
+              className="box-border w-full cursor-pointer px-3.5 py-2.5 text-[13px] font-medium text-fg transition-colors duration-150 hover:bg-hover"
               onClick={() => {
                 handleSetData(key, item);
                 setShowDropdown(null);
@@ -329,14 +305,20 @@ function ModalAddObject({
   const renderInput = (item) => {
     if (item.key === "icon") {
       return (
-        <div className={styles.input_box_icon} key={item.key}>
-          <span className={styles.name}>{item.name}</span>
-          <div className={styles.input}>
+        <div className="w-[48%]" key={item.key}>
+          <span className="block pb-2 text-[13px] font-semibold text-fg-secondary">
+            {item.name}
+          </span>
+          <div className="mb-0 flex min-h-[72px] flex-row items-center rounded-sm border border-line bg-elevated shadow-soft transition-[border-color] duration-150 focus-within:border-fg focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.06)]">
             {data.icon && (
-              <img className={styles.icon} src={data.icon} alt="icon" />
+              <img
+                className="m-auto h-10 w-10 px-6"
+                src={data.icon}
+                alt="icon"
+              />
             )}
             <img
-              className={styles.arrow}
+              className="m-auto h-3 w-3 scale-y-[-1] cursor-pointer p-3.5 transition-opacity duration-150 hover:opacity-60 active:opacity-100"
               src={arrow}
               alt="arrow"
               onClick={() => setModalAllIcons(true)}
@@ -350,26 +332,39 @@ function ModalAddObject({
       return null;
 
     return (
-      <div className={styles.input_box} key={item.key}>
-        <span className={styles.name}>{item.name}</span>
-        <div className={styles.input}>
-          <input
+      <div className="relative w-full" key={item.key}>
+        <span className="block pb-2 text-[13px] font-semibold text-fg-secondary">
+          {item.name}
+        </span>
+        <div className="relative mb-0 flex flex-row rounded-sm border border-line bg-elevated shadow-soft transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.06)]">
+          <Input
+            bare
             type={item.type}
             autoComplete="new-password"
+            className={cn(
+              "px-3.5 py-3 text-sm font-normal text-fg",
+              item.type === "list" && "cursor-pointer",
+            )}
             placeholder="Не указано"
             value={data[item.key] || ""}
             onClick={
-              item.type === "list" ? () => setShowDropdown(item.key) : null
+              item.type === "list" ? () => setShowDropdown(item.key) : undefined
             }
             onChange={(e) => handleSetData(item.key, e.target.value)}
             readOnly={item.type === "list"}
-            style={{ cursor: item.type === "list" ? "pointer" : "" }}
           />
           {item.type === "list" && (
             <>
-              <img className={styles.arrow} src={arrow} alt="arrow" />
+              <img
+                className="m-auto h-3 w-3 scale-y-[-1] cursor-pointer p-3.5 transition-opacity duration-150 hover:opacity-60 active:opacity-100"
+                src={arrow}
+                alt="arrow"
+              />
               {showDropdown === item.key && (
-                <div className={styles.list} ref={refList}>
+                <div
+                  className="absolute top-[calc(100%+4px)] left-0 z-[100] max-h-60 w-full overflow-x-hidden overflow-y-auto rounded-md border border-line bg-elevated shadow-card"
+                  ref={refList}
+                >
                   {renderDropdownList(item.key)}
                 </div>
               )}
@@ -384,7 +379,7 @@ function ModalAddObject({
     <AnimatePresence>
       {show && (
         <motion.div
-          className={styles.ModalAddObject}
+          className="fixed inset-0 z-[10000] box-border flex h-full w-full items-start justify-center overflow-y-auto bg-[rgba(17,17,17,0.35)] p-10 px-5 backdrop-blur-md"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -399,18 +394,23 @@ function ModalAddObject({
           />
 
           <motion.div
-            className={styles.container}
+            className="my-auto box-border max-h-[calc(100vh-80px)] w-full min-w-0 max-w-[520px] overflow-hidden overflow-y-auto rounded-xl border border-line bg-elevated p-7 shadow-card"
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
           >
-            {title && <h2>{title}</h2>}
-            <div className={styles.form}>
+            {title && (
+              <h2 className="m-0 mb-[22px] text-[22px] font-bold tracking-[-0.03em] text-fg">
+                {title}
+              </h2>
+            )}
+            <div className="flex w-full flex-wrap justify-between gap-3.5">
               {addEquipmentData.map(renderInput)}
             </div>
-            <div className={styles.btn}>
-              <button
-                className={styles.cancel}
+            <div className="mt-[22px] flex w-full flex-row justify-end gap-3 border-t border-line pt-[18px]">
+              <Button
+                variant="secondary"
+                className="min-w-[110px]"
                 onClick={() => {
                   setShow(false);
                   setData(defaultData);
@@ -418,10 +418,10 @@ function ModalAddObject({
                 }}
               >
                 Отменить
-              </button>
-              <button className={styles.save} onClick={handleSave}>
+              </Button>
+              <Button className="min-w-[120px]" onClick={handleSave}>
                 Сохранить
-              </button>
+              </Button>
             </div>
           </motion.div>
         </motion.div>

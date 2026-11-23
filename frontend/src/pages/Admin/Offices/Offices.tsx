@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import styles from "./Offices.module.scss";
 import { addOfficeData, paramMenu, tableHeader, typeOwnerships } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
@@ -60,33 +59,33 @@ function Offices() {
   };
 
   useEffect(() => {
-    if (query?.data) {
-      let tabDat = query?.data.map((el) => ({
-        ...el,
-        director: funGetUserFio(el?.users?.find((u) => u.id === el.directorId)),
-        usersCount: el?.users?.length,
-        floorsCount: el?.floors?.length,
-        devices: el?.eqipments?.length,
-      }));
-      tabDat.map((el) => {
-        Object.keys(el).forEach((key) => {
-          if (
-            el[key] === null ||
-            el[key] === undefined ||
-            !el[key] ||
-            el[key] === "undefined" ||
-            el[key] === "null" ||
-            el[key] === ""
-          ) {
-            el[key] = "";
-          }
-        });
-      });
+    if (!Array.isArray(query?.data)) return;
 
-      console.log("tabDat", tabDat);
-      setTableData(tabDat);
-      setOriginalData(tabDat);
-    }
+    const tabDat = query.data.map((el) => ({
+      id: el.id,
+      name: el.name || "",
+      address: el.address || "",
+      phone: el.phone || "",
+      email: el.email || "",
+      directorId: el.directorId || "",
+      director: funGetUserFio(
+        el?.users?.find((u) => u.id === el.directorId),
+      ),
+      typeOwnership: el.typeOwnership || "",
+      renter: el.renter || "",
+      contract: el.contract || "",
+      dateStart: el.dateStart || "",
+      dateEnd: el.dateEnd || "",
+      cost: el.cost ?? "",
+      renterContact: el.renterContact || "",
+      area: el.area ?? "",
+      usersCount: el?.users?.length || 0,
+      floorsCount: el?.floors?.length || 0,
+      devices: el?.eqipments?.length || 0,
+    }));
+
+    setTableData(tabDat);
+    setOriginalData(tabDat);
   }, [query?.data]);
 
   //! функция создания офиса
@@ -117,12 +116,14 @@ function Offices() {
     if (shearchParam.trim() !== "") {
       const filteredData = originalData.filter((item) =>
         Object.values(item).some((value) =>
-          value.toString().toLowerCase().includes(shearchParam.toLowerCase())
-        )
+          String(value ?? "")
+            .toLowerCase()
+            .includes(shearchParam.toLowerCase()),
+        ),
       );
       setTableData(filteredData);
     } else {
-      setTableData([...originalData]); // Сбрасываем фильтр
+      setTableData([...originalData]);
     }
   }, [shearchParam, originalData]);
 
@@ -184,13 +185,14 @@ function Offices() {
   };
 
   return (
-    <div className={styles.Offices}>
+    <div>
       <h1>Офисы</h1>
       <ModalAddOfice
         show={modalShow}
         setShow={setModalShow}
         title={"Добавить офис"}
         inputs={
+          createOfficeData?.typeOwnership === "Арендованный" ||
           createOfficeData?.typeOwnership?.[0] === "Арендованный"
             ? addOfficeData
             : addOfficeData?.slice(0, 6)
@@ -248,7 +250,7 @@ function Offices() {
         tableData={tableData}
         tableHeader={tableHeader}
       />
-      <div className={styles.content}>
+      <div className="mt-5 w-full min-w-0 box-border overflow-x-auto">
         <Table
           prewData={[]}
           tableData={tableData}

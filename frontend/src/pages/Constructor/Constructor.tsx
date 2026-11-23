@@ -1,10 +1,9 @@
-import styles from "./Constructor.module.scss";
-import ConvasSpace from "./modules/ConvasSpace/ConvasSpace";
+import FloorplanWorkspace from "./modules/FloorplanWorkspace/FloorplanWorkspace";
 
 function Constructor() {
   return (
-    <div className={styles.Constructor}>
-      <ConvasSpace />
+    <div className="h-screen w-full overflow-hidden">
+      <FloorplanWorkspace />
     </div>
   );
 }

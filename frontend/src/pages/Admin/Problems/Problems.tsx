@@ -1,5 +1,4 @@
 import { use, useEffect, useState } from "react";
-import styles from "./Problems.module.scss";
 import { addOfficeData, paramMenu, tableHeader } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
@@ -232,7 +231,7 @@ function Problems({ noedit }) {
   }, [equipments]);
 
   return (
-    <div className={styles.Problems}>
+    <div>
       <h1>Заявки на ремонт</h1>
       <ModalAddOfice
         show={modalShow}
@@ -274,7 +273,7 @@ function Problems({ noedit }) {
         tableData={tableData}
         tableHeader={tableHeader}
       />
-      <div className={styles.content}>
+      <div className="mt-5 w-full min-w-0 box-border overflow-x-auto">
         <Table
           prewData={[]}
           tableData={tableData}

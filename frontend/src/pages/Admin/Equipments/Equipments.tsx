@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import styles from "./Equipments.module.scss";
 import { addOfficeData, paramMenu, paramMenuNoEdit, tableHeader } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
@@ -300,7 +299,7 @@ function Equipments({ noedit }) {
   }, [equipments]);
 
   return (
-    <div className={styles.Equipments}>
+    <div>
       <h1> {noedit ? "Мои оборудование" : "Оборудование"} </h1>
       <ModalAddOfice
         show={modalShow}
@@ -366,7 +365,7 @@ function Equipments({ noedit }) {
         tableData={tableData}
         tableHeader={tableHeader}
       />
-      <div className={styles.content}>
+      <div className="mt-5 w-full min-w-0 box-border overflow-x-auto">
         <Table
           prewData={[]}
           tableData={tableData}

@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import styles from "./Analytics.module.scss";
 import {
   apiGetEquipments,
   apiGetFloors,
@@ -55,29 +54,29 @@ function Analytics() {
   });
 
   return (
-    <div className={styles.Analytics}>
+    <div>
       <h1>Аналитика</h1>
-      <div className={styles.content}>
-        <div className={styles.diagram}>
-          <h2>Офисы</h2>
+      <div className="mt-5 w-full min-w-0 box-border overflow-x-auto p-0">
+        <div className="mb-10">
+          <h2 className="mb-10">Офисы</h2>
           {offices?.data && <OfficeEquipmentChart data={offices?.data} />}
           <br />
           {offices?.data && <OfficeChart offices={offices?.data} />}
         </div>
-        <div className={styles.diagram}>
-          <h2>Этажи</h2>
+        <div className="mb-10">
+          <h2 className="mb-10">Этажи</h2>
           {floors?.data && <EquipmentWarrantyChart floors={floors?.data} />}
         </div>
-        <div className={styles.diagram}>
-          <h2>Бронирования</h2>
+        <div className="mb-10">
+          <h2 className="mb-10">Бронирования</h2>
           {reserveds?.data && <AnalyticsChart usageData={reserveds?.data} />}
         </div>
-        <div className={styles.diagram}>
-          <h2>Сотрудники</h2>
+        <div className="mb-10">
+          <h2 className="mb-10">Сотрудники</h2>
           {users?.data && <DonutChart users={users?.data} />}
         </div>
-        <div className={styles.diagram}>
-          <h2>Оборудование</h2>
+        <div className="mb-10">
+          <h2 className="mb-10">Оборудование</h2>
           {equipments?.data && (
             <EquipmentProblems3DChart equipment={equipments?.data} />
           )}

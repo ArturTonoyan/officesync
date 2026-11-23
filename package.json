@@ -1,0 +1,5 @@
+{
+  "name": "officesync",
+  "private": true,
+  "description": "Workspace root — app packages live in frontend/ and backend/"
+}

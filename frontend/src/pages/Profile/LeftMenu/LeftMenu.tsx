@@ -1,9 +1,12 @@
-import styles from "./LeftMenu.module.scss";
 import logoIcon from "@assets/images/logo/logo.svg";
+import companyIcon from "@assets/images/leftMenu/company.svg";
 import officeIcon from "@assets/images/leftMenu/office.svg";
+import catalogIcon from "@assets/images/leftMenu/catalog.svg";
+import bookingIcon from "@assets/images/leftMenu/booking.svg";
 import deviceIcon from "@assets/images/leftMenu/device.svg";
 import errorsIcon from "@assets/images/leftMenu/errors.svg";
-import { useNavigate } from "react-router-dom";
+import maintenanceIcon from "@assets/images/leftMenu/maintenance.svg";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@store/hooks";
 import editIcon from "@assets/images/icons/editProfile.svg";
 import exit from "@assets/images/icons/exit.svg";
@@ -12,10 +15,18 @@ import { apiUpdateUserProfile, server } from "../../../api/apirequests";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
 import { addOfficeData } from "./data";
 import { useState } from "react";
+import { cn } from "@utils/cn";
+
+const navItemBase =
+  "mb-0.5 flex cursor-pointer list-none items-center rounded-[10px] px-2.5 py-2 transition-colors hover:bg-bg2 [&_img]:mr-2.5 [&_img]:h-4 [&_img]:w-4 [&_img]:shrink-0 [&_img]:opacity-50 [&_span]:m-0 [&_span]:p-0 [&_span]:text-[13px] [&_span]:font-medium [&_span]:leading-[1.3] [&_span]:tracking-[-0.01em] [&_span]:text-[#4a4a4e]";
+
+const navItemActive =
+  "bg-[#ececed] hover:bg-[#ececed] [&_img]:opacity-90 [&_span]:font-semibold [&_span]:text-fg";
 
 function LeftMenu({ funUpdUser }) {
   const user = useAppSelector((state) => state.user.user.data);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [modalEditShow, setModalEditShow] = useState(false);
   const [modalEditData, setModalEditData] = useState({});
@@ -43,14 +54,30 @@ function LeftMenu({ funUpdUser }) {
     });
   };
 
+  const isAdmin = user?.roles?.some((role) => role.value === "ADMIN");
+
   const listMenu = [
+    ...(isAdmin
+      ? [
+          {
+            icon: officeIcon,
+            title: "Админ-панель",
+            navigate: "/admin",
+          },
+        ]
+      : []),
     {
-      icon: officeIcon,
+      icon: companyIcon,
       title: "Компания",
       navigate: "/profile",
     },
     {
-      icon: officeIcon,
+      icon: catalogIcon,
+      title: "Каталог",
+      navigate: "/catalog",
+    },
+    {
+      icon: bookingIcon,
       title: "Бронирование",
       navigate: "/profile/reservation",
     },
@@ -59,14 +86,13 @@ function LeftMenu({ funUpdUser }) {
       title: "Оборудование",
       navigate: "/profile/equipments",
     },
-
     {
       icon: errorsIcon,
       title: "Заявки на ремонт",
       navigate: "/profile/problems",
     },
     {
-      icon: errorsIcon,
+      icon: maintenanceIcon,
       title: "ТО",
       navigate: "/profile/to",
     },
@@ -87,67 +113,78 @@ function LeftMenu({ funUpdUser }) {
         data={modalEditData}
         setData={setModalEditData}
         funSave={funUpdate}
-        // lists={{
-        //   office: {
-        //     data: offices?.data,
-        //     key: "officeId",
-        //     value: ["name", "address"],
-        //   },
-        //   floor: {
-        //     data: floors?.data,
-        //     key: "floorId",
-        //     value: ["name", "address"],
-        //   },
-        //   user: {
-        //     data: users?.data,
-        //     key: "userId",
-        //     value: ["name", "surname", "patronymic", "email"],
-        //   },
-        // }}
       />
 
-      <div className={styles.LeftMenu}>
-        <div className={styles.logotype}>
+      <div className="scrollbar-thin fixed top-0 left-0 z-[100] box-border flex h-screen w-[248px] flex-col overflow-y-auto border-r border-line bg-elevated px-3 pt-[18px] pb-5">
+        <div className="px-2 pt-1.5 pb-[18px] [&_img]:block [&_img]:h-[26px] [&_img]:w-auto [&_img]:max-w-full [&_img]:cursor-pointer">
           <img src={logoIcon} alt="Логотип" onClick={() => navigate("/")} />
         </div>
-        <div className={styles.profile_data}>
-          <div className={styles.profile_img}>
+        <div className="mb-4 flex w-full flex-col items-center rounded-md border border-line bg-bg px-2.5 py-3.5">
+          <div className="mb-2.5">
             {user?.image ? (
-              <img src={`${server}/${user?.image}`} alt="Логотип" />
+              <img
+                className="h-16 w-16 rounded-full border border-line object-cover"
+                src={`${server}/${user?.image}`}
+                alt="Логотип"
+              />
             ) : (
-              <img style={{ opacity: "0.5" }} src={nophoto} alt="Логотип" />
+              <img
+                className="h-16 w-16 rounded-full border border-line object-cover opacity-50"
+                src={nophoto}
+                alt="Логотип"
+              />
             )}
           </div>
-          <div className={styles.fio}>
-            <p
-              className={styles.fio_text}
-            >{`${user?.surname} ${user?.name} ${user?.patronymic}`}</p>
-            <span className={styles.email}>{user?.email}</span>
-            <span className={styles.position}>{user?.position}</span>
+          <div className="flex flex-col items-center">
+            <p className="mb-0.5 text-center text-[13px] font-semibold tracking-[-0.01em] text-fg leading-[1.3]">{`${user?.surname} ${user?.name} ${user?.patronymic}`}</p>
+            <span className="mb-0.5 text-center text-[11px] leading-[1.35] text-fg-secondary">
+              {user?.email}
+            </span>
+            <span className="mb-0.5 text-center text-[11px] leading-[1.35] text-fg-secondary">
+              {user?.position}
+            </span>
           </div>
-          <div className={styles.buttons}>
+          <div className="mt-2.5 flex flex-row gap-1.5">
             <button
-              className={styles.edit}
+              type="button"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-sm border border-line bg-elevated transition-colors hover:bg-bg2"
               onClick={() => navigate("/authorization")}
             >
-              <img src={exit} alt="edit" />
+              <img className="h-3.5 w-3.5 object-cover" src={exit} alt="edit" />
             </button>
-            <button className={styles.edit} onClick={funClickEdit}>
-              <img src={editIcon} alt="exit" />
+            <button
+              type="button"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-sm border border-line bg-elevated transition-colors hover:bg-bg2"
+              onClick={funClickEdit}
+            >
+              <img className="h-3.5 w-3.5 object-cover" src={editIcon} alt="exit" />
             </button>
           </div>
         </div>
-        <div className={styles.content}>
-          <div className={styles.container}>
-            <div className={styles.tables_box}>
-              <span>Таблицы</span>
-              <ul className={styles.list_item}>
-                {listMenu.map((item, index) => (
-                  <li key={index} onClick={() => navigate(item.navigate)}>
-                    <img src={item.icon} alt="img" />
-                    <span>{item.title}</span>
-                  </li>
-                ))}
+        <div className="flex min-h-0 flex-1 flex-col justify-between">
+          <div className="flex flex-col">
+            <div className="mt-1">
+              <span className="block px-2.5 pb-2 text-[10px] font-semibold tracking-[0.08em] text-fg-muted uppercase">
+                Меню
+              </span>
+              <ul className="m-0 list-none p-0">
+                {listMenu.map((item) => {
+                  const active =
+                    item.navigate === "/profile"
+                      ? location.pathname === "/profile" ||
+                        location.pathname === "/profile/"
+                      : location.pathname.startsWith(item.navigate);
+                  return (
+                    <li
+                      key={item.navigate}
+                      className={cn(navItemBase, active && navItemActive)}
+                      onClick={() => navigate(item.navigate)}
+                    >
+                      <img src={item.icon} alt="" />
+                      <span>{item.title}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>

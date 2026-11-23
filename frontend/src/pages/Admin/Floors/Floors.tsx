@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import styles from "./Floors.module.scss";
 import { addFloorData, paramMenu, tableHeader } from "./data";
 import HeadBlock from "./HeadBlock/HeadBlock";
 import ModalAddOfice from "../../../modules/ModalAddOfice/ModalAddOfice";
@@ -12,6 +11,7 @@ import {
   apiUpdateFloor,
   server,
 } from "../../../api/apirequests";
+import { buildPlanPreviewUrl } from "../../Constructor/floorplan/planPreview";
 import { useAppSelector } from "@store/hooks";
 import { useQuery } from "@tanstack/react-query";
 
@@ -37,42 +37,51 @@ function Floors() {
   } = useQuery({
     queryKey: ["offices/all/id", user?.companyId],
     queryFn: () => apiGetOffices(user?.companyId),
-    staleTime: Infinity, //! не обновлять
+    staleTime: 30_000,
+    refetchOnMount: "always",
     enabled: !!user?.companyId,
   });
 
   const { data: floors, refetch: refetchFloors } = useQuery({
     queryKey: ["floors/all/id", user?.companyId],
     queryFn: () => apiGetFloors(user?.companyId),
-    staleTime: Infinity, //! не обновлять
+    staleTime: 30_000,
+    refetchOnMount: "always",
     enabled: !!user?.companyId,
   });
 
   useEffect(() => {
-    if (floors?.data) {
-      const qdat = floors?.data.map((item) => ({
-        ...item,
-        office: offices?.data?.find((el) => el.id === item.officeId)?.name,
-        users: item.users?.length,
-        devices: item.eqipments?.length,
-        image: `${server}/${item.image}`,
-      }));
-      setTableData(qdat);
-      setOriginalData(qdat);
-    }
-  }, [floors?.data]);
+    if (!Array.isArray(floors?.data)) return;
+
+    const qdat = floors.data.map((item) => ({
+      id: item.id,
+      name: item.name || "",
+      number: item.number ?? "",
+      officeId: item.officeId || "",
+      office: offices?.data?.find((el) => el.id === item.officeId)?.name || "",
+      users: item.users?.length || 0,
+      devices: item.eqipments?.length || 0,
+      image: item.image
+        ? `${server}/${item.image}`
+        : buildPlanPreviewUrl(item.planData) || "",
+    }));
+    setTableData(qdat);
+    setOriginalData(qdat);
+  }, [floors?.data, offices?.data]);
 
   //! поиск по всем полям
   useEffect(() => {
     if (shearchParam.trim() !== "") {
       const filteredData = originalData.filter((item) =>
         Object.values(item).some((value) =>
-          value.toString().toLowerCase().includes(shearchParam.toLowerCase())
-        )
+          String(value ?? "")
+            .toLowerCase()
+            .includes(shearchParam.toLowerCase()),
+        ),
       );
       setTableData(filteredData);
     } else {
-      setTableData([...originalData]); // Сбрасываем фильтр
+      setTableData([...originalData]);
     }
   }, [shearchParam, originalData]);
 
@@ -132,7 +141,7 @@ function Floors() {
   };
 
   return (
-    <div className={styles.Floors}>
+    <div>
       <h1>Этажи</h1>
       <ModalAddOfice
         show={modalShow}
@@ -173,7 +182,7 @@ function Floors() {
         tableData={tableData}
         tableHeader={tableHeader}
       />
-      <div className={styles.content}>
+      <div className="mt-5 w-full min-w-0 box-border overflow-x-auto">
         <Table
           prewData={[]}
           tableData={tableData}

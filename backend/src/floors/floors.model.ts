@@ -45,6 +45,13 @@ export class Floors extends Model<Floors, FloorsCreationAttrs> {
   })
   image: string;
 
+  /** JSON карты JBay Floorplan: { plan, markers } */
+  @Column({
+    type: DataType.TEXT,
+    allowNull: true,
+  })
+  planData: string;
+
   @ForeignKey(() => Office)
   @Column({
     type: DataType.UUID,
