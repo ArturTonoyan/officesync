@@ -25,12 +25,29 @@ type ScreenRect = { left: number; top: number; width: number; height: number };
 
 type Props = {
   enabled: boolean;
+  /** Режим чат-правок: клик без рамки открывает контекстный чат */
+  chatMode?: boolean;
   plan: FloorPlan;
   floorId?: string | null;
   editorRootRef: RefObject<HTMLElement | null>;
   onPlanChange: (plan: FloorPlan) => void;
+  onSelectionChange?: (items: SelectedItem[]) => void;
+  onChatPick?: (info: {
+    clientX: number;
+    clientY: number;
+    planX: number;
+    planY: number;
+  }) => void;
+  /** Внешнее выделение (например после авторазмещения) */
+  externalSelection?: SelectedItem[] | null;
+  externalSelectionTick?: number;
+  /** Фильтр hit-test (режим безопасности) */
+  furnitureKindFilter?: ((kind: string) => boolean) | null;
+  /** Только мебель — без стен/комнат/проёмов */
+  furnitureOnly?: boolean;
+  /** Панель выделения слева (чтобы не уходила под правый drawer) */
+  selectionPanelSide?: "left" | "right";
 };
-
 function isTypingTarget(el: EventTarget | null) {
   if (!(el instanceof HTMLElement)) return false;
   const tag = el.tagName;
@@ -44,10 +61,18 @@ function isTypingTarget(el: EventTarget | null) {
 
 function MarqueeSelectOverlay({
   enabled,
+  chatMode = false,
   plan,
   floorId,
   editorRootRef,
   onPlanChange,
+  onSelectionChange,
+  onChatPick,
+  externalSelection = null,
+  externalSelectionTick = 0,
+  furnitureKindFilter = null,
+  furnitureOnly = false,
+  selectionPanelSide = "right",
 }: Props) {
   const [modHeld, setModHeld] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -61,10 +86,31 @@ function MarqueeSelectOverlay({
   const planRef = useRef(plan);
   const floorIdRef = useRef(floorId);
   const onPlanChangeRef = useRef(onPlanChange);
+  const onSelectionChangeRef = useRef(onSelectionChange);
+  const onChatPickRef = useRef(onChatPick);
+  const chatModeRef = useRef(chatMode);
+  const kindFilterRef = useRef(furnitureKindFilter);
+  const furnitureOnlyRef = useRef(furnitureOnly);
   selectedRef.current = selected;
   planRef.current = plan;
   floorIdRef.current = floorId;
   onPlanChangeRef.current = onPlanChange;
+  onSelectionChangeRef.current = onSelectionChange;
+  onChatPickRef.current = onChatPick;
+  chatModeRef.current = chatMode;
+  kindFilterRef.current = furnitureKindFilter;
+  furnitureOnlyRef.current = furnitureOnly;
+
+  useEffect(() => {
+    if (!externalSelectionTick) return;
+    const items = externalSelection || [];
+    setSelected(items);
+    setFocusedKey(items[0] ? selectionKey(items[0]) : null);
+  }, [externalSelectionTick, externalSelection]);
+
+  useEffect(() => {
+    onSelectionChangeRef.current?.(selected);
+  }, [selected]);
 
   const details = useMemo(
     () => describeSelection(plan, selected, floorId),
@@ -173,6 +219,15 @@ function MarqueeSelectOverlay({
 
       const rect = normalizeRect(p0, p1);
       if (rect.width < 4 && rect.height < 4) {
+        if (chatModeRef.current && !start.additive) {
+          onChatPickRef.current?.({
+            clientX,
+            clientY,
+            planX: p0.x,
+            planY: p0.y,
+          });
+          return;
+        }
         if (!start.additive) {
           setSelected([]);
           setFocusedKey(null);
@@ -180,7 +235,21 @@ function MarqueeSelectOverlay({
         return;
       }
 
-      const hits = hitTestMarquee(planRef.current, rect, floorIdRef.current);
+      let hits = hitTestMarquee(planRef.current, rect, floorIdRef.current);
+      if (furnitureOnlyRef.current) {
+        hits = hits.filter((h) => h.kind === "furniture");
+      }
+      const kindFilter = kindFilterRef.current;
+      if (kindFilter) {
+        const floor =
+          planRef.current.floors.find((f) => f.id === floorIdRef.current) ||
+          planRef.current.floors[0];
+        hits = hits.filter((h) => {
+          if (h.kind !== "furniture") return !furnitureOnlyRef.current;
+          const f = (floor?.furniture || []).find((x) => x.id === h.id);
+          return kindFilter(String(f?.kind || ""));
+        });
+      }
       setSelected((prev) => {
         if (!start.additive) return hits;
         const map = new Map(prev.map((i) => [selectionKey(i), i]));
@@ -234,13 +303,23 @@ function MarqueeSelectOverlay({
       setModHeld(Boolean(e.metaKey || e.ctrlKey));
     };
 
+    let chatStart: { x: number; y: number } | null = null;
+
     const onPointerDown = (e: PointerEvent) => {
-      if (!(e.metaKey || e.ctrlKey) || e.button !== 0) return;
       const root = editorRootRef.current;
-      if (!root) return;
+      if (!root || e.button !== 0) return;
       const canvas = root.querySelector(".fp-canvas-host");
       if (!canvas || !(canvas instanceof HTMLElement)) return;
       if (!canvas.contains(e.target as Node)) return;
+
+      // Чат-режим: обычный клик (без ⌘) — контекст правки
+      if (chatModeRef.current && !(e.metaKey || e.ctrlKey)) {
+        if (isTypingTarget(e.target)) return;
+        chatStart = { x: e.clientX, y: e.clientY };
+        return;
+      }
+
+      if (!(e.metaKey || e.ctrlKey)) return;
 
       e.preventDefault();
       e.stopPropagation();
@@ -271,6 +350,25 @@ function MarqueeSelectOverlay({
     };
 
     const onPointerUp = (e: PointerEvent) => {
+      if (chatStart && chatModeRef.current) {
+        const dx = e.clientX - chatStart.x;
+        const dy = e.clientY - chatStart.y;
+        const start = chatStart;
+        chatStart = null;
+        if (Math.hypot(dx, dy) <= 6) {
+          const root = editorRootRef.current;
+          const pt = root ? clientToPlan(root, start.x, start.y) : null;
+          if (pt) {
+            onChatPickRef.current?.({
+              clientX: start.x,
+              clientY: start.y,
+              planX: pt.x,
+              planY: pt.y,
+            });
+          }
+        }
+        return;
+      }
       if (!startRef.current) return;
       finishDrag(e.clientX, e.clientY);
     };
@@ -325,7 +423,12 @@ function MarqueeSelectOverlay({
       )}
 
       {selected.length > 0 && (
-        <aside className="pointer-events-auto absolute bottom-4 right-4 top-4 z-[60] flex w-[280px] flex-col overflow-hidden rounded-xl border border-line bg-elevated shadow-card">
+        <aside
+          className={cn(
+            "pointer-events-auto fixed bottom-4 top-20 z-[145] flex w-[280px] flex-col overflow-hidden rounded-xl border border-line bg-elevated shadow-card",
+            selectionPanelSide === "left" ? "left-4" : "right-4",
+          )}
+        >
           <div className="flex items-start justify-between gap-2 border-b border-line px-3.5 py-3">
             <div>
               <p className="text-[13px] font-semibold tracking-[-0.01em] text-fg">

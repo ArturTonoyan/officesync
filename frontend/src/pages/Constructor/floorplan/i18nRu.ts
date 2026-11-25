@@ -30,6 +30,8 @@ export const FP_RU: Record<string, string> = {
   "Redo · Ctrl Y": "Повторить · Ctrl Y",
   "Select · V": "Выбор · V",
   "Pan · H": "Перемещение · H",
+  Chat: "Чат",
+  "Chat · C": "Чат · C",
   "Wall · W": "Стена · W",
   "Room · R": "Комната · R",
   "Road · S": "Дорога · S",
@@ -47,8 +49,9 @@ export const FP_RU: Record<string, string> = {
 
   // Status / hints
   "Click to select · drag empty space to pan · scroll to zoom":
-    "Клик — выбор · перетащите пустое место — сдвиг · колёсико — масштаб",
-  "Drag to pan · scroll to zoom": "Перетащите — сдвиг · колёсико — масштаб",
+    "Клик — выбор · пустое место / два пальца — сдвиг · pinch / колёсико — масштаб",
+  "Drag to pan · scroll to zoom":
+    "Перетащите / два пальца — сдвиг · pinch / колёсико — масштаб",
   "Drag to move · Del to delete · Esc to deselect":
     "Перетащите — переместить · Del — удалить · Esc — снять выделение",
   "Click to start a wall · snaps to grid, corners & walls":
@@ -348,10 +351,45 @@ export const FP_RU: Record<string, string> = {
   "Cable management tray": "Кабель-канал",
   "Wall whiteboard": "Настенная доска",
   "Notice board": "Доска объявлений",
+  "Evacuation plan poster": "План эвакуации",
+  "Exit sign": "Знак «Выход»",
+  "Exit direction sign": "Направление к выходу",
+  "Fire extinguisher sign": "Знак «Огнетушитель»",
   "Flag stand": "Флагшток",
   "Hedge planter": "Живая изгородь в кашпо",
   "Hanging plant": "Подвесное растение",
   "Cactus set": "Набор кактусов",
+
+  "Desk with dual monitors": "Стол с двумя мониторами",
+  "Sit-stand desk": "Стол с регулировкой высоты",
+  "Desk with return": "Стол с приставкой",
+  "Hot-desk pod for 2": "Хот-деск на 2",
+  "Mesh task chair": "Сетчатое рабочее кресло",
+  "Guest chairs pair": "Пара гостевых стульев",
+  "Desk lamp": "Настольная лампа",
+  "Monitor arm dual": "Кронштейн на 2 монитора",
+  "Docking station": "Док-станция",
+  "Under-desk PC mount": "Крепление системного блока",
+  "Personal locker": "Персональный локер",
+  "2-drawer filing cabinet": "Тумба на 2 ящика",
+  "Desk privacy panel": "Экран приватности стола",
+  Footrest: "Подставка для ног",
+  "Meeting table, 6 seats": "Стол переговоров на 6",
+  "Meeting table, 8 seats": "Стол переговоров на 8",
+  "Boardroom table, 10 seats": "Стол на 10 мест",
+  "Round meeting table, 4 seats": "Круглый стол на 4",
+  "Video conference display wall": "Стена ВКС (два экрана)",
+  "Interactive touch display": "Интерактивная панель",
+  "VC camera bar": "Камера ВКС",
+  "Conference soundbar": "Саундбар для переговоров",
+  "AV media credenza": "Тумба под AV",
+  "Glass writing board": "Стеклянная маркерная доска",
+  "Document camera": "Документ-камера",
+  "Presenter clicker dock": "Док для презентера",
+  "Nameplate stand": "Подставка для таблички",
+  "Acoustic wall panel": "Акустическая панель",
+  "Meeting room sideboard": "Сервант переговорной",
+  "Table power hub": "Розетки в столе",
 };
 
 const ATTRS = [

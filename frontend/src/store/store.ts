@@ -12,16 +12,18 @@ import {
 import storage from "redux-persist/lib/storage";
 import UserSlice from "./userSlice/user.Slice";
 import ConvaSlice from "./convaSlice/conva.Slice";
+import ChatSlice from "./chatSlice/chat.Slice";
 
 const rootReducer = combineReducers({
   user: UserSlice,
   conva: ConvaSlice,
+  chat: ChatSlice,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "conva"],
+  whitelist: ["user", "conva", "chat"],
   blacklist: [] as string[],
 };
 

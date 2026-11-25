@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "notes": "Числа для rule engine v1. Ссылки — в normsCatalog.ts и пояснительной записке.",
+  "areaPerWorkstationM2": 4.5,
+  "areaPerCrtWorkstationM2": 6,
+  "volumePerWorkerLightM3": 15,
+  "aisleMinM": 1.0,
+  "corridorMinM": 1.4,
+  "egressAisleMinM": 1.0,
+  "egressAisleSingleDeskMinM": 0.7,
+  "egressAisleOver50MinM": 1.2,
+  "doorSwingClear": true,
+  "noFurnitureOverlap": true,
+  "fixedObjectClearance": true,
+  "sources": [
+    "СП 2.2.3670-20",
+    "СанПиН 1.2.3685-21",
+    "СП 1.13130.2020",
+    "СП 44.13330.2011",
+    "Приказ Минтруда 774н"
+  ]
+}

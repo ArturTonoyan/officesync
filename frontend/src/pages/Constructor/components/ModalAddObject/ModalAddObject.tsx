@@ -318,7 +318,7 @@ function ModalAddObject({
               />
             )}
             <img
-              className="m-auto h-3 w-3 scale-y-[-1] cursor-pointer p-3.5 transition-opacity duration-150 hover:opacity-60 active:opacity-100"
+              className="mr-3.5 ml-auto h-3 w-3 shrink-0 scale-y-[-1] cursor-pointer transition-opacity duration-150 hover:opacity-60 active:opacity-100"
               src={arrow}
               alt="arrow"
               onClick={() => setModalAllIcons(true)}
@@ -336,14 +336,14 @@ function ModalAddObject({
         <span className="block pb-2 text-[13px] font-semibold text-fg-secondary">
           {item.name}
         </span>
-        <div className="relative mb-0 flex flex-row rounded-sm border border-line bg-elevated shadow-soft transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.06)]">
+        <div className="relative mb-0 flex flex-row items-center rounded-sm border border-line bg-elevated shadow-soft transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.06)]">
           <Input
             bare
             type={item.type}
             autoComplete="new-password"
             className={cn(
-              "px-3.5 py-3 text-sm font-normal text-fg",
-              item.type === "list" && "cursor-pointer",
+              "min-w-0 flex-1 px-3.5 py-3 text-sm font-normal text-fg",
+              item.type === "list" && "cursor-pointer pr-2",
             )}
             placeholder="Не указано"
             value={data[item.key] || ""}
@@ -356,9 +356,10 @@ function ModalAddObject({
           {item.type === "list" && (
             <>
               <img
-                className="m-auto h-3 w-3 scale-y-[-1] cursor-pointer p-3.5 transition-opacity duration-150 hover:opacity-60 active:opacity-100"
+                className="mr-3.5 h-3 w-3 shrink-0 scale-y-[-1] cursor-pointer transition-opacity duration-150 hover:opacity-60 active:opacity-100"
                 src={arrow}
                 alt="arrow"
+                onClick={() => setShowDropdown(item.key)}
               />
               {showDropdown === item.key && (
                 <div

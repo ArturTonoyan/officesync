@@ -1,6 +1,6 @@
 export const nav = [
   {
     name: "Каталог",
-    link: "/catalog",
+    link: "/admin/catalog",
   },
 ];

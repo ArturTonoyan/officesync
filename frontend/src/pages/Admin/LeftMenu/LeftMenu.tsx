@@ -124,9 +124,11 @@ function LeftMenu() {
               <li
                 className={cn(
                   navItemClass,
-                  location.pathname.startsWith("/catalog") && navItemActiveClass,
+                  (location.pathname.startsWith("/admin/catalog") ||
+                    location.pathname.startsWith("/catalog")) &&
+                    navItemActiveClass,
                 )}
-                onClick={() => navigate("/catalog")}
+                onClick={() => navigate("/admin/catalog")}
               >
                 <img
                   src={catalogIcon}

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@store/hooks";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -69,8 +69,12 @@ function App() {
                 <Route path="to" element={<To />}></Route>
                 <Route path="analytics" element={<Analytics />}></Route>
                 <Route path="chat" element={<Chat />}></Route>
+                <Route path="catalog" element={<Catalog />}></Route>
               </Route>
-              <Route path="/catalog" element={<Catalog />}></Route>
+              <Route
+                path="/catalog"
+                element={<Navigate to="/admin/catalog" replace />}
+              ></Route>
               <Route path="/constructor" element={<Constructor />}></Route>
               <Route
                 path="/profile"

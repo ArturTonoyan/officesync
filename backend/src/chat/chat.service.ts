@@ -40,7 +40,7 @@ export class ChatService {
     @InjectModel(To) private readonly toRepository: typeof To,
   ) {}
 
-  async ask(dto: AskChatDto, companyId?: string) {
+  async ask(dto: AskChatDto, companyId?: string, signal?: AbortSignal) {
     const topic = dto.topic as ChatTopic;
     const question = dto.question.trim();
     const startedAt = Date.now();
@@ -61,6 +61,7 @@ export class ChatService {
       topic,
       question,
       contextData: preparedData,
+      signal,
     });
 
     this.logger.log(
@@ -75,6 +76,8 @@ export class ChatService {
   }
 
   private async getTopicData(topic: ChatTopic, companyId?: string) {
+    const companyWhere = companyId ? { companyId } : undefined;
+
     switch (topic) {
       case 'company': {
         if (companyId) {
@@ -84,43 +87,127 @@ export class ChatService {
       }
       case 'offices': {
         return this.officeRepository.findAll({
-          where: companyId ? { companyId } : undefined,
-          include: { all: true },
+          where: companyWhere,
+          attributes: [
+            'id',
+            'name',
+            'address',
+            'phone',
+            'email',
+            'typeOwnership',
+            'area',
+            'cost',
+          ],
           limit: 100,
         });
       }
       case 'floors': {
         return this.floorRepository.findAll({
-          where: companyId ? { companyId } : undefined,
-          include: { all: true },
+          where: companyWhere,
+          attributes: ['id', 'name', 'number', 'officeId'],
+          include: [
+            {
+              model: Office,
+              attributes: ['name', 'address'],
+            },
+          ],
           limit: 100,
         });
       }
       case 'users': {
         return this.userRepository.findAll({
-          where: companyId ? { companyId } : undefined,
-          include: { all: true },
+          where: companyWhere,
+          attributes: [
+            'id',
+            'name',
+            'surname',
+            'patronymic',
+            'email',
+            'position',
+          ],
+          include: [
+            { model: Office, attributes: ['name'] },
+            { model: Floors, attributes: ['name', 'number'] },
+          ],
           limit: 100,
         });
       }
       case 'equipments': {
         return this.equipmentRepository.findAll({
-          where: companyId ? { companyId } : undefined,
-          include: { all: true },
+          where: companyWhere,
+          attributes: [
+            'id',
+            'name',
+            'inventoryNumber',
+            'type',
+            'description',
+            'cost',
+            'state',
+            'maxWarranty',
+            'currentWarranty',
+          ],
+          include: [
+            {
+              model: User,
+              attributes: ['name', 'surname', 'position'],
+            },
+            {
+              model: Floors,
+              attributes: ['name', 'number'],
+            },
+            {
+              model: Office,
+              attributes: ['name', 'address'],
+            },
+          ],
           limit: 100,
         });
       }
       case 'problems': {
         return this.problemRepository.findAll({
-          where: companyId ? { companyId } : undefined,
-          include: { all: true },
+          where: companyWhere,
+          attributes: [
+            'id',
+            'description',
+            'status',
+            'urgency',
+            'equipmentId',
+            'userId',
+          ],
+          include: [
+            {
+              model: Equipment,
+              attributes: ['name', 'inventoryNumber', 'type'],
+            },
+            {
+              model: User,
+              attributes: ['name', 'surname'],
+            },
+          ],
           limit: 100,
         });
       }
       case 'tos': {
         return this.toRepository.findAll({
-          where: companyId ? { companyId } : undefined,
-          include: { all: true },
+          where: companyWhere,
+          attributes: [
+            'id',
+            'description',
+            'status',
+            'urgency',
+            'equipmentId',
+            'userId',
+          ],
+          include: [
+            {
+              model: Equipment,
+              attributes: ['name', 'inventoryNumber', 'type'],
+            },
+            {
+              model: User,
+              attributes: ['name', 'surname'],
+            },
+          ],
           limit: 100,
         });
       }
@@ -139,9 +226,10 @@ export class ChatService {
       ? data.map(convertRecord)
       : convertRecord(data);
 
-    const stringified = JSON.stringify(prepared, null, 2);
-    return stringified.length > 18000
-      ? `${stringified.slice(0, 18000)}\n... [Данные обрезаны из-за лимита]`
+    // Компактный JSON: влезает больше записей в контекст модели
+    const stringified = JSON.stringify(prepared);
+    return stringified.length > 14000
+      ? `${stringified.slice(0, 14000)}\n... [Данные обрезаны из-за лимита]`
       : stringified;
   }
 
@@ -156,7 +244,7 @@ export class ChatService {
 
     if (Array.isArray(value)) {
       return value
-        .slice(0, 20)
+        .slice(0, 100)
         .map((item) => this.sanitizeObject(item, depth - 1));
     }
 
@@ -164,7 +252,15 @@ export class ChatService {
       return '[nested]';
     }
 
-    const blockedKeys = new Set(['password', 'createdAt', 'updatedAt']);
+    const blockedKeys = new Set([
+      'password',
+      'createdAt',
+      'updatedAt',
+      'image',
+      'planData',
+      'contract',
+      'elementId',
+    ]);
     const result: Record<string, any> = {};
 
     Object.keys(value).forEach((key) => {
@@ -181,6 +277,7 @@ export class ChatService {
     topic: ChatTopic;
     question: string;
     contextData: string;
+    signal?: AbortSignal;
   }) {
     const baseUrl = (
       this.configService.get<string>('OLLAMA_BASE_URL') ||
@@ -188,44 +285,63 @@ export class ChatService {
     ).replace(/\/$/, '');
     const model =
       this.configService.get<string>('OLLAMA_MODEL') ||
-      'huihui_ai/qwen2.5-abliterate:14b';
+      'huihui_ai/qwen2.5-abliterate:7b';
 
-    const response = await fetch(`${baseUrl}/api/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        stream: false,
-        options: {
-          temperature: 0.2,
+    const systemPrompt = [
+      'Ты корпоративный ассистент OfficeSync по данным компании.',
+      'Отвечай ТОЛЬКО на русском языке, понятно и по делу.',
+      'Не используй китайские иероглифы.',
+      'Не выдумывай факты — опирайся только на переданный контекст.',
+      'Если просят список или «все» записи — перечисли ВСЕ элементы из контекста нумерованным списком, не сокращай до одного примера.',
+      'Для каждого пункта указывай важные поля: название, тип, инвентарный номер, состояние, офис/этаж, если они есть.',
+      'В конце можно кратко подытожить количество.',
+      'Если данных не хватает, честно скажи об этом.',
+    ].join(' ');
+
+    const userPrompt = `Тема: ${params.topic}\n\nКонтекст данных (JSON):\n${params.contextData}\n\nВопрос: ${params.question}\n\nОтветь на русском. Если вопрос про список — выдай полный список из контекста.`;
+
+    try {
+      const response = await fetch(`${baseUrl}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        messages: [
-          {
-            role: 'system',
-            content:
-              'Ты корпоративный ассистент OfficeSync. Отвечай строго на русском языке, коротко и по делу. Не выдумывай факты. Если данных в контексте не хватает, честно сообщи об этом.',
+        signal: params.signal,
+        body: JSON.stringify({
+          model,
+          stream: false,
+          options: {
+            temperature: 0.2,
+            num_predict: 1200,
           },
-          {
-            role: 'user',
-            content: `Тема: ${params.topic}\n\nКонтекст данных:\n${params.contextData}\n\nВопрос: ${params.question}`,
-          },
-        ],
-      }),
-    });
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+        }),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      this.logger.error(
-        `Ollama request failed status=${response.status}, topic=${params.topic}, model=${model}`,
-      );
-      throw new InternalServerErrorException(
-        `Ошибка Ollama: ${response.status} ${errorText}`,
-      );
+      if (!response.ok) {
+        const errorText = await response.text();
+        this.logger.error(
+          `Ollama request failed status=${response.status}, topic=${params.topic}, model=${model}`,
+        );
+        throw new InternalServerErrorException(
+          `Ошибка Ollama: ${response.status} ${errorText}`,
+        );
+      }
+
+      const data = await response.json();
+      return (data?.message?.content as string) || 'Ответ не получен';
+    } catch (error) {
+      if (
+        error?.name === 'AbortError' ||
+        params.signal?.aborted
+      ) {
+        this.logger.warn(`Ollama request aborted topic=${params.topic}`);
+        throw new BadRequestException('Генерация остановлена');
+      }
+      throw error;
     }
-
-    const data = await response.json();
-    return data?.message?.content || 'Ответ не получен';
   }
 }

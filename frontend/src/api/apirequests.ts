@@ -17,6 +17,7 @@ export const apiRequest = async (
   data: unknown = null,
   headers: Record<string, string> = {},
   serv = server,
+  signal?: AbortSignal,
 ): Promise<any> => {
   const startedAt = Date.now();
 
@@ -26,6 +27,7 @@ export const apiRequest = async (
       url: `${serv}${endpoint}`,
       headers,
       data,
+      signal,
     };
 
     if (isTrackedEndpoint(endpoint)) {
@@ -319,6 +321,124 @@ export const apiPostNeural = async (data) => {
 };
 
 //! запрос к AI-чату
-export const apiAskChat = async (data) => {
-  return await apiRequest("post", `/chat/ask`, data);
+export const apiAskChat = async (
+  data,
+  options?: { signal?: AbortSignal },
+) => {
+  return await apiRequest(
+    "post",
+    `/chat/ask`,
+    data,
+    {},
+    server,
+    options?.signal,
+  );
+};
+
+//! автоплан / Ollama layout
+export const apiLayoutOllamaStatus = async () => {
+  const response = await apiRequest("get", `/layout/ollama-status`);
+  if (!response?.data || response?.isAxiosError) {
+    return { available: false };
+  }
+  return response.data as {
+    available: boolean;
+    model?: string;
+    baseUrl?: string;
+  };
+};
+
+export const apiLayoutParseEdit = async (
+  data: {
+    text: string;
+    scope: {
+      type: "global" | "room" | "selection";
+      roomId?: string;
+      roomName?: string;
+      items?: { kind: string; id: string; label?: string }[];
+    };
+    catalogKinds?: string[];
+    catalog?: { kind: string; label?: string }[];
+    /** Мебель в текущем scope — ids/kind для правок без ручного выделения */
+    existingFurniture?: {
+      id: string;
+      kind: string;
+      label?: string;
+      x?: number;
+      y?: number;
+      rotation?: number;
+    }[];
+    areaM2?: number;
+  },
+  signal?: AbortSignal,
+) => {
+  const response = await apiRequest(
+    "post",
+    `/layout/parse-edit`,
+    data,
+    {},
+    server,
+    signal,
+  );
+  if (signal?.aborted || response?.code === "ERR_CANCELED") {
+    const err = new Error("Остановлено");
+    (err as Error & { name: string }).name = "AbortError";
+    throw err;
+  }
+  if (!response?.data || response?.isAxiosError) {
+    if (
+      response?.code === "ERR_CANCELED" ||
+      response?.name === "CanceledError" ||
+      response?.name === "AbortError"
+    ) {
+      const err = new Error("Остановлено");
+      (err as Error & { name: string }).name = "AbortError";
+      throw err;
+    }
+    const msg =
+      response?.response?.data?.message ||
+      response?.message ||
+      "Ollama parse-edit failed";
+    throw new Error(typeof msg === "string" ? msg : "Ollama parse-edit failed");
+  }
+  return response.data as {
+    source: "ollama";
+    model?: string;
+    actions: Array<Record<string, unknown>>;
+    reply?: string;
+  };
+};
+
+export const apiLayoutFurnishRooms = async (data: {
+  rooms: {
+    id: string;
+    name: string;
+    role: string;
+    areaM2: number;
+    existingKinds: string[];
+  }[];
+  catalog: { kind: string; label: string; category?: string }[];
+  preferences?: {
+    morePlants?: boolean;
+    allowExtraFurniture?: boolean;
+    moreFocusBooths?: boolean;
+  };
+}) => {
+  const response = await apiRequest("post", `/layout/furnish-rooms`, data);
+  if (!response?.data || response?.isAxiosError) {
+    const msg =
+      response?.response?.data?.message ||
+      response?.message ||
+      "Ollama furnish failed";
+    throw new Error(typeof msg === "string" ? msg : "Ollama furnish failed");
+  }
+  return response.data as {
+    source: "ollama";
+    model?: string;
+    rooms: {
+      roomId: string;
+      add: { kind: string; count: number; placement?: string }[];
+    }[];
+    notes?: string;
+  };
 };

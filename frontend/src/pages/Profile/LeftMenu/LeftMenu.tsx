@@ -74,7 +74,7 @@ function LeftMenu({ funUpdUser }) {
     {
       icon: catalogIcon,
       title: "Каталог",
-      navigate: "/catalog",
+      navigate: "/admin/catalog",
     },
     {
       icon: bookingIcon,

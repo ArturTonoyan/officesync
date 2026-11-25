@@ -109,6 +109,15 @@
     font-family: inherit;
   }
 
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
   ::selection {
     background: rgba(17, 17, 17, 0.12);
   }
@@ -375,4 +384,46 @@
 /* при множественном выделении — наша панель справа вместо штатного инспектора */
 .os-multi-select .fp-inspector {
   display: none !important;
+}
+
+/* Режим «Безопасность»: только safety-объекты кликабельны (без затемнения карты) */
+.os-safety-mode .fp-dock,
+.os-safety-mode .fp-catalog {
+  pointer-events: none !important;
+}
+
+.os-safety-mode .fp-walls,
+.os-safety-mode .fp-wall-hits,
+.os-safety-mode .fp-rooms,
+.os-safety-mode .fp-railings,
+.os-safety-mode .fp-opening {
+  pointer-events: none !important;
+}
+
+.os-safety-mode .fp-furniture:not([data-os-safety="1"]) {
+  pointer-events: none !important;
+}
+
+/* инспектор объекта поверх панелей конструктора */
+.fp-root .fp-inspector {
+  z-index: 140 !important;
+}
+
+/* выделение комнаты: не перекрывать мебель серым квадратом */
+.fp-root .fp-sel-room {
+  fill: rgba(17, 17, 17, 0.04) !important;
+  fill-opacity: 1 !important;
+  stroke: #111111 !important;
+  stroke-opacity: 0.5 !important;
+}
+
+.fp-root .fp-hover-room {
+  fill: rgba(17, 17, 17, 0.03) !important;
+  fill-opacity: 1 !important;
+  stroke-opacity: 0.35 !important;
+}
+
+.fp-root .fp-room-hl {
+  fill-opacity: 0.07 !important;
+  stroke-opacity: 0.55 !important;
 }

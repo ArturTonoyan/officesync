@@ -103,7 +103,7 @@ function ModalAddOfice({
                   <span className="block pb-2 text-[13px] font-semibold tracking-[-0.01em] text-fg-secondary">
                     {item.name}
                   </span>
-                  <div className="relative box-border w-full rounded-md border border-line bg-elevated shadow-soft transition-[border-color,box-shadow] focus-within:border-fg focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.06)]">
+                  <div className="relative box-border flex w-full items-center rounded-md border border-line bg-bg shadow-soft transition-[border-color,box-shadow] focus-within:border-fg focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.06)]">
                     {item?.type === "descr" && (
                       <textarea
                         value={data?.[item.key] ?? ""}
@@ -132,12 +132,36 @@ function ModalAddOfice({
                         }
                         style={lists?.[item.key] ? { cursor: "pointer" } : {}}
                         id={item.key}
-                        className="box-border w-full rounded-md border-0 bg-transparent px-3.5 py-3 text-sm font-normal text-fg outline-none"
+                        className={
+                          lists?.[item.key]
+                            ? "box-border min-w-0 flex-1 rounded-md border-0 bg-transparent py-3 pl-3.5 pr-2 text-sm font-normal text-fg outline-none"
+                            : "box-border w-full rounded-md border-0 bg-transparent px-3.5 py-3 text-sm font-normal text-fg outline-none"
+                        }
                       />
+                    )}
+                    {lists?.[item.key] && item?.type !== "descr" && (
+                      <button
+                        type="button"
+                        aria-label="Открыть список"
+                        className="mr-3.5 flex h-3 w-3 shrink-0 items-center justify-center border-0 bg-transparent p-0"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={() =>
+                          setOpenList((prev) =>
+                            prev === item.key ? null : item.key,
+                          )
+                        }
+                      >
+                        <span
+                          aria-hidden
+                          className={`block h-0 w-0 border-x-[4px] border-t-[5px] border-x-transparent border-t-fg-muted transition-transform ${
+                            openList === item.key ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
                     )}
                     {item.type === "file" && (
                       <div
-                        className="scrollbar-thin min-h-5 cursor-pointer overflow-y-auto px-3.5 py-3 text-[13px] text-fg-secondary"
+                        className="scrollbar-thin min-h-5 w-full cursor-pointer overflow-y-auto px-3.5 py-3 text-[13px] text-fg-secondary"
                         onClick={() => {
                           document.getElementById(item.key)?.click();
                         }}

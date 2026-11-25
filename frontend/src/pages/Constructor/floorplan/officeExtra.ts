@@ -488,6 +488,51 @@ export const officeExtraItems: PackItem[] = [
       box("fp-fire", 0, 0, 3, 10, 1),
   },
   {
+    kind: "office/exit-sign",
+    label: "Exit sign",
+    category: "Equipment",
+    width: 48,
+    depth: 8,
+    symbol: (w, d) => {
+      const bw = Math.max(w, 28);
+      const bh = Math.max(d * 5, 12);
+      return (
+        `<rect x="${round(-bw / 2)}" y="${round(-bh / 2)}" width="${round(bw)}" height="${round(bh)}" rx="1" fill="#00A651" stroke="#007A3D" stroke-width="1"/>` +
+        `<text x="0" y="${round(bh * 0.18)}" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="Arial,sans-serif">ВЫХОД</text>`
+      );
+    },
+  },
+  {
+    kind: "office/exit-arrow",
+    label: "Exit direction sign",
+    category: "Equipment",
+    width: 40,
+    depth: 8,
+    symbol: (w, d) => {
+      const bw = Math.max(w, 22);
+      const bh = Math.max(d * 4, 10);
+      return (
+        `<rect x="${round(-bw / 2)}" y="${round(-bh / 2)}" width="${round(bw)}" height="${round(bh)}" rx="1" fill="#00A651" stroke="#007A3D" stroke-width="1"/>` +
+        `<polygon points="${round(-bw * 0.28)},0 ${round(bw * 0.05)},${round(-bh * 0.28)} ${round(bw * 0.05)},${round(-bh * 0.1)} ${round(bw * 0.32)},${round(-bh * 0.1)} ${round(bw * 0.32)},${round(bh * 0.1)} ${round(bw * 0.05)},${round(bh * 0.1)} ${round(bw * 0.05)},${round(bh * 0.28)}" fill="#fff"/>`
+      );
+    },
+  },
+  {
+    kind: "office/fire-sign",
+    label: "Fire extinguisher sign",
+    category: "Equipment",
+    width: 22,
+    depth: 6,
+    symbol: (w, d) => {
+      const s = Math.max(w, 16);
+      return (
+        `<rect x="${round(-s / 2)}" y="${round(-s / 2)}" width="${round(s)}" height="${round(s)}" rx="1" fill="#E30613" stroke="#9a0410" stroke-width="1"/>` +
+        `<ellipse cx="0" cy="${round(s * 0.08)}" rx="${round(s * 0.18)}" ry="${round(s * 0.28)}" fill="#fff"/>` +
+        `<rect x="${round(-s * 0.06)}" y="${round(-s * 0.32)}" width="${round(s * 0.12)}" height="${round(s * 0.14)}" fill="#fff"/>`
+      );
+    },
+  },
+  {
     kind: "office/wall-clock",
     label: "Wall clock",
     category: "Equipment",
@@ -1343,6 +1388,26 @@ export const officeExtraItems: PackItem[] = [
         .join(""),
   },
   {
+    kind: "office/evacuation-map",
+    label: "Evacuation plan poster",
+    category: "Equipment",
+    width: 60,
+    depth: 4,
+    /** Цветной постер на стене (этажный 600×400 мм по ГОСТ). */
+    symbol: (w, d) => {
+      const bw = Math.max(w, 40);
+      const bh = Math.max(d * 8, 28);
+      return (
+        `<rect x="${round(-bw / 2)}" y="${round(-bh / 2)}" width="${round(bw)}" height="${round(bh)}" rx="1" fill="#FFFCE8" stroke="#1a1a1a" stroke-width="1.2"/>` +
+        `<rect x="${round(-bw / 2 + 2)}" y="${round(-bh / 2 + 2)}" width="${round(bw - 4)}" height="${round(bh * 0.22)}" fill="#00A651"/>` +
+        `<polyline points="${round(-bw * 0.28)},${round(4)} ${round(-bw * 0.05)},${round(-2)} ${round(bw * 0.22)},${round(-6)}" fill="none" stroke="#00A651" stroke-width="2.2" stroke-linecap="round"/>` +
+        `<circle cx="${round(bw * 0.22)}" cy="${round(-6)}" r="2.2" fill="#E30613"/>` +
+        `<rect x="${round(-bw * 0.32)}" y="${round(bh * 0.18)}" width="5" height="7" rx="0.5" fill="#E30613"/>` +
+        `<rect x="${round(bw * 0.2)}" y="${round(bh * 0.14)}" width="8" height="5" rx="0.5" fill="#c5d0de" stroke="#7b8794" stroke-width="0.5"/>`
+      );
+    },
+  },
+  {
     kind: "office/flag-stand",
     label: "Flag stand",
     category: "Equipment",
@@ -1394,6 +1459,409 @@ export const officeExtraItems: PackItem[] = [
             box("fp-f2", w * t, 8, 14, 10, 2) +
             box("fp-leaf2", w * t, -2 - i * 2, 6, 16 + i * 3, 3),
         )
+        .join(""),
+  },
+
+  // —— Офис: рабочие места ——
+  {
+    kind: "office/desk-dual-monitor",
+    label: "Desk with dual monitors",
+    category: "Desks",
+    width: 140,
+    depth: 70,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 3) +
+      monitor(-w * 0.16, -d / 2 + 12, 42) +
+      monitor(w * 0.16, -d / 2 + 12, 42) +
+      box("fp-fl", -8, 6, 36, 12, 2) +
+      box("fp-f2", w * 0.32, 8, 22, 28, 2),
+  },
+  {
+    kind: "office/standing-desk",
+    label: "Sit-stand desk",
+    category: "Desks",
+    width: 130,
+    depth: 65,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 2) +
+      monitor(0, -d / 2 + 12, 50) +
+      box("fp-fl", 0, 8, 40, 12, 2) +
+      rect("fp-f2", -w * 0.35, d * 0.2, 8, 14, 1) +
+      rect("fp-f2", w * 0.35 - 8, d * 0.2, 8, 14, 1),
+  },
+  {
+    kind: "office/desk-with-return",
+    label: "Desk with return",
+    category: "Desks",
+    width: 180,
+    depth: 140,
+    symbol: (w, d) =>
+      box("fp-f", 0, -d * 0.28, w, d * 0.4, 3) +
+      box("fp-f", -w * 0.28, d * 0.18, w * 0.4, d * 0.55, 3) +
+      monitor(0, -d * 0.42, 52) +
+      box("fp-fl", 10, -d * 0.12, 36, 12, 2) +
+      chairTop(w * 0.1, -d * 0.02, 0, 32),
+  },
+  {
+    kind: "office/hotdesk-pod",
+    label: "Hot-desk pod for 2",
+    category: "Desks",
+    width: 200,
+    depth: 90,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d * 0.55, 3) +
+      box("fp-f2", 0, -d * 0.08, 12, d * 0.7, 2) +
+      monitor(-w * 0.28, -d * 0.12, 44) +
+      monitor(w * 0.28, -d * 0.12, 44) +
+      chairTop(-w * 0.28, d * 0.42, 0, 30) +
+      chairTop(w * 0.28, d * 0.42, 0, 30),
+  },
+  {
+    kind: "office/mesh-task-chair",
+    label: "Mesh task chair",
+    category: "Seating",
+    width: 50,
+    depth: 52,
+    symbol: (_w, _d) =>
+      circle("fp-fl", 0, 6, 18) +
+      box("fp-f", 0, 2, 34, 36, 8) +
+      box("fp-f2", 0, -14, 30, 10, 3) +
+      rect("fp-fl", -16, 10, 3, 18, 1) +
+      rect("fp-fl", 13, 10, 3, 18, 1),
+  },
+  {
+    kind: "office/guest-chairs-pair",
+    label: "Guest chairs pair",
+    category: "Seating",
+    width: 110,
+    depth: 55,
+    symbol: (w, d) =>
+      chairTop(-w * 0.28, 0, 0, 34) +
+      chairTop(w * 0.28, 0, 0, 34) +
+      box("fp-fl", 0, d * 0.35, w * 0.7, 6, 2),
+  },
+  {
+    kind: "office/desk-lamp",
+    label: "Desk lamp",
+    category: "Equipment",
+    width: 28,
+    depth: 28,
+    symbol: (_w, _d) =>
+      circle("fp-f2", 0, 8, 8) +
+      rect("fp-fl", -1.5, -6, 3, 18, 1) +
+      ellipse("fp-fa", 6, -12, 10, 6),
+  },
+  {
+    kind: "office/monitor-arm",
+    label: "Monitor arm dual",
+    category: "Equipment",
+    width: 70,
+    depth: 30,
+    symbol: (w, d) =>
+      box("fp-f2", 0, d * 0.2, 14, 12, 2) +
+      rect("fp-fl", -2, -8, 4, 20, 1) +
+      box("fp-tv", -w * 0.28, -6, 28, 8, 1) +
+      box("fp-tv", w * 0.28, -6, 28, 8, 1),
+  },
+  {
+    kind: "office/docking-station",
+    label: "Docking station",
+    category: "Equipment",
+    width: 40,
+    depth: 25,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 2) +
+      box("fp-f2", 0, -2, w * 0.7, d * 0.45, 1) +
+      [-0.25, 0, 0.25]
+        .map((t) => circle("fp-fl", w * t, d * 0.2, 2))
+        .join(""),
+  },
+  {
+    kind: "office/underdesk-cpu",
+    label: "Under-desk PC mount",
+    category: "Equipment",
+    width: 45,
+    depth: 50,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 3) +
+      box("fp-f2", 0, 0, w * 0.7, d * 0.55, 2) +
+      circle("fp-fl", 0, d * 0.28, 4),
+  },
+  {
+    kind: "office/personal-locker",
+    label: "Personal locker",
+    category: "Storage",
+    width: 40,
+    depth: 45,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 2) +
+      box("fp-f2", 0, -d * 0.05, w * 0.75, d * 0.7, 1) +
+      circle("fp-fl", w * 0.12, 0, 3),
+  },
+  {
+    kind: "office/filing-cabinet-2",
+    label: "2-drawer filing cabinet",
+    category: "Storage",
+    width: 50,
+    depth: 60,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 2) +
+      rect("fp-fl", -w * 0.35, -d * 0.22, w * 0.7, 2, 0) +
+      rect("fp-fl", -w * 0.35, d * 0.08, w * 0.7, 2, 0) +
+      box("fp-f2", 0, -d * 0.12, 12, 6, 1) +
+      box("fp-f2", 0, d * 0.18, 12, 6, 1),
+  },
+  {
+    kind: "office/desk-privacy-panel",
+    label: "Desk privacy panel",
+    category: "Partitions",
+    width: 140,
+    depth: 18,
+    symbol: (w, d) =>
+      box("fp-fa", 0, 0, w, d, 2) +
+      box("fp-f2", 0, 0, w * 0.92, d * 0.55, 1),
+  },
+  {
+    kind: "office/footrest",
+    label: "Footrest",
+    category: "Equipment",
+    width: 45,
+    depth: 35,
+    symbol: (w, d) =>
+      box("fp-f2", 0, 0, w, d, 4) + box("fp-fl", 0, -d * 0.1, w * 0.7, 4, 2),
+  },
+
+  // —— Переговорные / ВКС ——
+  {
+    kind: "office/meeting-table-6",
+    label: "Meeting table, 6 seats",
+    category: "Meeting",
+    width: 220,
+    depth: 110,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 8) +
+      box("fp-f2", 0, 0, w * 0.55, d * 0.35, 4) +
+      [-0.32, 0, 0.32]
+        .map(
+          (t) =>
+            chairTop(w * t, -d * 0.55, 180, 30) +
+            chairTop(w * t, d * 0.55, 0, 30),
+        )
+        .join(""),
+  },
+  {
+    kind: "office/meeting-table-8",
+    label: "Meeting table, 8 seats",
+    category: "Meeting",
+    width: 280,
+    depth: 120,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 8) +
+      box("fp-f2", 0, 0, w * 0.5, d * 0.32, 4) +
+      [-0.36, -0.12, 0.12, 0.36]
+        .map(
+          (t) =>
+            chairTop(w * t, -d * 0.55, 180, 28) +
+            chairTop(w * t, d * 0.55, 0, 28),
+        )
+        .join(""),
+  },
+  {
+    kind: "office/meeting-table-10",
+    label: "Boardroom table, 10 seats",
+    category: "Meeting",
+    width: 340,
+    depth: 130,
+    symbol: (w, d) =>
+      ellipse("fp-f", 0, 0, w / 2, d / 2) +
+      ellipse("fp-f2", 0, 0, w * 0.32, d * 0.28) +
+      [-0.4, -0.2, 0, 0.2, 0.4]
+        .map(
+          (t) =>
+            chairTop(w * t, -d * 0.48, 180, 28) +
+            chairTop(w * t, d * 0.48, 0, 28),
+        )
+        .join(""),
+  },
+  {
+    kind: "office/meeting-round-4",
+    label: "Round meeting table, 4 seats",
+    category: "Meeting",
+    width: 130,
+    depth: 130,
+    symbol: (w, d) =>
+      circle("fp-f", 0, 0, w * 0.42) +
+      circle("fp-f2", 0, 0, w * 0.18) +
+      chairTop(0, -d * 0.48, 180, 30) +
+      chairTop(0, d * 0.48, 0, 30) +
+      chairTop(-w * 0.48, 0, -90, 30) +
+      chairTop(w * 0.48, 0, 90, 30),
+  },
+  {
+    kind: "office/meeting-chair",
+    label: "Meeting chair",
+    category: "Seating",
+    width: 48,
+    depth: 50,
+    symbol: (_w, _d) =>
+      box("fp-f", 0, 4, 32, 30, 6) +
+      box("fp-f2", 0, -12, 30, 12, 4) +
+      circle("fp-fl", -14, 14, 4) +
+      circle("fp-fl", 14, 14, 4),
+  },
+  {
+    kind: "office/vc-display-wall",
+    label: "Video conference display wall",
+    category: "Meeting",
+    width: 260,
+    depth: 35,
+    symbol: (w, d) =>
+      box("fp-f", 0, d * 0.15, w, d * 0.55, 2) +
+      box("fp-tv", -w * 0.22, -2, w * 0.38, d * 0.7, 2) +
+      box("fp-tv", w * 0.22, -2, w * 0.38, d * 0.7, 2) +
+      circle("fp-fl", 0, -d * 0.35, 4),
+  },
+  {
+    kind: "office/interactive-display",
+    label: "Interactive touch display",
+    category: "Meeting",
+    width: 180,
+    depth: 40,
+    symbol: (w, d) =>
+      box("fp-f2", 0, d * 0.2, w * 0.35, 12, 2) +
+      box("fp-tv", 0, -4, w * 0.9, d * 0.7, 2) +
+      box("fp-f", 0, -4, w * 0.78, d * 0.5, 1),
+  },
+  {
+    kind: "office/vc-camera-bar",
+    label: "VC camera bar",
+    category: "Meeting",
+    width: 80,
+    depth: 20,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 3) +
+      circle("fp-tv", 0, 0, 5) +
+      box("fp-fl", -w * 0.28, 0, 10, 6, 1) +
+      box("fp-fl", w * 0.28, 0, 10, 6, 1),
+  },
+  {
+    kind: "office/soundbar",
+    label: "Conference soundbar",
+    category: "Meeting",
+    width: 120,
+    depth: 18,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 4) +
+      [-0.3, -0.1, 0.1, 0.3]
+        .map((t) => circle("fp-fl", w * t, 0, 2.5))
+        .join(""),
+  },
+  {
+    kind: "office/av-credenza",
+    label: "AV media credenza",
+    category: "Meeting",
+    width: 160,
+    depth: 45,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 3) +
+      [-0.3, 0, 0.3]
+        .map((t) => box("fp-f2", w * t, 0, w * 0.22, d * 0.65, 2))
+        .join("") +
+      box("fp-tv", 0, -d * 0.55, w * 0.7, 8, 1),
+  },
+  {
+    kind: "office/mobile-whiteboard",
+    label: "Mobile whiteboard",
+    category: "Meeting",
+    width: 160,
+    depth: 50,
+    symbol: (w, d) =>
+      box("fp-f", 0, -2, w * 0.9, d * 0.45, 2) +
+      box("fp-f2", 0, -2, w * 0.78, d * 0.28, 1) +
+      circle("fp-fl", -w * 0.35, d * 0.32, 5) +
+      circle("fp-fl", w * 0.35, d * 0.32, 5) +
+      rect("fp-fl", -w * 0.4, d * 0.05, w * 0.8, 3, 1),
+  },
+  {
+    kind: "office/glass-board",
+    label: "Glass writing board",
+    category: "Meeting",
+    width: 200,
+    depth: 22,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 2) +
+      box("fp-f2", 0, 0, w * 0.92, d * 0.55, 1) +
+      rect("fp-fl", -w * 0.3, -2, w * 0.35, 2, 0),
+  },
+  {
+    kind: "office/document-camera",
+    label: "Document camera",
+    category: "Meeting",
+    width: 35,
+    depth: 40,
+    symbol: (w, d) =>
+      box("fp-f", 0, d * 0.15, w, d * 0.5, 2) +
+      rect("fp-fl", -1.5, -12, 3, 22, 1) +
+      circle("fp-tv", 0, -14, 6),
+  },
+  {
+    kind: "office/clicker-dock",
+    label: "Presenter clicker dock",
+    category: "Meeting",
+    width: 30,
+    depth: 25,
+    symbol: (w, d) =>
+      box("fp-f2", 0, 0, w, d, 3) +
+      box("fp-f", 0, -2, w * 0.45, d * 0.7, 2) +
+      circle("fp-fl", 0, 6, 3),
+  },
+  {
+    kind: "office/nameplate-stand",
+    label: "Nameplate stand",
+    category: "Meeting",
+    width: 35,
+    depth: 20,
+    symbol: (w, d) =>
+      box("fp-f2", 0, d * 0.2, w * 0.7, 6, 1) +
+      box("fp-f", 0, -2, w, d * 0.7, 2) +
+      rect("fp-fl", -w * 0.3, -4, w * 0.6, 2, 0),
+  },
+  {
+    kind: "office/acoustic-panel",
+    label: "Acoustic wall panel",
+    category: "Partitions",
+    width: 100,
+    depth: 20,
+    symbol: (w, d) =>
+      box("fp-fa", 0, 0, w, d, 3) +
+      [-0.3, 0, 0.3]
+        .map((t) => rect("fp-fl", w * t - 8, -d * 0.25, 16, d * 0.5, 2))
+        .join(""),
+  },
+  {
+    kind: "office/meeting-sideboard",
+    label: "Meeting room sideboard",
+    category: "Meeting",
+    width: 180,
+    depth: 45,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 3) +
+      [-0.28, 0, 0.28]
+        .map((t) => box("fp-f2", w * t, 0, w * 0.24, d * 0.65, 2))
+        .join("") +
+      box("fp-fl", -w * 0.15, -d * 0.35, 40, 8, 1),
+  },
+  {
+    kind: "office/power-hub-table",
+    label: "Table power hub",
+    category: "Meeting",
+    width: 35,
+    depth: 35,
+    symbol: (_w, _d) =>
+      circle("fp-f", 0, 0, 14) +
+      circle("fp-f2", 0, 0, 8) +
+      [-0.35, 0.35]
+        .map((t) => rect("fp-fl", t * 10 - 2, -6, 4, 12, 1))
         .join(""),
   },
 ];

@@ -17,20 +17,24 @@ import {
   hasSavedPlan,
 } from "../Constructor/floorplan/planPreview";
 import logoIcon from "@assets/images/logo/logo.svg";
+import lupa from "@assets/images/icons/lupa.svg";
 import { Button } from "@components/ui";
 import { Input } from "@components/ui";
 import { cn } from "@utils/cn";
 
 type ViewMode = "all" | "offices" | "floors";
 
-const catalogCheckbox =
-  "relative m-0 h-[15px] w-[15px] shrink-0 cursor-pointer appearance-none rounded border-[1.5px] border-[#c8c8cc] bg-elevated transition checked:border-ink checked:bg-ink checked:after:absolute checked:after:top-px checked:after:left-1 checked:after:h-2 checked:after:w-1 checked:after:rotate-45 checked:after:border-r-[1.5px] checked:after:border-b-[1.5px] checked:after:border-solid checked:after:border-white checked:after:content-['']";
-
 const categoryBtn =
-  "w-full cursor-pointer rounded-[10px] border-none bg-transparent px-2.5 py-2 text-left text-[13px] font-medium text-[#4a4a4e] transition-colors hover:bg-bg2 hover:text-fg";
+  "cursor-pointer rounded-lg border border-line bg-white px-3 py-1.5 text-[13px] font-medium text-[#4a4a4e] transition-colors hover:border-[#c8c8cc] hover:bg-[#f7f7f8]";
 
 const categoryBtnActive =
-  "bg-[#ececed] font-semibold text-fg hover:bg-[#ececed]";
+  "border-ink bg-ink text-white hover:border-ink hover:bg-ink";
+
+const filterChip =
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#3a3a3e] transition-colors hover:border-[#c8c8cc] hover:bg-[#f7f7f8]";
+
+const filterChipActive =
+  "border-[#c8c8cc] bg-[#ececed] text-fg hover:border-[#c8c8cc] hover:bg-[#ececed]";
 
 const cardClass =
   "group flex cursor-pointer flex-col overflow-hidden rounded-lg border border-line bg-elevated transition-colors hover:border-[#cfcfd4] hover:bg-[#fcfcfc]";
@@ -67,7 +71,7 @@ function PlanPreview({
   if (showImage) {
     return (
       <img
-        className="box-border block h-full w-full object-contain p-2"
+        className="pointer-events-none box-border block h-full w-full select-none object-contain p-2"
         src={src}
         alt={title}
         onError={() => setBroken(true)}
@@ -318,242 +322,219 @@ function Catalog() {
     { key: "floors", label: "этажи" },
   ];
 
+  const hasFilters =
+    selectedOffices.length > 0 || selectedFloorNumbers.length > 0;
+
   if (!user?.companyId) {
     return (
-      <div className="flex min-h-screen bg-bg">
-        <div className="m-auto flex flex-col items-center gap-3 px-6 py-10 text-center">
-          <img
-            className="mb-2 h-8 w-auto"
-            src={logoIcon}
-            alt="OfficeSync"
-          />
-          <h1 className="m-0 text-[26px] tracking-[-0.03em]">
-            Каталог офисов и этажей
-          </h1>
-          <p className="m-0 max-w-[380px] text-sm leading-normal text-fg-secondary">
-            Войдите в аккаунт, чтобы выбирать планы и работать в конструкторе.
-          </p>
-          <Button
-            type="button"
-            className="mt-2.5"
-            onClick={() => navigate("/authorization")}
-          >
-            Войти
-          </Button>
-        </div>
+      <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
+        <img className="mb-2 h-8 w-auto" src={logoIcon} alt="OfficeSync" />
+        <h1 className="m-0 text-[26px] tracking-[-0.03em]">
+          Каталог офисов и этажей
+        </h1>
+        <p className="m-0 max-w-[380px] text-sm leading-normal text-fg-secondary">
+          Войдите в аккаунт, чтобы выбирать планы и работать в конструкторе.
+        </p>
+        <Button
+          type="button"
+          className="mt-2.5"
+          onClick={() => navigate("/authorization")}
+        >
+          Войти
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-bg max-[860px]:flex-col">
-      <aside className="scrollbar-thin sticky top-0 box-border flex h-screen w-[248px] shrink-0 flex-col gap-5 overflow-y-auto border-r border-line bg-elevated px-3 pt-[18px] pb-5 max-[860px]:relative max-[860px]:h-auto max-[860px]:w-full max-[860px]:border-r-0 max-[860px]:border-b max-[860px]:border-line">
-        <div
-          className="cursor-pointer px-2 pt-1.5 pb-[18px] [&_img]:block [&_img]:h-[26px] [&_img]:w-auto [&_img]:max-w-full"
-          onClick={() => navigate("/")}
-        >
-          <img src={logoIcon} alt="OfficeSync" />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <p className="m-0 block px-2.5 pb-2 text-[10px] font-semibold tracking-[0.08em] text-fg-muted uppercase">
-            Категории
+    <div>
+      <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="m-0 mb-1.5 text-[28px] font-bold tracking-[-0.035em] text-fg">
+            Каталог
+          </h1>
+          <p className="m-0 max-w-[420px] text-sm leading-[1.45] text-fg-secondary">
+            Выберите офис или этаж, чтобы открыть план и работать в конструкторе
           </p>
-          <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
-            {categories.map((c) => (
-              <li key={c.key}>
-                <button
-                  type="button"
-                  className={cn(
-                    categoryBtn,
-                    view === c.key && categoryBtnActive,
-                  )}
-                  onClick={() => setView(c.key)}
-                >
-                  {c.label}
-                </button>
-              </li>
-            ))}
-          </ul>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <p className="m-0 block px-2.5 pb-2 text-[10px] font-semibold tracking-[0.08em] text-fg-muted uppercase">
-            Офисы
-          </p>
-          <ul className="scrollbar-thin m-0 flex max-h-[220px] list-none flex-col gap-px overflow-y-auto p-0">
-            {officeList.map((o) => (
-              <li key={o.id}>
-                <label className="flex cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-[7px] text-[13px] leading-[1.3] font-medium text-[#3a3a3e] transition-colors hover:bg-[#f5f5f6]">
-                  <input
-                    type="checkbox"
-                    className={catalogCheckbox}
-                    checked={selectedOffices.includes(o.id)}
-                    onChange={() => toggleOffice(o.id)}
-                  />
-                  <span>{o.name}</span>
-                </label>
-              </li>
-            ))}
-            {!officeList.length && (
-              <li className="px-2.5 py-1.5 text-xs text-fg-muted">Нет офисов</li>
-            )}
-          </ul>
+        <div className="flex h-11 w-full max-w-[360px] min-w-[240px] flex-1 items-center rounded-xl border border-[#d8d8dc] bg-white px-3.5 shadow-[0_1px_3px_rgba(17,17,17,0.04)] transition-[border-color,box-shadow] focus-within:border-[#b8b8bc] focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.06)]">
+          <img
+            src={lupa}
+            alt=""
+            className="mr-2.5 h-4 w-4 shrink-0 opacity-40"
+          />
+          <Input
+            bare
+            type="search"
+            placeholder="Поиск по названию, адресу…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="text-sm font-normal"
+          />
         </div>
+      </header>
 
-        <div className="flex flex-col gap-2">
-          <p className="m-0 block px-2.5 pb-2 text-[10px] font-semibold tracking-[0.08em] text-fg-muted uppercase">
-            Номер этажа
-          </p>
-          <ul className="scrollbar-thin m-0 flex max-h-[220px] list-none flex-col gap-px overflow-y-auto p-0">
-            {floorNumbers.map((n) => (
-              <li key={n}>
-                <label className="flex cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-[7px] text-[13px] leading-[1.3] font-medium text-[#3a3a3e] transition-colors hover:bg-[#f5f5f6]">
-                  <input
-                    type="checkbox"
-                    className={catalogCheckbox}
-                    checked={selectedFloorNumbers.includes(n)}
-                    onChange={() => toggleFloorNumber(n)}
-                  />
-                  <span>{n}</span>
-                </label>
-              </li>
-            ))}
-            {!floorNumbers.length && (
-              <li className="px-2.5 py-1.5 text-xs text-fg-muted">Нет этажей</li>
-            )}
-          </ul>
-        </div>
-
-        <div className="mt-auto flex flex-col gap-2 border-t border-line pt-4">
-          <Button
-            type="button"
-            className="w-full text-[13px]"
-            onClick={() => navigate("/constructor")}
-          >
-            Открыть конструктор
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            className="w-full text-[13px]"
-            onClick={() => navigate("/admin")}
-          >
-            Админ-панель
-          </Button>
-        </div>
-      </aside>
-
-      <main className="box-border min-w-0 flex-1 px-8 pt-7 pb-12 max-[860px]:px-4 max-[860px]:py-5 max-[860px]:pb-10">
-        <header className="mb-[18px] flex flex-wrap items-end justify-between gap-5">
-          <div>
-            <h1 className="m-0 mb-1.5 text-[28px] font-bold tracking-[-0.035em] text-fg">
-              Каталог
-            </h1>
-            <p className="m-0 max-w-[420px] text-sm leading-[1.45] text-fg-secondary">
-              Выберите офис или этаж, чтобы открыть план и работать в
-              конструкторе
-            </p>
-          </div>
-          <div className="min-w-[260px] flex-1 max-w-[360px]">
-            <Input
-              type="search"
-              placeholder="Поиск по названию, адресу…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 py-0"
-            />
-          </div>
-        </header>
-
-        <div className="mb-4 flex items-center gap-3.5 text-[13px] text-fg-secondary">
-          <span>
-            Найдено: <strong className="text-fg">{cards.length}</strong>
+      <div className="mb-5 flex flex-col gap-3.5 rounded-xl border border-line bg-white px-4 py-3.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="mr-1 text-[11px] font-semibold tracking-[0.06em] text-fg-muted uppercase">
+            Категория
           </span>
-          {(selectedOffices.length > 0 || selectedFloorNumbers.length > 0) && (
+          {categories.map((c) => (
             <button
+              key={c.key}
               type="button"
-              className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-fg underline underline-offset-[3px]"
-              onClick={() => {
-                setSelectedOffices([]);
-                setSelectedFloorNumbers([]);
-              }}
+              className={cn(categoryBtn, view === c.key && categoryBtnActive)}
+              onClick={() => setView(c.key)}
             >
-              Сбросить фильтры
+              {c.label}
             </button>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="mr-1 text-[11px] font-semibold tracking-[0.06em] text-fg-muted uppercase">
+            Офисы
+          </span>
+          {officeList.length === 0 ? (
+            <span className="text-xs text-fg-muted">Нет офисов</span>
+          ) : (
+            officeList.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                className={cn(
+                  filterChip,
+                  selectedOffices.includes(o.id) && filterChipActive,
+                )}
+                onClick={() => toggleOffice(o.id)}
+              >
+                {o.name}
+              </button>
+            ))
           )}
         </div>
 
-        {cards.length === 0 ? (
-          <div className="mt-12 flex flex-col items-center gap-2 text-center">
-            <strong className="text-base text-fg">Ничего не найдено</strong>
-            <span className="max-w-[360px] text-[13px] leading-[1.45] text-fg-secondary">
-              Измените фильтры или добавьте офисы и этажи в админке
+        {(view === "floors" || view === "all") && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-[11px] font-semibold tracking-[0.06em] text-fg-muted uppercase">
+              Этаж
             </span>
-            <Button
-              type="button"
-              className="mt-2.5"
-              onClick={() => navigate("/admin/offices")}
-            >
-              Перейти к офисам
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-[18px] max-[1100px]:grid-cols-2 max-[720px]:grid-cols-1">
-            {cards.map((card) => (
-              <article
-                key={`${card.type}-${card.id}`}
-                className={cardClass}
-                onClick={() => onCardClick(card)}
-              >
-                <div className="flex items-center justify-between px-3.5 pt-3">
-                  <span className="rounded-md bg-bg px-2 py-1 text-[11px] font-semibold tracking-[0.02em] text-fg-secondary lowercase">
-                    {card.type === "office" ? "офис" : "этаж"}
-                  </span>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    className={openBtnClass}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onCardClick(card);
-                    }}
-                  >
-                    Открыть
-                  </Button>
-                </div>
-
-                <div className="mx-3.5 mt-2.5 flex h-[220px] items-center justify-center overflow-hidden rounded-md border border-line bg-bg">
-                  <PlanPreview
-                    src={card.image}
-                    title={card.title}
-                    hasPlan={card.hasPlan}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1.5 px-4 pt-3.5 pb-4">
-                  <h3 className="m-0 text-base font-bold tracking-[-0.02em] text-fg">
-                    {card.title}
-                  </h3>
-                  <p className="m-0 text-sm font-semibold text-[#2f8f7a]">
-                    {card.subtitle}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {card.badges.map((b) => (
-                      <span
-                        key={b}
-                        className="rounded-full bg-bg px-2.5 py-[5px] text-[11px] font-medium text-fg-secondary"
-                      >
-                        {b}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </article>
-            ))}
+            {floorNumbers.length === 0 ? (
+              <span className="text-xs text-fg-muted">Нет этажей</span>
+            ) : (
+              floorNumbers.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={cn(
+                    filterChip,
+                    selectedFloorNumbers.includes(n) && filterChipActive,
+                  )}
+                  onClick={() => toggleFloorNumber(n)}
+                >
+                  {n}
+                </button>
+              ))
+            )}
           </div>
         )}
-      </main>
+      </div>
+
+      <div className="mb-4 flex flex-wrap items-center gap-3.5 text-[13px] text-fg-secondary">
+        <span>
+          Найдено: <strong className="text-fg">{cards.length}</strong>
+        </span>
+        {hasFilters && (
+          <button
+            type="button"
+            className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-fg underline underline-offset-[3px]"
+            onClick={() => {
+              setSelectedOffices([]);
+              setSelectedFloorNumbers([]);
+            }}
+          >
+            Сбросить фильтры
+          </button>
+        )}
+        <Button
+          type="button"
+          variant="secondary"
+          className="ml-auto h-9 text-[13px]"
+          onClick={() => navigate("/constructor")}
+        >
+          Открыть конструктор
+        </Button>
+      </div>
+
+      {cards.length === 0 ? (
+        <div className="mt-12 flex flex-col items-center gap-2 text-center">
+          <strong className="text-base text-fg">Ничего не найдено</strong>
+          <span className="max-w-[360px] text-[13px] leading-[1.45] text-fg-secondary">
+            Измените фильтры или добавьте офисы и этажи в админке
+          </span>
+          <Button
+            type="button"
+            className="mt-2.5"
+            onClick={() => navigate("/admin/offices")}
+          >
+            Перейти к офисам
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-[18px] max-[1100px]:grid-cols-2 max-[720px]:grid-cols-1">
+          {cards.map((card) => (
+            <article
+              key={`${card.type}-${card.id}`}
+              className={cardClass}
+              onClick={() => onCardClick(card)}
+            >
+              <div className="flex items-center justify-between px-3.5 pt-3">
+                <span className="rounded-md bg-bg px-2 py-1 text-[11px] font-semibold tracking-[0.02em] text-fg-secondary lowercase">
+                  {card.type === "office" ? "офис" : "этаж"}
+                </span>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className={openBtnClass}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCardClick(card);
+                  }}
+                >
+                  Открыть
+                </Button>
+              </div>
+
+              <div className="mx-3.5 mt-2.5 flex h-[220px] items-center justify-center overflow-hidden rounded-md border border-line bg-bg">
+                <PlanPreview
+                  src={card.image}
+                  title={card.title}
+                  hasPlan={card.hasPlan}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5 px-4 pt-3.5 pb-4">
+                <h3 className="m-0 text-base font-bold tracking-[-0.02em] text-fg">
+                  {card.title}
+                </h3>
+                <p className="m-0 text-sm font-semibold text-[#2f8f7a]">
+                  {card.subtitle}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {card.badges.map((b) => (
+                    <span
+                      key={b}
+                      className="rounded-full bg-bg px-2.5 py-[5px] text-[11px] font-medium text-fg-secondary"
+                    >
+                      {b}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

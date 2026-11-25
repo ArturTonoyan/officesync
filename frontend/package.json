@@ -8,7 +8,8 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "lint": "eslint --fix 'src/**/*.{ts,tsx}' && prettier --write 'src/**/*.{ts,tsx}'"
+    "lint": "eslint --fix 'src/**/*.{ts,tsx}' && prettier --write 'src/**/*.{ts,tsx}'",
+    "postinstall": "node ./scripts/patch-floorplan-pan.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

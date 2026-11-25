@@ -390,20 +390,29 @@ export function paintSelectionHighlights(
     if (!d.bounds || d.bounds.width <= 0 || d.bounds.height <= 0) continue;
     const key = selectionKey(d);
     const focused = focusedKey != null && focusedKey === key;
-    const pad = focused ? 8 : 6;
+    const isRoom = d.kind === "room";
+    const pad = isRoom ? (focused ? 4 : 2) : focused ? 8 : 6;
     const rect = document.createElementNS(HIGHLIGHT_NS, "rect");
     rect.setAttribute("x", String(d.bounds.x - pad));
     rect.setAttribute("y", String(d.bounds.y - pad));
     rect.setAttribute("width", String(d.bounds.width + pad * 2));
     rect.setAttribute("height", String(d.bounds.height + pad * 2));
+    // комнаты: почти прозрачная заливка, иначе квадрат перекрывает мебель
     rect.setAttribute(
       "fill",
-      focused ? "rgba(17, 17, 17, 0.14)" : "rgba(17, 17, 17, 0.08)",
+      isRoom
+        ? focused
+          ? "rgba(17, 17, 17, 0.035)"
+          : "rgba(17, 17, 17, 0.02)"
+        : focused
+          ? "rgba(17, 17, 17, 0.12)"
+          : "rgba(17, 17, 17, 0.07)",
     );
     rect.setAttribute("stroke", "#111111");
+    rect.setAttribute("stroke-opacity", isRoom ? "0.55" : "1");
     rect.setAttribute("stroke-width", focused ? "2.5" : "2");
     if (!focused) rect.setAttribute("stroke-dasharray", "8 4");
-    rect.setAttribute("rx", "4");
+    rect.setAttribute("rx", isRoom ? "2" : "4");
     rect.setAttribute("vector-effect", "non-scaling-stroke");
     layer.appendChild(rect);
   }

@@ -33,6 +33,20 @@ export class ChatController {
       `Chat request started topic=${dto.topic}, companyId=${companyId || 'n/a'}`,
     );
 
-    return this.chatService.ask(dto, companyId);
+    const abortController = new AbortController();
+    const onClose = () => abortController.abort();
+    request.on?.('close', onClose);
+    request.raw?.on?.('close', onClose);
+
+    try {
+      return await this.chatService.ask(
+        dto,
+        companyId,
+        abortController.signal,
+      );
+    } finally {
+      request.off?.('close', onClose);
+      request.raw?.off?.('close', onClose);
+    }
   }
 }

@@ -26,6 +26,7 @@ import { To } from './tos/tos.model';
 import { TosModule } from './tos/tos.module';
 import { ElementsReserved } from './elements/elements-reserved.model';
 import { ChatModule } from './chat/chat.module';
+import { LayoutModule } from './layout/layout.module';
 
 @Module({
   controllers: [],
@@ -72,6 +73,7 @@ import { ChatModule } from './chat/chat.module';
     ProblemsModule,
     TosModule,
     ChatModule,
+    LayoutModule,
   ],
 })
 export class AppModule {}

@@ -1,0 +1,136 @@
+/* Поиск в левой панели каталога FloorplanEditor */
+
+.fp-catalog .os-catalog-search {
+  margin: 0 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fp-catalog .os-catalog-search-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  outline: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--fp-text);
+  background: var(--fp-input-bg);
+  box-shadow: inset 0 0 0 1px var(--fp-panel-border);
+  transition: box-shadow 0.15s;
+}
+
+.fp-catalog .os-catalog-search-input::placeholder {
+  color: var(--fp-text-muted);
+  font-weight: 500;
+}
+
+.fp-catalog .os-catalog-search-input:focus {
+  box-shadow:
+    inset 0 0 0 1.5px var(--fp-accent),
+    0 0 0 3px var(--fp-accent-soft);
+}
+
+.fp-catalog .os-catalog-search-hint {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 550;
+  color: var(--fp-text-muted);
+}
+
+.fp-catalog .os-catalog-search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: min(52vh, 420px);
+  overflow: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.fp-catalog .os-catalog-search-section {
+  margin: 6px 2px 2px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fp-text-muted);
+}
+
+.fp-catalog .os-catalog-search-section:first-child {
+  margin-top: 0;
+}
+
+.fp-catalog .os-catalog-search-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 9px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--fp-input-bg);
+  color: var(--fp-text);
+  transition: background 0.15s;
+}
+
+.fp-catalog .os-catalog-search-item:hover {
+  background: var(--fp-hover);
+}
+
+.fp-catalog .os-catalog-search-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.fp-catalog .os-catalog-search-item-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--fp-text);
+}
+
+.fp-catalog .os-catalog-search-badge {
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--fp-accent-soft);
+  color: var(--fp-accent);
+}
+
+.fp-catalog .os-catalog-search-badge--furniture {
+  background: color-mix(in srgb, var(--fp-accent-2) 18%, transparent);
+  color: var(--fp-accent-2);
+}
+
+.fp-catalog .os-catalog-search-item-cat {
+  font-size: 10.5px;
+  font-weight: 550;
+  color: var(--fp-text-muted);
+}
+
+.fp-catalog .os-catalog-search-empty {
+  margin: 0;
+  padding: 8px 4px 2px;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--fp-text-muted);
+}
+
+/* Во время поиска прячем штатные чипы категорий и сетку */
+.fp-catalog.os-catalog-searching > .fp-chips,
+.fp-catalog.os-catalog-searching > .fp-catalog-grid {
+  display: none !important;
+}

@@ -1,0 +1,15 @@
+/* Курсор инструмента «Чат» — пузырь + точка клика */
+.os-chat-cursor,
+.os-chat-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath fill='%23482BE7' stroke='%23fff' stroke-width='1.2' d='M4 5.5A2.5 2.5 0 0 1 6.5 3h12A2.5 2.5 0 0 1 21 5.5v7a2.5 2.5 0 0 1-2.5 2.5H12l-4 3.5V15H6.5A2.5 2.5 0 0 1 4 12.5v-7z'/%3E%3Ccircle cx='22' cy='22' r='3' fill='%23111' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E")
+      4 4,
+    pointer !important;
+}
+
+/* Активный чат — как остальные пункты dock (тёмный фон) */
+.fp-root .fp-dock .fp-tool-btn.os-chat-tool-btn.os-chat-tool-active,
+.fp-root .fp-dock .fp-tool-btn.os-chat-tool-btn.os-chat-tool-active:hover {
+  background: var(--color-ink) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}

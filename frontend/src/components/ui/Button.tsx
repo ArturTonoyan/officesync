@@ -22,7 +22,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
       ref={ref}
       type={type}
       className={cn(
-        "inline-flex h-10 items-center justify-center gap-1.5 rounded-sm px-4 text-[13px] font-semibold tracking-[-0.01em] transition-colors disabled:opacity-50",
+        "inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-sm px-4 text-[13px] font-semibold tracking-[-0.01em] transition-colors disabled:cursor-not-allowed disabled:opacity-50",
         variants[variant],
         className,
       )}
