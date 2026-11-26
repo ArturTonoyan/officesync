@@ -26,6 +26,7 @@ export const FURNISH_CATALOG: {
   width: number;
   depth: number;
 }[] = [
+  { kind: "office/desk-empty", label: "Пустой стол", category: "Desks", width: 140, depth: 70 },
   { kind: "office/desk-dual-monitor", label: "Стол 2 монитора", category: "Desks", width: 140, depth: 70 },
   { kind: "office/standing-desk", label: "Sit-stand стол", category: "Desks", width: 130, depth: 65 },
   { kind: "office/compact-desk", label: "Компактный стол", category: "Desks", width: 120, depth: 60 },

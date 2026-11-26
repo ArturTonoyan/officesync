@@ -13,7 +13,18 @@ import type {
   GenerationReport,
   PlanVariantId,
   PrivateOfficeRow,
+  ReportCounts,
 } from "./types";
+
+const COUNT_LABELS: { key: keyof ReportCounts; label: string }[] = [
+  { key: "workstations", label: "Рабочие места" },
+  { key: "meetingRooms", label: "Переговорные" },
+  { key: "conferenceRoom", label: "Конференц-зал" },
+  { key: "privateOffices", label: "Кабинеты" },
+  { key: "lounge", label: "Зона отдыха" },
+  { key: "reception", label: "Ресепшен" },
+  { key: "pantry", label: "Кухня / пантри" },
+];
 
 export type OfficeUserOption = {
   id: string;
@@ -756,6 +767,41 @@ function ParamsPanel({
                 </button>
               ))}
             </div>
+            <div className="mb-2">
+              <p className="mb-1 text-[12px] font-semibold text-fg-secondary">
+                Запрошено → Размещено
+              </p>
+              <ul className="flex flex-col gap-1">
+                {COUNT_LABELS.filter(
+                  (row) =>
+                    (report.requested?.[row.key] || 0) > 0 ||
+                    (report.placed?.[row.key] || 0) > 0,
+                ).map((row) => {
+                  const req = report.requested?.[row.key] || 0;
+                  const pl = report.placed?.[row.key] || 0;
+                  const ok = pl >= req && req > 0;
+                  const partial = pl > 0 && pl < req;
+                  return (
+                    <li
+                      key={row.key}
+                      className="flex items-center justify-between text-[12px] text-fg"
+                    >
+                      <span>{row.label}</span>
+                      <span
+                        className={cn(
+                          "font-semibold tabular-nums",
+                          ok && "text-tag-green",
+                          partial && "text-[#9a5b00]",
+                          !ok && !partial && req > 0 && "text-[#b32020]",
+                        )}
+                      >
+                        {pl} / {req}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
             {report.created.length > 0 && (
               <div className="mb-2">
                 <p className="mb-1 text-[12px] font-semibold text-fg-secondary">
@@ -788,6 +834,23 @@ function ParamsPanel({
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+            {report.equipment && (
+              <div className="mb-2">
+                <p className="mb-1 text-[12px] font-semibold text-fg-secondary">
+                  Оборудование (БД)
+                </p>
+                <ul className="mb-1 flex flex-col gap-1 text-[12px] text-fg">
+                  <li>Выбрано в превью: {report.equipment.selected}</li>
+                  <li>
+                    Уже в комплектациях: {report.equipment.assignedToKits}
+                  </li>
+                  <li>Свободно для столов: {report.equipment.freeForKits}</li>
+                </ul>
+                <p className="text-[11px] leading-snug text-fg-muted">
+                  {report.equipment.note}
+                </p>
               </div>
             )}
             <div>

@@ -11,6 +11,10 @@ import type {
   DensityLevel,
   GenerationReport,
 } from "../types";
+import {
+  EQUIPMENT_AUTO_NOTE,
+  emptyReportCounts,
+} from "../types";
 import { ensureRoomsDetected } from "./detectRooms";
 import {
   insetBounds,
@@ -33,7 +37,7 @@ const FIXTURE_KINDS = new Set([
 ]);
 
 const ITEM = {
-  desk: { kind: "office/desk-dual-monitor", width: 140, depth: 70 },
+  desk: { kind: "office/desk-empty", width: 140, depth: 70 },
   executive: { kind: "office/executive-desk", width: 200, depth: 100 },
   chair: { kind: "office/mesh-task-chair", width: 50, depth: 52 },
   meeting: { kind: "office/meeting-table-6", width: 220, depth: 110 },
@@ -70,6 +74,8 @@ export type GenerateInput = {
   markers: Marker[];
   form: AutoPlanFormState;
   floorId?: string | null;
+  /** Число единиц оборудования уже привязанных к kits на этаже */
+  assignedEquipmentCount?: number;
 };
 
 export type GenerateResult = {
@@ -466,6 +472,14 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       report: {
         created: [],
         skipped: ["Нет этажа для расстановки"],
+        requested: emptyReportCounts(),
+        placed: emptyReportCounts(),
+        equipment: {
+          selected: 0,
+          assignedToKits: input.assignedEquipmentCount || 0,
+          freeForKits: 0,
+          note: EQUIPMENT_AUTO_NOTE,
+        },
         norms: [{ id: "n0", label: "План этажа", status: "error" }],
       },
       roomRoles: [],
@@ -474,6 +488,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
 
   const created: string[] = [];
   const skipped: string[] = [];
+  const placedCounts = emptyReportCounts();
 
   // Автоопределение комнат по замкнутым контурам стен
   const detected = ensureRoomsDetected(
@@ -757,6 +772,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       );
       newFurniture.push(...items);
       desksTotal += placedCount;
+      placedCounts.workstations += placedCount;
       for (let i = 0; i < placedCount; i++) {
         const desk = items.find(
           (it, j) =>
@@ -795,6 +811,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       );
       if (items.length) {
         newFurniture.push(...items);
+        placedCounts.meetingRooms += 1;
         created.push(`Переговорная: ${entry.room.name || "комната"}`);
       } else {
         skipped.push(`Переговорная не влезла в «${entry.room.name}»`);
@@ -811,6 +828,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       );
       if (items.length) {
         newFurniture.push(...items);
+        placedCounts.conferenceRoom += 1;
         if (form.morePlants) {
           const b = polygonBounds(entry.room.points || []);
           if (b) {
@@ -852,6 +870,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       if (cab) items.push(cab);
       if (items.length) {
         newFurniture.push(...items);
+        placedCounts.privateOffices += 1;
         const c = roomCentroid(entry.room.points || []);
         markers.push({
           id: uid("m"),
@@ -901,6 +920,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       }
       if (items.length) {
         newFurniture.push(...items);
+        placedCounts.lounge += 1;
         created.push(`Зона отдыха: ${entry.room.name || "комната"}`);
       }
     }
@@ -914,6 +934,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       );
       if (item) {
         newFurniture.push(item);
+        placedCounts.reception += 1;
         created.push(`Ресепшен: ${entry.room.name || "комната"}`);
       } else {
         skipped.push("Ресепшен не удалось разместить");
@@ -945,6 +966,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
       );
       if (fridge) {
         newFurniture.push(fridge);
+        placedCounts.pantry += 1;
         created.push(`Кухня / пантри: ${entry.room.name || "комната"}`);
       } else {
         skipped.push("Пантри не удалось разместить");
@@ -995,6 +1017,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
           );
           if (item) {
             newFurniture.push(item);
+            placedCounts.lounge += 1;
             created.push(
               `Зона отдыха (${where}): ${host.room.name || "комната"}`,
             );
@@ -1012,6 +1035,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
           );
           if (item) {
             newFurniture.push(item);
+            placedCounts.reception += 1;
             created.push(`Ресепшен (${where}): ${host.room.name || "комната"}`);
             placedOk = true;
             break;
@@ -1028,6 +1052,7 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
           );
           if (item) {
             newFurniture.push(item);
+            placedCounts.pantry += 1;
             created.push(
               `Кухня / пантри (${where}): ${host.room.name || "комната"}`,
             );
@@ -1089,9 +1114,46 @@ export function generateAutoPlan(input: GenerateInput): GenerateResult {
   }
 
   const aisleOk = form.density !== "high";
+  const seatsRequestedInitial =
+    form.workstations > 0
+      ? form.workstations
+      : enabledUsers.length > 0
+        ? enabledUsers.length
+        : 0;
+  const requested = emptyReportCounts();
+  requested.workstations = seatsRequestedInitial;
+  requested.meetingRooms = Math.max(0, form.meetingRooms);
+  requested.conferenceRoom = form.conferenceRoom > 0 ? 1 : 0;
+  requested.privateOffices = form.privateOffices.length;
+  requested.lounge = form.lounge ? Math.max(1, form.loungeCount || 1) : 0;
+  requested.reception = form.reception ? 1 : 0;
+  requested.pantry = form.pantry ? 1 : 0;
+
+  const selectedItems = form.pullEquipment
+    ? form.dbEquipment.filter((e) => e.enabled)
+    : [];
+  const selectedEq = selectedItems.length;
+  const assignedEq = Math.max(0, input.assignedEquipmentCount || 0);
+  // Свободно среди выбранных: без точных id kits считаем остаток
+  const freeEq = Math.max(0, selectedEq - assignedEq);
+
+  if (selectedEq > 0) {
+    created.push(
+      `Оборудование из БД: ${selectedEq} выбрано (ручная комплектация столов)`,
+    );
+  }
+
   const report: GenerationReport = {
     created,
     skipped,
+    requested,
+    placed: placedCounts,
+    equipment: {
+      selected: selectedEq,
+      assignedToKits: assignedEq,
+      freeForKits: freeEq,
+      note: EQUIPMENT_AUTO_NOTE,
+    },
     norms: [
       {
         id: "n-area",

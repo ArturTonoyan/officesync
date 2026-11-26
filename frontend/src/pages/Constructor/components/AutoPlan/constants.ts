@@ -5,7 +5,8 @@ import type {
 } from "./types";
 
 export const FURNITURE_OPTIONS: FurnitureCatalogOption[] = [
-  { id: "desk", label: "Рабочий стол", kind: "office/desk-dual-monitor" },
+  { id: "desk", label: "Пустой стол", kind: "office/desk-empty" },
+  { id: "desk-dual", label: "Стол с 2 мониторами", kind: "office/desk-dual-monitor" },
   { id: "standing-desk", label: "Sit-stand стол", kind: "office/standing-desk" },
   { id: "executive-desk", label: "Стол руководителя", kind: "office/executive-desk" },
   { id: "meeting-table", label: "Стол переговоров (6)", kind: "office/meeting-table-6" },
@@ -44,6 +45,30 @@ export const MOCK_REPORT: GenerationReport = {
     "зона отдыха",
   ],
   skipped: ["конференц не влез по площади — уменьшен до 8 мест"],
+  requested: {
+    workstations: 24,
+    meetingRooms: 2,
+    conferenceRoom: 1,
+    privateOffices: 0,
+    lounge: 1,
+    reception: 0,
+    pantry: 0,
+  },
+  placed: {
+    workstations: 24,
+    meetingRooms: 2,
+    conferenceRoom: 0,
+    privateOffices: 0,
+    lounge: 1,
+    reception: 0,
+    pantry: 0,
+  },
+  equipment: {
+    selected: 12,
+    assignedToKits: 0,
+    freeForKits: 12,
+    note: "Оборудование из БД на столы не расставляется автоматически — используйте комплектацию рабочего места",
+  },
   norms: [
     { id: "n1", label: "Пересечения мебели", status: "ok" },
     { id: "n2", label: "Ширина прохода", status: "warn" },

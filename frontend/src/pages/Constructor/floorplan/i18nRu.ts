@@ -360,6 +360,7 @@ export const FP_RU: Record<string, string> = {
   "Hanging plant": "Подвесное растение",
   "Cactus set": "Набор кактусов",
 
+  "Empty desk": "Пустой стол",
   "Desk with dual monitors": "Стол с двумя мониторами",
   "Sit-stand desk": "Стол с регулировкой высоты",
   "Desk with return": "Стол с приставкой",
@@ -367,6 +368,9 @@ export const FP_RU: Record<string, string> = {
   "Mesh task chair": "Сетчатое рабочее кресло",
   "Guest chairs pair": "Пара гостевых стульев",
   "Desk lamp": "Настольная лампа",
+  Monitor: "Монитор",
+  Keyboard: "Клавиатура",
+  Mouse: "Мышь",
   "Monitor arm dual": "Кронштейн на 2 монитора",
   "Docking station": "Док-станция",
   "Under-desk PC mount": "Крепление системного блока",

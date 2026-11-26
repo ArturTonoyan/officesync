@@ -1464,6 +1464,15 @@ export const officeExtraItems: PackItem[] = [
 
   // —— Офис: рабочие места ——
   {
+    kind: "office/desk-empty",
+    label: "Empty desk",
+    category: "Desks",
+    width: 140,
+    depth: 70,
+    // только столешница — оборудование ставится комплектацией
+    symbol: (w, d) => box("fp-f", 0, 0, w, d, 3),
+  },
+  {
     kind: "office/desk-dual-monitor",
     label: "Desk with dual monitors",
     category: "Desks",
@@ -1550,6 +1559,36 @@ export const officeExtraItems: PackItem[] = [
       circle("fp-f2", 0, 8, 8) +
       rect("fp-fl", -1.5, -6, 3, 18, 1) +
       ellipse("fp-fa", 6, -12, 10, 6),
+  },
+  {
+    kind: "office/monitor",
+    label: "Monitor",
+    category: "Equipment",
+    width: 52,
+    depth: 18,
+    symbol: (_w, _d) => monitor(0, 0, 52),
+  },
+  {
+    kind: "office/keyboard",
+    label: "Keyboard",
+    category: "Equipment",
+    width: 44,
+    depth: 16,
+    symbol: (w, d) =>
+      box("fp-f", 0, 0, w, d, 2) +
+      rect("fp-fl", -w * 0.38, -d * 0.22, w * 0.76, 1.5, 0) +
+      rect("fp-fl", -w * 0.38, 0, w * 0.76, 1.5, 0) +
+      rect("fp-fl", -w * 0.38, d * 0.22, w * 0.76, 1.5, 0),
+  },
+  {
+    kind: "office/mouse",
+    label: "Mouse",
+    category: "Equipment",
+    width: 12,
+    depth: 18,
+    symbol: (w, d) =>
+      ellipse("fp-f", 0, 0, w * 0.45, d * 0.42) +
+      rect("fp-fl", -1, -d * 0.2, 2, d * 0.35, 1),
   },
   {
     kind: "office/monitor-arm",

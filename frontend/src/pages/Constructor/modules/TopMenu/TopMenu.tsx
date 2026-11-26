@@ -17,6 +17,7 @@ type Props = {
   safetyModeActive?: boolean;
   onNorms?: () => void;
   normsCount?: number;
+  onStructuralTemplate?: () => void;
   /** оставлены для совместимости с вызовами */
   offices?: unknown;
   floors?: unknown;
@@ -33,6 +34,7 @@ function TopMenu({
   safetyModeActive = false,
   onNorms,
   normsCount = 0,
+  onStructuralTemplate,
 }: Props) {
   const selectOffice = useAppSelector(
     (state) => state.conva.offices.selectedObject,
@@ -200,6 +202,39 @@ function TopMenu({
               </svg>
               Безопасность
             </Button>
+            {onStructuralTemplate && (
+              <Button
+                variant="secondary"
+                className="h-9 gap-2"
+                onClick={onStructuralTemplate}
+                title="Сохранить или применить каркас: стены, комнаты, сантехника"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                  className="shrink-0"
+                >
+                  <path
+                    d="M4 20V10l8-6 8 6v10"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M10 20v-6h4v6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Шаблон этажа
+              </Button>
+            )}
             <Button
               variant="secondary"
               className="h-9 gap-2"

@@ -91,3 +91,6 @@ INSERT INTO equipments (id, name, "inventoryNumber", type, description, cost, "m
 ('a8888888-8888-4888-8888-aaaaaaaaaa43', 'iMac 24" (директор)', 'СПБ-КВ-2101', 'ПК', 'Кабинет директора', 159000, 36, 4, 'Исправен', '32a6f6a4-d652-4feb-a641-475f3ef31f86', '0cfcdb24-5ae5-421e-8dc5-f4b474f64d8c', 'c033114a-0f91-4832-89ec-898a9eb4c444', '1b0c2686-b7e4-42bc-8608-36e9901257ba', NOW(), NOW()),
 ('a8888888-8888-4888-8888-aaaaaaaaaa44', 'iPhone 16 Pro', 'СПБ-КВ-2102', 'Смартфон', 'Кабинет директора', 120000, 24, 2, 'Исправен', '32a6f6a4-d652-4feb-a641-475f3ef31f86', '0cfcdb24-5ae5-421e-8dc5-f4b474f64d8c', 'c033114a-0f91-4832-89ec-898a9eb4c444', '1b0c2686-b7e4-42bc-8608-36e9901257ba', NOW(), NOW());
 COMMIT;
+
+-- Периферия столов (клавиатуры, мыши, док-станции, доп. мониторы/ПК):
+-- PGPASSWORD=root psql -h localhost -U admin -d officesync -f scripts/seed-spb-coworking-desk-gear.sql

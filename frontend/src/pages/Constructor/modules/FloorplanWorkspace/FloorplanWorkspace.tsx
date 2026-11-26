@@ -28,6 +28,7 @@ import {
 } from "../../../../store/convaSlice/conva.Slice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  apiGetEquipments,
   apiGetFloors,
   apiGetOffices,
   apiLayoutOllamaStatus,
@@ -52,6 +53,22 @@ import {
   AutoPlanDrawer,
   type AutoPlanTab,
 } from "../../components/AutoPlan";
+import WorkplaceKitPanel from "../../components/WorkplaceKit/WorkplaceKitPanel";
+import StructuralTemplateModal from "../../components/StructuralTemplate/StructuralTemplateModal";
+import {
+  copyWorkplaceKit,
+  findFurniture,
+  isDeskKind,
+  occupiedEquipmentIds,
+  parseWorkplaceKits,
+  resyncKitsAfterPlanChange,
+  syncKitFurniture,
+  type WorkplaceKit,
+} from "../../floorplan/workplaceKit";
+import {
+  applyStructuralTemplate,
+  type StructuralTemplate,
+} from "../../floorplan/structuralTemplate";
 import {
   EvacuationMapModal,
   bindEvacTextureToFurnitureIds,
@@ -99,6 +116,9 @@ import { evacMap3D } from "../../floorplan/evacMap3d";
 import { safetyGear3D } from "../../floorplan/safetyGear3d";
 import { projector3D } from "../../floorplan/projector3d";
 import { fridge3D } from "../../floorplan/fridge3d";
+import { deskEmpty3D } from "../../floorplan/deskEmpty3d";
+import { deskGear3D } from "../../floorplan/deskGear3d";
+import { runWithoutCameraFit } from "../../floorplan/editorView";
 import { syncOpeningsOnOverlappingWalls } from "../../floorplan/openingsSync";
 import ObjectInfoPopup, {
   type ObjectInfo,
@@ -124,6 +144,8 @@ async function registerAll3dPacks(
   registerPack3D(evacMap3D);
   registerPack3D(projector3D);
   registerPack3D(fridge3D);
+  registerPack3D(deskEmpty3D);
+  registerPack3D(deskGear3D);
   registerPack3D(safetyGear3D);
 }
 
@@ -193,6 +215,7 @@ class Viewer3DErrorBoundary extends Component<
 type StoredMap = {
   plan: FloorPlan;
   markers: Marker[];
+  workplaceKits: WorkplaceKit[];
 };
 
 const storageKey = (floorId: string) => `officesync-floorplan:${floorId}`;
@@ -207,10 +230,19 @@ function parseStored(raw: string | null | undefined): StoredMap | null {
         localizePlan(normalizePlan(data.plan)),
       ),
       markers: Array.isArray(data.markers) ? data.markers : [],
+      workplaceKits: parseWorkplaceKits(data.workplaceKits),
     };
   } catch {
     return null;
   }
+}
+
+function serializeStored(
+  plan: FloorPlan,
+  markers: Marker[],
+  workplaceKits: WorkplaceKit[],
+) {
+  return JSON.stringify({ plan, markers, workplaceKits });
 }
 
 /** Насколько «полный» сохранённый план (стены/комнаты/мебель). */
@@ -224,6 +256,7 @@ function planRichness(stored: StoredMap | null): number {
     score += (floor.openings?.length || 0) * 2;
   }
   score += stored.markers?.length || 0;
+  score += stored.workplaceKits?.length || 0;
   return score;
 }
 
@@ -269,6 +302,9 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
   const [viewMode, setViewMode] = useState<ViewMode>(noedit ? "2d" : "edit");
   const [plan, setPlan] = useState<FloorPlan>(() => createRussianPlan("Офис"));
   const [markers, setMarkers] = useState<Marker[]>([]);
+  const [workplaceKits, setWorkplaceKits] = useState<WorkplaceKit[]>([]);
+  const [kitDeskId, setKitDeskId] = useState<string | null>(null);
+  const [kitCopyWarning, setKitCopyWarning] = useState<string | null>(null);
   const [planFloorId, setPlanFloorId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
@@ -279,6 +315,7 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
   const planReadyRef = useRef(false);
   const [autoPlanOpen, setAutoPlanOpen] = useState(false);
   const [autoPlanTab, setAutoPlanTab] = useState<AutoPlanTab>("params");
+  const [structuralTplOpen, setStructuralTplOpen] = useState(false);
   const [evacOpen, setEvacOpen] = useState(false);
   const [evacWallPick, setEvacWallPick] = useState(false);
   /** Пересборка 3D после запекания текстуры плана эвакуации */
@@ -513,13 +550,34 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
   });
 
   const selectedFloorId = conva.floors.selected;
+  const selectedOfficeId = conva.offices.selected as string | null;
   const selectedFloor = conva.floors.selectedObject as {
     id?: string;
     name?: string;
     number?: number;
     planData?: string | null;
+    officeId?: string;
   } | null;
   const selectedFloorPlanData = selectedFloor?.planData ?? null;
+
+  const officeFloorsForTemplate = useMemo(() => {
+    const list = (floors?.data || []) as Array<{
+      id: string;
+      name?: string;
+      number?: number | null;
+      officeId?: string;
+      planData?: string | null;
+    }>;
+    const officeId = selectedOfficeId || selectedFloor?.officeId || null;
+    return list
+      .filter((f) => !officeId || f.officeId === officeId)
+      .map((f) => ({
+        id: f.id,
+        name: f.name || (f.number != null ? `${f.number} этаж` : "Этаж"),
+        number: f.number,
+        planData: f.planData ?? null,
+      }));
+  }, [floors?.data, selectedOfficeId, selectedFloor?.officeId]);
 
   useEffect(() => {
     if (!offices?.data?.length) return;
@@ -648,18 +706,27 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
     if (stored) {
       setPlan(stored.plan);
       setMarkers(stored.markers);
+      setWorkplaceKits(stored.workplaceKits);
+      setKitDeskId(null);
+      setKitCopyWarning(null);
       setPlanFloorId(stored.plan.floors?.[0]?.id ?? null);
       // Синхронизируем localStorage с лучшим источником (не затираем богатый план пустым)
       if (planRichness(stored) > 0) {
         localStorage.setItem(
           storageKey(selectedFloorId),
-          JSON.stringify({ plan: stored.plan, markers: stored.markers }),
+          serializeStored(
+            stored.plan,
+            stored.markers,
+            stored.workplaceKits,
+          ),
         );
       }
     } else {
       const next = createRussianPlan(floorDisplayName);
       setPlan(next);
       setMarkers([]);
+      setWorkplaceKits([]);
+      setKitDeskId(null);
       setPlanFloorId(next.floors?.[0]?.id ?? null);
     }
 
@@ -722,14 +789,85 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
   }, [viewMode, selectedFloorId, planFloorId, plan]);
 
   const persistLocal = useCallback(
-    (nextPlan: FloorPlan, nextMarkers: Marker[]) => {
+    (
+      nextPlan: FloorPlan,
+      nextMarkers: Marker[],
+      nextKits: WorkplaceKit[] = workplaceKits,
+    ) => {
       if (!selectedFloorId || !planReadyRef.current) return;
       if (loadedFloorRef.current !== selectedFloorId) return;
-      const payload = JSON.stringify({ plan: nextPlan, markers: nextMarkers });
+      const payload = serializeStored(nextPlan, nextMarkers, nextKits);
       localStorage.setItem(storageKey(selectedFloorId), payload);
     },
-    [selectedFloorId],
+    [selectedFloorId, workplaceKits],
   );
+
+  const { data: equipmentsRes } = useQuery({
+    queryKey: ["constructor/equipments", user?.companyId],
+    queryFn: () => apiGetEquipments(user?.companyId),
+    enabled: !!user?.companyId && !noedit,
+    staleTime: 30_000,
+  });
+
+  const floorEquipments = useMemo(() => {
+    const all = (equipmentsRes?.data || []) as {
+      id: string;
+      name?: string;
+      type?: string;
+      inventoryNumber?: string;
+      floorId?: string;
+    }[];
+    if (!selectedFloorId) return all;
+    const onFloor = all.filter((e) => e.floorId === selectedFloorId);
+    return onFloor.length > 0 ? onFloor : all;
+  }, [equipmentsRes, selectedFloorId]);
+
+  const applyKits = useCallback(
+    (nextKits: WorkplaceKit[], basePlan?: FloorPlan) => {
+      const live = basePlan || editorRef.current?.getPlan?.() || plan;
+      const synced = syncKitFurniture(live, planFloorId, nextKits);
+      runWithoutCameraFit(canvasHostRef.current, () => {
+        setWorkplaceKits(nextKits);
+        setPlan(synced);
+        persistLocal(synced, markers, nextKits);
+      });
+    },
+    [plan, planFloorId, markers, persistLocal],
+  );
+
+  const handleCopyWorkplace = useCallback(() => {
+    if (!kitDeskId) return;
+    const live = editorRef.current?.getPlan?.() || plan;
+    const result = copyWorkplaceKit(
+      live,
+      planFloorId,
+      workplaceKits,
+      kitDeskId,
+      floorEquipments,
+    );
+    if (!result) return;
+    runWithoutCameraFit(canvasHostRef.current, () => {
+      setPlan(result.plan);
+      setWorkplaceKits(result.kits);
+      setKitDeskId(result.newDeskId);
+      persistLocal(result.plan, markers, result.kits);
+    });
+    if (result.missingEquipment > 0) {
+      setKitCopyWarning(
+        `Скопирована раскладка, не хватило ${result.missingEquipment} ед. оборудования в БД — слоты без инвентаря`,
+      );
+    } else {
+      setKitCopyWarning(null);
+    }
+  }, [
+    kitDeskId,
+    plan,
+    planFloorId,
+    workplaceKits,
+    floorEquipments,
+    markers,
+    persistLocal,
+  ]);
 
   const handleChatStop = useCallback(() => {
     chatAbortRef.current?.abort();
@@ -742,10 +880,10 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
     if (!chatUndo) return;
     setPlan(chatUndo.plan);
     setMarkers(chatUndo.markers);
-    persistLocal(chatUndo.plan, chatUndo.markers);
+    persistLocal(chatUndo.plan, chatUndo.markers, workplaceKits);
     setChatUndo(null);
     setChatReply("Правка чата отменена");
-  }, [chatUndo, persistLocal]);
+  }, [chatUndo, persistLocal, workplaceKits]);
 
   const handleChatSubmit = useCallback(
     async (text: string, scope: ChatEditScope) => {
@@ -901,11 +1039,41 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
 
   const handlePlanChange = useCallback(
     (next: FloorPlan) => {
-      const synced = syncOpeningsOnOverlappingWalls(next);
-      setPlan(synced);
-      persistLocal(synced, markers);
+      const openingsSynced = syncOpeningsOnOverlappingWalls(next);
+      const { plan: synced, kits, mutatedFurniture } = resyncKitsAfterPlanChange(
+        openingsSynced,
+        planFloorId,
+        workplaceKits,
+        plan,
+      );
+      // Drag/resize/delete слотов: kits обновляем, plan обратно не пушим —
+      // внешний setPlan в библиотеке сбрасывает камеру через fit().
+      if (mutatedFurniture) {
+        runWithoutCameraFit(canvasHostRef.current, () => {
+          setPlan(synced);
+          setWorkplaceKits(kits);
+          persistLocal(synced, markers, kits);
+        });
+        return;
+      }
+      const openingsChanged =
+        JSON.stringify(openingsSynced) !== JSON.stringify(next);
+      if (openingsChanged) {
+        runWithoutCameraFit(canvasHostRef.current, () => {
+          setPlan(openingsSynced);
+          setWorkplaceKits(kits);
+          persistLocal(openingsSynced, markers, kits);
+        });
+        return;
+      }
+      // Редактор уже содержит next (= be) — не провоцируем fit лишним rewrite.
+      setWorkplaceKits(kits);
+      persistLocal(next, markers, kits);
+      if (JSON.stringify(plan) !== JSON.stringify(next)) {
+        setPlan(next);
+      }
     },
-    [markers, persistLocal],
+    [markers, persistLocal, planFloorId, workplaceKits, plan],
   );
 
   const funSave = async () => {
@@ -915,7 +1083,12 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
     const currentPlan = syncOpeningsOnOverlappingWalls(
       localizePlan(editorRef.current?.getPlan?.() || plan),
     );
-    const payload = JSON.stringify({ plan: currentPlan, markers });
+    const withKits = syncKitFurniture(
+      currentPlan,
+      planFloorId,
+      workplaceKits,
+    );
+    const payload = serializeStored(withKits, markers, workplaceKits);
     localStorage.setItem(storageKey(selectedFloorId), payload);
     planReadyRef.current = true;
     loadedFloorRef.current = selectedFloorId;
@@ -947,7 +1120,7 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
         }
       }
 
-      setPlan(currentPlan);
+      setPlan(withKits);
       setSaveMsg("Карта сохранена");
 
       const withPayload = (list: Array<{ id: string; planData?: string | null }>) =>
@@ -1047,6 +1220,37 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
               onFloorChange={setPlanFloorId}
               onSelectionChange={(selection) => {
                 if (evacWallPick) return;
+                if (selection?.kind === "furniture") {
+                  const live = editorRef.current?.getPlan?.() || plan;
+                  const furn = findFurniture(
+                    live,
+                    planFloorId,
+                    selection.id,
+                  );
+                  if (furn && isDeskKind(String(furn.kind))) {
+                    setKitDeskId(selection.id);
+                    setKitCopyWarning(null);
+                  } else if (
+                    furn &&
+                    String(furn.id).startsWith("wpslot_")
+                  ) {
+                    // клик по слоту — открыть kit родительского стола
+                    const parent = workplaceKits.find((k) =>
+                      k.slots.some(
+                        (s) =>
+                          s.furnitureId === furn.id || s.id === selection.id,
+                      ),
+                    );
+                    if (parent) {
+                      setKitDeskId(parent.deskFurnitureId);
+                      setKitCopyWarning(null);
+                    }
+                  } else {
+                    setKitDeskId(null);
+                  }
+                } else if (!selection) {
+                  // не сбрасываем kit при клике в пустоту — панель закрывается кнопкой
+                }
                 if (!roomPickRowId || !selection || selection.kind !== "room") {
                   return;
                 }
@@ -1403,6 +1607,7 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
         safetyModeActive={safetyMode}
         onNorms={() => openAutoPlan("norms")}
         normsCount={2}
+        onStructuralTemplate={() => setStructuralTplOpen(true)}
         modeToggle={
           <ModeToggle
             mode={viewMode}
@@ -1490,6 +1695,92 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
       )}
 
       {!noedit && (
+        <StructuralTemplateModal
+          open={structuralTplOpen}
+          onClose={() => setStructuralTplOpen(false)}
+          officeId={selectedOfficeId || selectedFloor?.officeId}
+          currentFloorId={selectedFloorId}
+          currentFloorName={
+            selectedFloor?.name ||
+            (selectedFloor?.number != null
+              ? `${selectedFloor.number} этаж`
+              : undefined)
+          }
+          planFloorId={planFloorId}
+          getLivePlan={() => editorRef.current?.getPlan?.() || plan}
+          floors={officeFloorsForTemplate}
+          onApplyToCurrent={(nextPlan) => {
+            runWithoutCameraFit(canvasHostRef.current, () => {
+              setPlan(nextPlan);
+              // Каркас сменился — комплектации столов сбрасываем
+              setWorkplaceKits([]);
+              setKitDeskId(null);
+              persistLocal(nextPlan, markers, []);
+            });
+            setStructuralTplOpen(false);
+            setSaveMsg("Шаблон каркаса применён к текущему этажу");
+            window.setTimeout(() => setSaveMsg(null), 2800);
+          }}
+          onApplyToOtherFloor={async (floorId, template) => {
+            const floorMeta = officeFloorsForTemplate.find(
+              (f) => f.id === floorId,
+            );
+            const fromApi = parseStored(floorMeta?.planData);
+            const fromLocal = parseStored(
+              localStorage.getItem(storageKey(floorId)),
+            );
+            const base =
+              pickStored(fromApi, fromLocal) ||
+              ({
+                plan: createRussianPlan(floorMeta?.name || "Офис"),
+                markers: [],
+                workplaceKits: [],
+              } satisfies StoredMap);
+
+            const targetPlanFloorId =
+              base.plan.floors[0]?.id || planFloorId;
+            const nextPlan = applyStructuralTemplate(
+              base.plan,
+              targetPlanFloorId,
+              template as StructuralTemplate,
+            );
+            const payload = serializeStored(
+              nextPlan,
+              base.markers,
+              // kits привязаны к старым id столов — сбрасываем
+              [],
+            );
+            localStorage.setItem(storageKey(floorId), payload);
+
+            const updateRes = await apiUpdateFloor(
+              {
+                name: floorMeta?.name,
+                number: floorMeta?.number ?? undefined,
+                planData: payload,
+              },
+              floorId,
+            );
+            if (!isApiOk(updateRes)) {
+              throw new Error(
+                (updateRes as { response?: { data?: { message?: string } } })
+                  ?.response?.data?.message ||
+                  "Сервер отклонил запись шаблона на этаж",
+              );
+            }
+            await refetchFloors();
+            void queryClient.invalidateQueries({
+              queryKey: ["floors/all/id", user?.companyId],
+            });
+            setStructuralTplOpen(false);
+            setSaveMsg(
+              `Шаблон записан на этаж «${floorMeta?.name || floorId}». Откройте его в каталоге.`,
+            );
+            window.setTimeout(() => setSaveMsg(null), 4000);
+          }}
+        />
+      )}
+
+      {!noedit && (
         <EvacuationMapModal
           open={evacOpen}
           onClose={() => setEvacOpen(false)}
@@ -1568,7 +1859,7 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
           onApplyPlan={(nextPlan, nextMarkers) => {
             setPlan(nextPlan);
             setMarkers(nextMarkers);
-            persistLocal(nextPlan, nextMarkers);
+            persistLocal(nextPlan, nextMarkers, workplaceKits);
           }}
           roomPickRowId={roomPickRowId}
           onStartRoomPick={(rowId) => {
@@ -1578,6 +1869,34 @@ function FloorplanWorkspace({ noedit = false }: { noedit?: boolean }) {
           onCancelRoomPick={() => setRoomPickRowId(null)}
           pickedRoom={pickedRoom}
           onPickedRoomConsumed={() => setPickedRoom(null)}
+          assignedEquipmentCount={occupiedEquipmentIds(workplaceKits).size}
+        />
+      )}
+
+      {!noedit && viewMode === "edit" && kitDeskId && (
+        <WorkplaceKitPanel
+          open
+          hostRef={workspaceRef}
+          deskId={kitDeskId}
+          deskLabel={(() => {
+            const furn = findFurniture(plan, planFloorId, kitDeskId);
+            if (!furn) return "Стол";
+            const kind = String(furn.kind);
+            const item =
+              officePackRu.items.find((c) => String(c.kind) === kind) ||
+              furnitureCatalogRu.find((c) => String(c.kind) === kind);
+            return item?.label || kind.replace(/^office\//, "");
+          })()}
+          kits={workplaceKits}
+          equipments={floorEquipments}
+          floorId={selectedFloorId}
+          onChangeKits={applyKits}
+          onCopyWorkplace={handleCopyWorkplace}
+          onClose={() => {
+            setKitDeskId(null);
+            setKitCopyWarning(null);
+          }}
+          copyWarning={kitCopyWarning}
         />
       )}
 

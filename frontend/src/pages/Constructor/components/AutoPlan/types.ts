@@ -44,11 +44,47 @@ export type GenerationPhase =
 
 export type PlanVariantId = "A" | "B" | "C";
 
+export type ReportCounts = {
+  workstations: number;
+  meetingRooms: number;
+  conferenceRoom: number;
+  privateOffices: number;
+  lounge: number;
+  reception: number;
+  pantry: number;
+};
+
+export type EquipmentReport = {
+  /** Выбрано в превью «Подтянуть из БД» */
+  selected: number;
+  /** Уже привязано к комплектациям столов на этаже */
+  assignedToKits: number;
+  /** Свободно для ручной комплектации */
+  freeForKits: number;
+  note: string;
+};
+
 export type GenerationReport = {
   created: string[];
   skipped: string[];
+  requested: ReportCounts;
+  placed: ReportCounts;
+  equipment: EquipmentReport;
   norms: { id: string; label: string; status: "ok" | "warn" | "error" }[];
 };
+
+export const emptyReportCounts = (): ReportCounts => ({
+  workstations: 0,
+  meetingRooms: 0,
+  conferenceRoom: 0,
+  privateOffices: 0,
+  lounge: 0,
+  reception: 0,
+  pantry: 0,
+});
+
+export const EQUIPMENT_AUTO_NOTE =
+  "Оборудование из БД на столы не расставляется автоматически — используйте комплектацию рабочего места";
 
 export type NormViolation = {
   id: string;

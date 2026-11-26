@@ -4,6 +4,7 @@
  */
 const KIND_3D: Record<string, string> = {
   // столы
+  "office/desk-empty": "office/desk-empty",
   "office/desk-dual-monitor": "office/desk-dual",
   "office/desk-triple-monitor": "office/desk-dual",
   "office/compact-desk": "office/hot-desk",
@@ -134,7 +135,12 @@ const KIND_3D: Record<string, string> = {
   "office/router-shelf": "office/shelving",
   "office/vending": "office/coffee-station",
   "office/desk-lamp": "office/pedestal",
-  "office/docking-station": "office/pedestal",
+  "office/monitor": "office/monitor",
+  "office/keyboard": "office/keyboard",
+  "office/mouse": "office/mouse",
+  "office/underdesk-cpu": "office/underdesk-cpu",
+  "office/docking-station": "office/docking-station",
+  "office/monitor-arm": "office/monitor",
 
   // фокус / ресепшен
   "office/focus-booth": "office/phone-booth",
@@ -207,7 +213,15 @@ function guessKind3d(kind: string): string {
   if (/meeting-table-8/.test(k)) return "office/meeting-8";
   if (/meeting-table|meeting-6/.test(k)) return "office/meeting-6";
   if (/round-meeting|meeting-round/.test(k)) return "office/round-meeting";
-  if (/desk-dual|monitor/.test(k)) return "office/desk-dual";
+  if (/desk-empty|пустой.?стол|empty.?desk/.test(k)) return "office/desk-empty";
+  if (/keyboard|клавиатур/.test(k)) return "office/keyboard";
+  if (/mouse|мыш/.test(k)) return "office/mouse";
+  if (/underdesk-cpu|системн.?блок|(^|\/)cpu$/.test(k))
+    return "office/underdesk-cpu";
+  if (/docking|док-?станц/.test(k)) return "office/docking-station";
+  if (/\/monitor$|office\/monitor|monitor-arm/.test(k)) return "office/monitor";
+  if (/desk-dual|desk-triple|dual-monitor|triple-monitor/.test(k))
+    return "office/desk-dual";
   if (/standing|sit-stand/.test(k)) return "office/standing-desk";
   if (/desk|стол/.test(k)) return "office/desk";
   if (/projector(?!-?screen)|проектор/.test(k) && !/screen|экран/.test(k))
@@ -277,6 +291,12 @@ const CUSTOM_3D = new Set([
   "office/evacuation-map",
   "office/projector",
   "office/mini-fridge",
+  "office/desk-empty",
+  "office/monitor",
+  "office/keyboard",
+  "office/mouse",
+  "office/underdesk-cpu",
+  "office/docking-station",
   "office/fire-extinguisher",
   "office/first-aid",
   "office/exit-sign",
@@ -288,6 +308,7 @@ export function mapKindFor3d(kind: string): string {
   if (!kind) return "office/pedestal";
   // Встроенный `fridge` в floorplan-elements — гладкий ящик; всегда наша модель.
   if (kind === "fridge" || kind === "office/fridge") return "office/mini-fridge";
+  if (kind === "office/desk-empty") return "office/desk-empty";
   if (CUSTOM_3D.has(kind)) return kind;
   if (NATIVE_3D.has(kind)) return kind;
   if (BUILTIN_3D[kind]) return BUILTIN_3D[kind]!;

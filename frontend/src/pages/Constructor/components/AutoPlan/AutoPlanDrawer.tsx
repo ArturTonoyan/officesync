@@ -78,6 +78,8 @@ type Props = {
   onPickedRoomConsumed?: () => void;
   /** Если не передан — статус берётся с GET /layout/ollama-status */
   ollamaAvailable?: boolean;
+  /** Сколько единиц оборудования уже привязано к комплектациям столов */
+  assignedEquipmentCount?: number;
 };
 
 function fio(u: FloorUser) {
@@ -190,6 +192,7 @@ function AutoPlanDrawer({
   pickedRoom = null,
   onPickedRoomConsumed,
   ollamaAvailable: ollamaAvailableProp,
+  assignedEquipmentCount = 0,
 }: Props) {
   const [form, setForm] = useState<AutoPlanFormState>(defaultAutoPlanForm);
   const [generating, setGenerating] = useState(false);
@@ -454,6 +457,7 @@ function AutoPlanDrawer({
         markers,
         form,
         floorId: planFloorId || floorId,
+        assignedEquipmentCount,
       });
 
       // Ollama (или fallback) доукомплектовывает комнаты
